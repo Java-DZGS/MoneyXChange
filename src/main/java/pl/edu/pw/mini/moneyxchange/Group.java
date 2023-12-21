@@ -1,0 +1,90 @@
+package pl.edu.pw.mini.moneyxchange;
+
+import pl.edu.pw.mini.moneyxchange.Transfer;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Group implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    private static Group instance;
+
+    private String name = "Unnamed group 1";
+    private final List<User> users;
+    private final List<Expense> expenses;
+    private final List<Transfer> pendingTransfers;
+    private final List<Transfer> completedTransfers;
+
+    private Group() {
+        // Private constructor to prevent instantiation
+        users = new ArrayList<>();
+        expenses = new ArrayList<>();
+        pendingTransfers = new ArrayList<>();
+        completedTransfers = new ArrayList<>();
+
+        users.add(new User("Bronisław"));
+        users.add(new User("Stanisław"));
+        users.add(new User("Radosław"));
+        users.add(new User("Władysław"));
+    }
+
+    public static synchronized Group getInstance() {
+        if (instance == null) {
+            instance = new Group();
+        }
+        return instance;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public List<Expense> getExpenses() {
+        return expenses;
+    }
+
+    public List<Transfer> getPendingTransfers() {
+        return pendingTransfers;
+    }
+
+    public List<Transfer> getCompletedTransfers() {
+        return completedTransfers;
+    }
+
+    public void addPendingTransfer(Transfer Transfer) {
+        pendingTransfers.add(Transfer);
+    }
+
+    public void markTransferAsCompleted(Transfer Transfer) {
+        pendingTransfers.remove(Transfer);
+        completedTransfers.add(Transfer);
+    }
+
+    public void serialize() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("group.ser"))) {
+            oos.writeObject(instance);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Group deserialize() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("group.ser"))) {
+            return (Group) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
