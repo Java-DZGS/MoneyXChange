@@ -1,17 +1,19 @@
 package pl.edu.pw.mini.moneyxchange;
-import java.util.List;
 
 public class Transfer {
+    // to edit
     private final String title;
     private final String date;
     private final double amount;
-    private final List<String> participants;
+    private final User fromUser;
+    private final User toUser;
 
-    public Transfer(String title, String date, double amount, List<String> participants) {
+    public Transfer(String title, String date, double amount, User fromUser, User toUser) {
         this.title = title;
         this.date = date;
         this.amount = amount;
-        this.participants = participants;
+        this.fromUser = fromUser;
+        this.toUser = toUser;
     }
 
     public String getTitle() {
@@ -26,8 +28,12 @@ public class Transfer {
         return amount;
     }
 
-    public List<String> getParticipants() {
-        return participants;
+    public User getToUser() {
+        return toUser;
+    }
+
+    public User getFromUser() {
+        return fromUser;
     }
 }
 

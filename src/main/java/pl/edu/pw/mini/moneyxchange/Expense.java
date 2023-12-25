@@ -1,50 +1,62 @@
 package pl.edu.pw.mini.moneyxchange;
 
 import java.io.Serializable;
+import java.util.List;
+
+enum DivisionType {
+
+}
 
 public class Expense implements Serializable {
-    private String title;
-    private String date;
-    private double amount;
-    private String payer;
-    private String category;
+    private final User creator;
+    private final double amount;
+    private final List<User> participants;
+    private final DivisionType divisionType;
+    private final String name;
+    private final String date;
 
-    public Expense(String title, String date, double amount, String payer, String category) {
-        this.title = title;
-        this.date = date;
+    public Expense(User creator, double amount, List<User> participants, DivisionType divisionType, String name, String date) {
+        this.creator = creator;
         this.amount = amount;
-        this.payer = payer;
-        this.category = category;
+        this.participants = participants;
+        this.divisionType = divisionType;
+        this.name = name;
+        this.date = date;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDate() {
-        return date;
+    public User getCreator() {
+        return creator;
     }
 
     public double getAmount() {
         return amount;
     }
 
-    public String getPayer() {
-        return payer;
+    public List<User> getParticipants() {
+        return participants;
     }
 
-    public String getCategory() {
-        return category;
+    public DivisionType getDivisionType() {
+        return divisionType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDate() {
+        return date;
     }
 
     @Override
     public String toString() {
         return "Expense{" +
-                "title='" + title + '\'' +
-                ", date='" + date + '\'' +
+                "creator=" + creator +
                 ", amount=" + amount +
-                ", payer='" + payer + '\'' +
-                ", category='" + category + '\'' +
+                ", participants=" + participants +
+                ", divisionType=" + divisionType +
+                ", name='" + name + '\'' +
+                ", date='" + date + '\'' +
                 '}';
     }
 }

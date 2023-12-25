@@ -2,7 +2,6 @@ package pl.edu.pw.mini.moneyxchange;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Group implements Serializable {
     @Serial
@@ -84,5 +83,14 @@ public class Group implements Serializable {
             System.out.println("Nie udało się zdeserializować grupy");
             return null;
         }
+    }
+
+    public User findUserByName(String name) {
+        for (User user : users) {
+            if (user.getName().equals(name)) {
+                return user; // Found the user with the given name
+            }
+        }
+        return null; // User not found
     }
 }

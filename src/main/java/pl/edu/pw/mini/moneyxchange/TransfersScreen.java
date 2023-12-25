@@ -1,4 +1,5 @@
 package pl.edu.pw.mini.moneyxchange;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -11,13 +12,12 @@ public class TransfersScreen extends JPanel {
 
     public TransfersScreen() {
         transfers = new ArrayList<>();
-        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, List.of("User1", "User2")));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, List.of("User3", "User4", "User5")));
-        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, List.of("User1", "User2")));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, List.of("User3", "User4", "User5")));
-        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, List.of("User1", "User2")));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, List.of("User3", "User4", "User5")));
-
+        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1"), new User("User2")));
+        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3"), new User("User4")));
+        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1"), new User("User2")));
+        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3"), new User("User4")));
+        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1"), new User("User2")));
+        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3"), new User("User4")));
         // Create components
         transfersPanel = new JPanel();
         JScrollPane transfersScrollPane = new JScrollPane(transfersPanel);
@@ -61,17 +61,19 @@ public class TransfersScreen extends JPanel {
     private JPanel createTransferPanel(Transfer transfer) {
         JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        panel.setLayout(new GridLayout(4, 1));
+        panel.setLayout(new GridLayout(5, 1));
 
         JLabel titleLabel = new JLabel("Tytuł: " + transfer.getTitle());
         JLabel dateLabel = new JLabel("Data: " + transfer.getDate());
         JLabel amountLabel = new JLabel("Kwota: $" + transfer.getAmount());
-        JLabel participantsLabel = new JLabel("Uczestnicy: " + String.join(", ", transfer.getParticipants()));
+        JLabel fromLabel = new JLabel("Od: " + transfer.getFromUser().getName());
+        JLabel toLabel = new JLabel("Do: " + transfer.getToUser().getName());
 
         panel.add(titleLabel);
         panel.add(dateLabel);
         panel.add(amountLabel);
-        panel.add(participantsLabel);
+        panel.add(fromLabel);
+        panel.add(toLabel);
 
         // Set a fixed size for the panel
         panel.setPreferredSize(new Dimension(0, 100)); // Adjust the width and height as needed
@@ -86,19 +88,22 @@ public class TransfersScreen extends JPanel {
         JTextField titleField = new JTextField();
         JTextField dateField = new JTextField();
         JTextField amountField = new JTextField();
-        JTextField participantsField = new JTextField();
+        JTextField fromField = new JTextField();
+        JTextField toField = new JTextField();
 
         JButton addButton = new JButton("Dodaj przelew");
 
-        JPanel inputPanel = new JPanel(new GridLayout(4, 2));
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2));
         inputPanel.add(new JLabel("Tytuł:"));
         inputPanel.add(titleField);
         inputPanel.add(new JLabel("Data:"));
         inputPanel.add(dateField);
         inputPanel.add(new JLabel("Kwota:"));
         inputPanel.add(amountField);
-        inputPanel.add(new JLabel("Uczestnicy (oddzielone przecinkiem):"));
-        inputPanel.add(participantsField);
+        inputPanel.add(new JLabel("Od:"));
+        inputPanel.add(fromField);
+        inputPanel.add(new JLabel("Do:"));
+        inputPanel.add(toField);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addButton);
@@ -112,11 +117,12 @@ public class TransfersScreen extends JPanel {
             String title = titleField.getText();
             String date = dateField.getText();
             double amount = Double.parseDouble(amountField.getText());
-            String participantsText = participantsField.getText();
-            List<String> participants = new ArrayList<>(List.of(participantsText.split(",")));
+
+            User fromUser = Group.getInstance().findUserByName(fromField.getText());
+            User toUser = Group.getInstance().findUserByName(toField.getText());
 
             // Create a new transfer
-            Transfer newTransfer = new Transfer(title, date, amount, participants);
+            Transfer newTransfer = new Transfer(title, date, amount, fromUser, toUser);
             transfers.add(newTransfer);
 
             // Update the display
