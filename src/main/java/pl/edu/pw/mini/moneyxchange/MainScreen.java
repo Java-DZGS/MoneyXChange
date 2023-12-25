@@ -3,9 +3,6 @@ package pl.edu.pw.mini.moneyxchange;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 public class MainScreen extends JPanel {
     private Group group;
@@ -72,6 +69,7 @@ public class MainScreen extends JPanel {
 
         deserializeButton.addActionListener(e -> {
             group = Group.deserialize();
+            assert group != null;
             groupNameLabel.setText(group.getName());
             userList.setListData(group.getUsers().stream().map(User::getName).toArray(String[]::new));
             JOptionPane.showMessageDialog(null, "Grupa zdeserializowana z pliku.");

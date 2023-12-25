@@ -2,22 +2,18 @@ package pl.edu.pw.mini.moneyxchange;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class PaymentDialog extends JDialog {
-    private Group group;
-    private JTextField titleField;
-    private JTextField dateField;
-    private JTextField amountField;
+    private final JTextField titleField;
+    private final JTextField dateField;
+    private final JTextField amountField;
     private ArrayList<User> selectedUsers;
-    private JComboBox<String> splitTypeComboBox;
+    private final JComboBox<String> splitTypeComboBox;
     private boolean paymentAdded;
 
     public PaymentDialog(Group group) {
         super((JFrame) null, "Add New Payment", true);
-        this.group = group;
 
         titleField = new JTextField();
         dateField = new JTextField();
@@ -50,19 +46,11 @@ public class PaymentDialog extends JDialog {
         panel.add(selectUsersButton);
         panel.add(addButton);
 
-        selectUsersButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectedUsers = showUserSelectionDialog(group.getUsers());
-            }
-        });
+        selectUsersButton.addActionListener(e -> selectedUsers = showUserSelectionDialog(group.getUsers()));
 
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                paymentAdded = true;
-                dispose();
-            }
+        addButton.addActionListener(e -> {
+            paymentAdded = true;
+            dispose();
         });
 
         add(panel);

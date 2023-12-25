@@ -73,7 +73,7 @@ public class Group implements Serializable {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("group.ser"))) {
             oos.writeObject(instance);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Nie udało się zserializować grupy");
         }
     }
 
@@ -81,7 +81,7 @@ public class Group implements Serializable {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("group.ser"))) {
             return (Group) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Nie udało się zdeserializować grupy");
             return null;
         }
     }

@@ -2,8 +2,6 @@ package pl.edu.pw.mini.moneyxchange;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,26 +107,23 @@ public class TransfersScreen extends JPanel {
         dialog.add(buttonPanel, BorderLayout.SOUTH);
 
         // Add action listener for the "Add Transfer" button
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Get input values
-                String title = titleField.getText();
-                String date = dateField.getText();
-                double amount = Double.parseDouble(amountField.getText());
-                String participantsText = participantsField.getText();
-                List<String> participants = new ArrayList<>(List.of(participantsText.split(",")));
+        addButton.addActionListener(e -> {
+            // Get input values
+            String title = titleField.getText();
+            String date = dateField.getText();
+            double amount = Double.parseDouble(amountField.getText());
+            String participantsText = participantsField.getText();
+            List<String> participants = new ArrayList<>(List.of(participantsText.split(",")));
 
-                // Create a new transfer
-                Transfer newTransfer = new Transfer(title, date, amount, participants);
-                transfers.add(newTransfer);
+            // Create a new transfer
+            Transfer newTransfer = new Transfer(title, date, amount, participants);
+            transfers.add(newTransfer);
 
-                // Update the display
-                displayTransfers();
+            // Update the display
+            displayTransfers();
 
-                // Close the dialog
-                dialog.dispose();
-            }
+            // Close the dialog
+            dialog.dispose();
         });
 
         dialog.setSize(300, 200);
@@ -168,24 +163,21 @@ public class TransfersScreen extends JPanel {
         filterDialog.add(buttonPanel, BorderLayout.SOUTH);
 
         // Add action listener for the "Apply Filter" button
-        applyFilterButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Determine the selected filter option
-                if (titleRadioButton.isSelected()) {
-                    // Filter by title
-                    applyTitleFilter();
-                } else if (dateRadioButton.isSelected()) {
-                    // Filter by date
-                    applyDateFilter();
-                } else if (amountRadioButton.isSelected()) {
-                    // Filter by amount
-                    applyAmountFilter();
-                }
-
-                // Close the dialog
-                filterDialog.dispose();
+        applyFilterButton.addActionListener(e -> {
+            // Determine the selected filter option
+            if (titleRadioButton.isSelected()) {
+                // Filter by title
+                applyTitleFilter();
+            } else if (dateRadioButton.isSelected()) {
+                // Filter by date
+                applyDateFilter();
+            } else if (amountRadioButton.isSelected()) {
+                // Filter by amount
+                applyAmountFilter();
             }
+
+            // Close the dialog
+            filterDialog.dispose();
         });
 
         // Set dialog properties
