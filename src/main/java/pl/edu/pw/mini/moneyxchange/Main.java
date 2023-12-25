@@ -10,10 +10,7 @@ public class Main extends JFrame {
 
         tabbedPane.addTab("Ekran Główny", new MainScreen());
 
-        // Przelewy
-        JPanel przelewyPanel = new JPanel();
-        // Dodaj komponenty do przelewyPanel
-        tabbedPane.addTab("Przelewy", przelewyPanel);
+        tabbedPane.addTab("Przelewy", new TransfersScreen());
 
         // Wykresy
         JPanel wykresyPanel = new JPanel();

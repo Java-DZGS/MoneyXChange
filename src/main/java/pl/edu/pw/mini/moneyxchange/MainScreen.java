@@ -5,6 +5,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class MainScreen extends JPanel {
     private Group group;
@@ -78,9 +79,30 @@ public class MainScreen extends JPanel {
 
         addPaymentButton.addActionListener(e -> {
             // TODO
-            transfersTextArea.append("New payment added\n");
+            showPaymentDialog(group);
         });
     }
+
+    private void showPaymentDialog(Group group) {
+        PaymentDialog dialog = new PaymentDialog(group);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+
+        if (dialog.isPaymentAdded()) {
+            // Handle the payment details and split type here
+            String paymentDetails = "Title: " + dialog.getTitleField().getText() +
+                    "\nDate: " + dialog.getDateField().getText() +
+                    "\nAmount: " + dialog.getAmountField().getText() +
+                    "\nSelected Users: " + String.join(", ", dialog.getSelectedUsers().stream().map(User::getName).toArray(String[]::new)) +
+                    "\nSplit Type: " + dialog.getSplitType();
+
+            // Display the payment details in the transfersTextArea
+            transfersTextArea.append(paymentDetails + "\n");
+        }
+    }
+
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Main Screen");
