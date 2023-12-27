@@ -3,8 +3,9 @@ package pl.edu.pw.mini.moneyxchange;
 import java.io.Serializable;
 import java.util.List;
 
+// todo
 enum DivisionType {
-
+    EQUAL
 }
 
 public class Expense implements Serializable {
