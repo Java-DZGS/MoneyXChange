@@ -23,9 +23,7 @@ public class Main extends JFrame {
         tabbedPane.addTab("Historia Wydatków", historiaPanel);
 
         // Kursy Walutowe
-        JPanel kursyPanel = new JPanel();
-        // Dodaj komponenty do kursyPanel
-        tabbedPane.addTab("Kursy Walutowe", kursyPanel);
+        tabbedPane.addTab("Kursy Walutowe", new ExchangeRateScreen());
 
         add(tabbedPane);
 
