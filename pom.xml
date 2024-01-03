@@ -31,6 +31,11 @@
             <artifactId>xchart</artifactId>
             <version>3.8.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.javamoney</groupId>
+            <artifactId>moneta</artifactId>
+            <version>1.1</version>
+        </dependency>
     </dependencies>
 
 
