@@ -1,5 +1,8 @@
 package pl.edu.pw.mini.moneyxchange;
 
+import pl.edu.pw.mini.moneyxchange.data.Group;
+import pl.edu.pw.mini.moneyxchange.data.User;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;

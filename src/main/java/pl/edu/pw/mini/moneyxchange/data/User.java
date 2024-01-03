@@ -1,4 +1,4 @@
-package pl.edu.pw.mini.moneyxchange;
+package pl.edu.pw.mini.moneyxchange.data;
 
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
