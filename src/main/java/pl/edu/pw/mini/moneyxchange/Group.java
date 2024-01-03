@@ -1,10 +1,7 @@
 package pl.edu.pw.mini.moneyxchange;
 
-import pl.edu.pw.mini.moneyxchange.Transfer;
-
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Group implements Serializable {
     @Serial
@@ -13,10 +10,10 @@ public class Group implements Serializable {
     private static Group instance;
 
     private String name = "Unnamed group 1";
-    private final List<User> users;
-    private final List<Expense> expenses;
-    private final List<Transfer> pendingTransfers;
-    private final List<Transfer> completedTransfers;
+    private final ArrayList<User> users;
+    private final ArrayList<Expense> expenses;
+    private final ArrayList<Transfer> pendingTransfers;
+    private final ArrayList<Transfer> completedTransfers;
 
     private Group() {
         // Private constructor to prevent instantiation
@@ -46,19 +43,19 @@ public class Group implements Serializable {
         this.name = name;
     }
 
-    public List<User> getUsers() {
+    public ArrayList<User> getUsers() {
         return users;
     }
 
-    public List<Expense> getExpenses() {
+    public ArrayList<Expense> getExpenses() {
         return expenses;
     }
 
-    public List<Transfer> getPendingTransfers() {
+    public ArrayList<Transfer> getPendingTransfers() {
         return pendingTransfers;
     }
 
-    public List<Transfer> getCompletedTransfers() {
+    public ArrayList<Transfer> getCompletedTransfers() {
         return completedTransfers;
     }
 
@@ -75,7 +72,7 @@ public class Group implements Serializable {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("group.ser"))) {
             oos.writeObject(instance);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Nie udało się zserializować grupy");
         }
     }
 
@@ -83,8 +80,17 @@ public class Group implements Serializable {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("group.ser"))) {
             return (Group) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Nie udało się zdeserializować grupy");
             return null;
         }
+    }
+
+    public User findUserByName(String name) {
+        for (User user : users) {
+            if (user.getName().equals(name)) {
+                return user; // Found the user with the given name
+            }
+        }
+        return null; // User not found
     }
 }
