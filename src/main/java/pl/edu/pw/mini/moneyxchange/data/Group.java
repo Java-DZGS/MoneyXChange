@@ -1,4 +1,4 @@
-package pl.edu.pw.mini.moneyxchange;
+package pl.edu.pw.mini.moneyxchange.data;
 
 import java.io.*;
 import java.util.ArrayList;

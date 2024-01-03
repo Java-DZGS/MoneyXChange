@@ -5,6 +5,9 @@ import org.knowm.xchart.CategoryChartBuilder;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.internal.chartpart.Chart;
 import org.knowm.xchart.style.markers.SeriesMarkers;
+import pl.edu.pw.mini.moneyxchange.data.DivisionType;
+import pl.edu.pw.mini.moneyxchange.data.Expense;
+import pl.edu.pw.mini.moneyxchange.data.User;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

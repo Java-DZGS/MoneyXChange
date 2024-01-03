@@ -1,12 +1,7 @@
-package pl.edu.pw.mini.moneyxchange;
+package pl.edu.pw.mini.moneyxchange.data;
 
 import java.io.Serializable;
 import java.util.List;
-
-// todo
-enum DivisionType {
-    EQUAL
-}
 
 public class Expense implements Serializable {
     private final User creator;
