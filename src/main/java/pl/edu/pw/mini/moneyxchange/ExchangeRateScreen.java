@@ -7,6 +7,9 @@ import org.javamoney.moneta.FastMoney;
 import org.javamoney.moneta.Money;
 import org.knowm.xchart.*;
 import org.knowm.xchart.internal.chartpart.Chart;
+import pl.edu.pw.mini.moneyxchange.nbp.Currency;
+import pl.edu.pw.mini.moneyxchange.nbp.ExchangeRate;
+import pl.edu.pw.mini.moneyxchange.nbp.NBP_API;
 
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
@@ -22,15 +25,13 @@ import java.util.List;
 import java.util.*;
 
 public class ExchangeRateScreen extends JPanel {
-    public static final CurrencyUnit PLN = Monetary.getCurrency("PLN");
-    private static final SimpleDateFormat JsonDate = new SimpleDateFormat("yyyy-MM-dd");
 
     private List<ExchangeRate> exchangeData;
 
     private JPanel chartPanel;
 
     public ExchangeRateScreen() {
-        exchangeData = createDummyData(); // Initialize with dummy data
+        exchangeData = NBP_API.getCurrencyExchangeRate(Currency.CAD, 255); // Initialize with dummy data
 
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -63,44 +64,5 @@ public class ExchangeRateScreen extends JPanel {
         chart.addSeries("EUR", xAxis, yAxis);
 
         return chart;
-    }
-
-    private List<ExchangeRate> createDummyData() {
-        List<ExchangeRate> exchangeData = new ArrayList<>();
-
-        JsonObject object;
-        try (InputStreamReader isr = new InputStreamReader(new FileInputStream("data.json"))) {
-            object = JsonParser.parseReader(isr).getAsJsonObject();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        JsonArray rates = object.getAsJsonArray("rates");
-
-        for(var r : rates) {
-            JsonObject rate = (JsonObject) r;
-            Date date;
-            Money money;
-            try {
-                date = JsonDate.parse(rate.get("effectiveDate").getAsString());
-                money = Money.of(rate.get("mid").getAsBigDecimal(), PLN);
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-
-            exchangeData.add(new ExchangeRate(date, money));
-        }
-
-        return exchangeData;
-    }
-
-    private static class ExchangeRate {
-        Date date;
-        Money value;
-
-        public ExchangeRate(Date date, Money value) {
-            this.date = date;
-            this.value = value;
-        }
     }
 }
