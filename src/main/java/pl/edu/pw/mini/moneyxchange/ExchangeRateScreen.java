@@ -18,17 +18,12 @@ public class ExchangeRateScreen extends JPanel {
 
 	private List<ExchangeRate> exchangeData;
 	private JPanel chartPanel;
+	private JComboBox<Currency> currencySelector;
+    private JProgressBar progressBar;
+
 	private XYChart chart;
 
 	public ExchangeRateScreen() {
-		NBP_API.getCurrencyExchangeRate(Currency.CAD, 255)
-				.thenAccept(data -> {
-					exchangeData = data;
-
-					updateChart();
-					repaint();
-				});
-
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(10, 10, 10, 10));
 
@@ -45,18 +40,38 @@ public class ExchangeRateScreen extends JPanel {
 
 		chartPanel = new XChartPanel<>(chart);
 		add(chartPanel, BorderLayout.CENTER);
+
+		currencySelector = new JComboBox<>(Currency.values());
+		currencySelector.addActionListener(e -> updateChart());
+		add(currencySelector, BorderLayout.NORTH);
+
+		progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true); // Set to true for an indeterminate (spinning) progress bar
+        progressBar.setVisible(false); // Initially set to invisible
+
+        add(progressBar, BorderLayout.SOUTH);
+
+		updateChart();
 	}
 
 	private void updateChart() {
-		List<Date> xAxis = new ArrayList<>();
-		List<Double> yAxis = new ArrayList<>();
+        progressBar.setVisible(true);
+		NBP_API.getCurrencyExchangeRate((Currency) currencySelector.getSelectedItem(), 255)
+				.thenAccept(data -> {
+					exchangeData = data;
 
-		exchangeData.forEach(rate -> {
-			xAxis.add(rate.date);
-			yAxis.add(rate.value.getNumber().doubleValue());
-		});
+					List<Date> xAxis = new ArrayList<>();
+					List<Double> yAxis = new ArrayList<>();
 
-		chart.removeSeries("Rate");
-		chart.addSeries("Rate", xAxis, yAxis);
+					exchangeData.forEach(rate -> {
+						xAxis.add(rate.date);
+						yAxis.add(rate.value.getNumber().doubleValue());
+					});
+
+					chart.removeSeries("Rate");
+					chart.addSeries("Rate", xAxis, yAxis);
+					repaint();
+                    progressBar.setVisible(false);
+				});
 	}
 }

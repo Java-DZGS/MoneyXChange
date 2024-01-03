@@ -26,11 +26,11 @@ public class NBP_API {
     private static final SimpleDateFormat JsonDate = new SimpleDateFormat("yyyy-MM-dd");
     public static final CurrencyUnit PLN = Monetary.getCurrency("PLN");
 
-    private static CompletableFuture<JsonObject> getApiResponse(Currency currency, int count) {
+    private static CompletableFuture<JsonObject> getApiResponse(String endpoint) {
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(EXCHANGE_RATE_ENDPOINT + "A/" + currency.toString() + "/last/" + count + "/"))
+                .uri(URI.create(EXCHANGE_RATE_ENDPOINT + endpoint))
                 .timeout(Duration.ofMinutes(1))
                 .header("Accept", "application/json")
                 .build();
@@ -40,6 +40,15 @@ public class NBP_API {
 //                    System.out.println(inputStreamHttpResponse.statusCode());
 //                    return inputStreamHttpResponse;
 //                })
+                //TODO: Temporary, just for testing
+                .thenApply(v -> {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return v;
+                })
                 .thenApply(HttpResponse::body)
                 .thenApply(InputStreamReader::new)
                 .thenApply(JsonParser::parseReader)
@@ -47,7 +56,7 @@ public class NBP_API {
     }
 
     public static CompletableFuture<List<ExchangeRate>> getCurrencyExchangeRate(Currency currency, int count) {
-        return getApiResponse(currency, count)
+        return getApiResponse("A/" + currency.getCode() + "/last/" + count + "/")
                 .thenApply(response -> response.getAsJsonArray("rates"))
                 .thenApply(rates -> StreamSupport.stream(rates.spliterator(), true)
                             .map(JsonElement::getAsJsonObject)

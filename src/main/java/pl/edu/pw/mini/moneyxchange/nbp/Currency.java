@@ -18,6 +18,15 @@ public enum Currency {
 
     Currency(String name) {
         this.name = name;
-        this.currencyUnit = Monetary.getCurrency(toString());
+        this.currencyUnit = Monetary.getCurrency(super.toString());
+    }
+
+    @Override
+    public String toString() {
+        return currencyUnit + " – " + name;
+    }
+
+    public String getCode() {
+        return super.name();
     }
 }
