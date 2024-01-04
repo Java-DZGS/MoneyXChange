@@ -16,6 +16,8 @@ public class MainScreen extends JPanel {
     public MainScreen() {
         group = Group.getInstance();
 
+
+
         JLabel groupNameLabel = new JLabel(group.getName());
         groupNameLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         JButton changeNameButton = new JButton("Zmień nazwę grupy");

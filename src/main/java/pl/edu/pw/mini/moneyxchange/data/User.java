@@ -9,13 +9,15 @@ import java.util.List;
 public class User implements Serializable {
 
     private String name;
+    private int id;
     private BufferedImage image;
     private List<Expense> expenses;
     private List<Transfer> pendingTransfers;
     private List<Transfer> completedTransfers;
 
-    public User(String name) {
+    public User(String name, int id) {
         this.name = name;
+        this.id = id;
         this.expenses = new ArrayList<>();
         this.pendingTransfers = new ArrayList<>();
         this.completedTransfers = new ArrayList<>();
@@ -23,6 +25,7 @@ public class User implements Serializable {
     public String getName() {
         return name;
     }
+    public int getId() { return id; }
     public List<Expense> getExpenses(){ return expenses; }
     public void addExpense(Expense expense){
         expenses.add(expense);

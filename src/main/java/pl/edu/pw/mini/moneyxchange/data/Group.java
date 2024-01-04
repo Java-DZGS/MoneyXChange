@@ -12,6 +12,7 @@ public class Group implements Serializable {
     private String name = "Unnamed group 1";
     private final ArrayList<User> users;
     private final ArrayList<Expense> expenses;
+
     private final ArrayList<Transfer> pendingTransfers;
     private final ArrayList<Transfer> completedTransfers;
 
@@ -22,10 +23,10 @@ public class Group implements Serializable {
         pendingTransfers = new ArrayList<>();
         completedTransfers = new ArrayList<>();
 
-        users.add(new User("Bronisław"));
-        users.add(new User("Stanisław"));
-        users.add(new User("Radosław"));
-        users.add(new User("Władysław"));
+        users.add(new User("Bronisław",0));
+        users.add(new User("Stanisław",1));
+        users.add(new User("Radosław",2));
+        users.add(new User("Władysław",3));
     }
 
     public static synchronized Group getInstance() {
@@ -34,7 +35,6 @@ public class Group implements Serializable {
         }
         return instance;
     }
-
     public String getName() {
         return name;
     }

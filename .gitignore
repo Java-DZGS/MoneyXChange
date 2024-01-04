@@ -48,3 +48,4 @@ Thumbs.db
 *.mov
 *.wmv
 
+/src/main/java/pl/edu/pw/mini/moneyxchange/CashFlow/MinCashFlow.java

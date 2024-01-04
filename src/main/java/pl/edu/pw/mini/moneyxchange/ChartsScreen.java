@@ -112,15 +112,15 @@ public class ChartsScreen extends JPanel {
     private List<Expense> createDummyData() {
         List<Expense> dummyData = new ArrayList<>();
 
-        dummyData.add(new Expense(new User("User1"), 50.0, List.of(new User("User2")), DivisionType.EQUAL, "Expense1", "2023-01-01"));
-        dummyData.add(new Expense(new User("User2"), 30.0, List.of(new User("User1")), DivisionType.EQUAL, "Expense2", "2023-01-02"));
-        dummyData.add(new Expense(new User("User3"), 40.0, List.of(new User("User1"), new User("User2")), DivisionType.EQUAL, "Expense3", "2023-01-03"));
-        dummyData.add(new Expense(new User("User4"), 20.0, List.of(new User("User1")), DivisionType.EQUAL, "Expense4", "2023-01-01"));
-        dummyData.add(new Expense(new User("User5"), 35.0, List.of(new User("User2")), DivisionType.EQUAL, "Expense5", "2023-01-02"));
-        dummyData.add(new Expense(new User("User6"), 25.0, List.of(new User("User1"), new User("User2")), DivisionType.EQUAL, "Expense6", "2023-01-03"));
-        dummyData.add(new Expense(new User("User7"), 15.0, List.of(new User("User8")), DivisionType.EQUAL, "Expense7", "2023-01-04"));
-        dummyData.add(new Expense(new User("User8"), 60.0, List.of(new User("User7")), DivisionType.EQUAL, "Expense8", "2023-01-05"));
-        dummyData.add(new Expense(new User("User9"), 45.0, List.of(new User("User7"), new User("User8")), DivisionType.EQUAL, "Expense9", "2023-01-06"));
+        dummyData.add(new Expense(new User("User1",1), 50.0, List.of(new User("User2",2)), DivisionType.EQUAL, "Expense1", "2023-01-01"));
+        dummyData.add(new Expense(new User("User2",2), 30.0, List.of(new User("User1",1)), DivisionType.EQUAL, "Expense2", "2023-01-02"));
+        dummyData.add(new Expense(new User("User3",3), 40.0, List.of(new User("User1",1), new User("User2",2)), DivisionType.EQUAL, "Expense3", "2023-01-03"));
+        dummyData.add(new Expense(new User("User4",4), 20.0, List.of(new User("User1",1)), DivisionType.EQUAL, "Expense4", "2023-01-01"));
+        dummyData.add(new Expense(new User("User5",5), 35.0, List.of(new User("User2",2)), DivisionType.EQUAL, "Expense5", "2023-01-02"));
+        dummyData.add(new Expense(new User("User6",6), 25.0, List.of(new User("User1",1), new User("User2",2)), DivisionType.EQUAL, "Expense6", "2023-01-03"));
+        dummyData.add(new Expense(new User("User7",7), 15.0, List.of(new User("User8",8)), DivisionType.EQUAL, "Expense7", "2023-01-04"));
+        dummyData.add(new Expense(new User("User8",8), 60.0, List.of(new User("User7",7)), DivisionType.EQUAL, "Expense8", "2023-01-05"));
+        dummyData.add(new Expense(new User("User9",9), 45.0, List.of(new User("User7",7), new User("User8",8)), DivisionType.EQUAL, "Expense9", "2023-01-06"));
 
         return dummyData;
     }
