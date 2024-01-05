@@ -1,4 +1,4 @@
-package pl.edu.pw.mini.moneyxchange.CashFlow;
+package pl.edu.pw.mini.moneyxchange.cashflow;
 
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;

@@ -1,6 +1,6 @@
 package pl.edu.pw.mini.moneyxchange;
 
-import pl.edu.pw.mini.moneyxchange.CashFlow.MinCashFlow;
+import pl.edu.pw.mini.moneyxchange.cashflow.MinCashFlow;
 import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
