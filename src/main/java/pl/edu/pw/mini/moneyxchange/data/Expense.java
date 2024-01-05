@@ -1,39 +1,47 @@
 package pl.edu.pw.mini.moneyxchange.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class Expense implements Serializable {
-    private final User creator;
+public class Expense implements MoneyMovement, Serializable {
+    private final User payer;
     private final double amount;
-    private final List<User> participants;
-    private final DivisionType divisionType;
+    private final HashMap<User, Double> debts;
     private final String name;
     private final String date;
+    private final ExpenseCategory category;
 
-    public Expense(User creator, double amount, List<User> participants, DivisionType divisionType, String name, String date) {
-        this.creator = creator;
+    public Expense(User creator, double amount, HashMap<User, Double> debts,
+                   String name, String date, ExpenseCategory category) {
+        this.payer = creator;
         this.amount = amount;
-        this.participants = participants;
-        this.divisionType = divisionType;
+        this.debts = debts;
         this.name = name;
         this.date = date;
+        this.category = category;
     }
 
-    public User getCreator() {
-        return creator;
+    public User getPayer() {
+        return payer;
     }
 
     public double getAmount() {
         return amount;
     }
 
-    public List<User> getParticipants() {
-        return participants;
-    }
-
-    public DivisionType getDivisionType() {
-        return divisionType;
+    public List<User> getParticipants()
+    {
+        // Get users with a non-zero debt
+        List<User> ret = new ArrayList<User>();
+        for (Map.Entry<User, Double> entry : debts.entrySet()) {
+            if (entry.getValue() != 0) {
+                ret.add(entry.getKey());
+            }
+        }
+        return ret;
     }
 
     public String getName() {
@@ -47,10 +55,8 @@ public class Expense implements Serializable {
     @Override
     public String toString() {
         return "Expense{" +
-                "creator=" + creator +
+                "creator=" + payer +
                 ", amount=" + amount +
-                ", participants=" + participants +
-                ", divisionType=" + divisionType +
                 ", name='" + name + '\'' +
                 ", date='" + date + '\'' +
                 '}';

@@ -16,16 +16,10 @@ public class TransfersScreen extends JPanel {
     private List<Transfer> transfers;
     private final JPanel transfersPanel;
 
+
     public TransfersScreen() {
-        transfers = new ArrayList<>();
-        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1",1), new User("User2",2)));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3",3), new User("User4",4)));
-        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1",1), new User("User2",2)));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3",3), new User("User4",4)));
-        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1",1), new User("User2",2)));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3",3), new User("User4",4)));
-        transfers.add(new Transfer("Dinner", "2023-01-15", 40.0, new User("User1",1), new User("User3",3)));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 20.0, new User("User3",3), new User("User2",2)));
+        transfers = Group.getInstance().getPendingTransfers();
+
         // Create components
         transfersPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();

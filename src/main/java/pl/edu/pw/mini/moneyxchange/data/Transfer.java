@@ -1,6 +1,8 @@
 package pl.edu.pw.mini.moneyxchange.data;
 
-public class Transfer {
+import java.io.Serializable;
+
+public class Transfer implements MoneyMovement, Serializable {
     // to edit
     private final String title;
     private final String date;

@@ -13,17 +13,15 @@ public class Main extends JFrame {
         tabbedPane.addTab("Wykresy", new ChartsScreen());
 
         // Podsumowanie
-        JPanel podsumowaniePanel = new JPanel();
-        // Dodaj komponenty do podsumowaniePanel
-        tabbedPane.addTab("Podsumowanie", podsumowaniePanel);
+        JPanel summaryPanel = new JPanel();
+        // Dodaj komponenty do summaryPanel
+        tabbedPane.addTab("Podsumowanie", summaryPanel);
 
         // Historia Wydatków
-        JPanel historiaPanel = new JPanel();
-        // Dodaj komponenty do historiaPanel
-        tabbedPane.addTab("Historia Wydatków", historiaPanel);
+        tabbedPane.addTab("Historia wydatków", new HistoryScreen());
 
         // Kursy Walutowe
-        tabbedPane.addTab("Kursy Walutowe", new ExchangeRateScreen());
+        tabbedPane.addTab("Kursy walutowe", new ExchangeRateScreen());
 
         add(tabbedPane);
 
