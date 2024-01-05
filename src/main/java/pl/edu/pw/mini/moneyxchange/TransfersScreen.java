@@ -27,7 +27,13 @@ public class TransfersScreen extends JPanel {
         transfers.add(new Transfer("Dinner", "2023-01-15", 40.0, new User("User1",1), new User("User3",3)));
         transfers.add(new Transfer("Groceries", "2023-01-20", 20.0, new User("User3",3), new User("User2",2)));
         // Create components
-        transfersPanel = new JPanel();
+        transfersPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        transfersPanel.add(new JPanel(), gbc);
+
         JScrollPane transfersScrollPane = new JScrollPane(transfersPanel);
         JButton addTransferButton = new JButton("Dodaj przelew");
         JButton filterButton = new JButton("Filtruj...");
@@ -76,11 +82,24 @@ public class TransfersScreen extends JPanel {
     private void displayOptimalTransfers() {
         transfersPanel.removeAll();
 
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
         List<Transfer> optimalTransfers = MinCashFlow.minTransfers(transfers);
         for (Transfer transfer : optimalTransfers) {
             JPanel transferPanel = createTransferPanel(transfer);
-            transfersPanel.add(transferPanel);
+            transfersPanel.add(transferPanel, gbc);
         }
+
+        gbc = new GridBagConstraints();
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JPanel spacer = new JPanel();
+        spacer.setPreferredSize(new Dimension(0,0));
+        transfersPanel.add(spacer, gbc);
 
         transfersPanel.revalidate();
         transfersPanel.repaint();
