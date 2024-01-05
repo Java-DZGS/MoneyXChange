@@ -1,10 +1,12 @@
 package pl.edu.pw.mini.moneyxchange;
 
+import pl.edu.pw.mini.moneyxchange.CashFlow.MinCashFlow;
 import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
@@ -16,26 +18,33 @@ public class TransfersScreen extends JPanel {
 
     public TransfersScreen() {
         transfers = new ArrayList<>();
-        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1"), new User("User2")));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3"), new User("User4")));
-        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1"), new User("User2")));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3"), new User("User4")));
-        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1"), new User("User2")));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3"), new User("User4")));
+        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1",1), new User("User2",2)));
+        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3",3), new User("User4",4)));
+        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1",1), new User("User2",2)));
+        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3",3), new User("User4",4)));
+        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1",1), new User("User2",2)));
+        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3",3), new User("User4",4)));
+        transfers.add(new Transfer("Dinner", "2023-01-15", 40.0, new User("User1",1), new User("User3",3)));
+        transfers.add(new Transfer("Groceries", "2023-01-20", 20.0, new User("User3",3), new User("User2",2)));
         // Create components
         transfersPanel = new JPanel();
         JScrollPane transfersScrollPane = new JScrollPane(transfersPanel);
         JButton addTransferButton = new JButton("Dodaj przelew");
         JButton filterButton = new JButton("Filtruj...");
+        JButton optimalTransfersButton = new JButton("Optymalne przelewy");
 
         // Add padding to the main panel
         int padding = 10;
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(padding, padding, padding, padding));
 
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(addTransferButton);
+        buttonPanel.add(optimalTransfersButton);
+
         // Add components to the layout
         add(transfersScrollPane, BorderLayout.CENTER);
-        add(addTransferButton, BorderLayout.SOUTH);
+        add(buttonPanel, BorderLayout.SOUTH);
         add(filterButton, BorderLayout.NORTH);
 
         // Set up the transfers panel
@@ -47,12 +56,28 @@ public class TransfersScreen extends JPanel {
 
         // Add action listener for the "Filter" button
         filterButton.addActionListener(e -> showFilterDialog());
+
+        // Add action listener for the "Optimal transfers" button
+        optimalTransfersButton.addActionListener(e -> displayOptimalTransfers());
+
     }
 
     private void displayTransfers() {
         transfersPanel.removeAll();
 
         for (Transfer transfer : transfers) {
+            JPanel transferPanel = createTransferPanel(transfer);
+            transfersPanel.add(transferPanel);
+        }
+
+        transfersPanel.revalidate();
+        transfersPanel.repaint();
+    }
+    private void displayOptimalTransfers() {
+        transfersPanel.removeAll();
+
+        List<Transfer> optimalTransfers = MinCashFlow.minTransfers(transfers);
+        for (Transfer transfer : optimalTransfers) {
             JPanel transferPanel = createTransferPanel(transfer);
             transfersPanel.add(transferPanel);
         }
