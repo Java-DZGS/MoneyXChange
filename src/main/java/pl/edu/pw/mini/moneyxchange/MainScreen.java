@@ -1,22 +1,24 @@
 package pl.edu.pw.mini.moneyxchange;
 
-import pl.edu.pw.mini.moneyxchange.data.Group;
-import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.data.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainScreen extends JPanel {
     private Group group;
 
-    private final JTextArea transfersTextArea;
+    private final JPanel actionsPanel;
     private final JList<String> userList;
 
     public MainScreen() {
         group = Group.getInstance();
-
-
 
         JLabel groupNameLabel = new JLabel(group.getName());
         groupNameLabel.setFont(new Font("Arial", Font.PLAIN, 18));
@@ -24,19 +26,18 @@ public class MainScreen extends JPanel {
         JButton serializeButton = new JButton("Serializuj grupę do pliku");
         JButton deserializeButton = new JButton("Deserializuj grupę z pliku");
 
-        transfersTextArea = new JTextArea(10, 30);
-        transfersTextArea.setEditable(false);
-        JScrollPane transfersScrollPane = new JScrollPane(transfersTextArea);
+        actionsPanel = new JPanel(new GridBagLayout());
+        actionsPanel.setLayout(new GridLayout(0, 1));
+        JScrollPane transfersScrollPane = new JScrollPane(actionsPanel);
+        importActions();
 
         JButton addPaymentButton = new JButton("Dodaj nową płatność");
 
         userList = new JList<>(group.getUsers().stream().map(User::getName).toArray(String[]::new));
-
         JScrollPane userListScrollPane = new JScrollPane(userList);
 
         int padding = 10;
         setBorder(new EmptyBorder(padding, padding, padding, padding));
-
         setLayout(new BorderLayout());
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -61,6 +62,7 @@ public class MainScreen extends JPanel {
         add(topPanel, BorderLayout.NORTH);
         add(splitPane, BorderLayout.CENTER);
 
+        // BUTTONS
         changeNameButton.addActionListener(e -> {
             String newName = JOptionPane.showInputDialog("Wprowadź nową nazwę grupy:");
             group.setName(newName);
@@ -87,31 +89,47 @@ public class MainScreen extends JPanel {
     }
 
     private void showPaymentDialog(Group group) {
-        PaymentDialog dialog = new PaymentDialog(group);
+        ExpenseDialog dialog = new ExpenseDialog(group);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setSize(400, 300);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
 
-        if (dialog.isPaymentAdded()) {
-            // Handle the payment details and split type here
-            String paymentDetails = "Title: " + dialog.getTitleField().getText() +
-                    "\nDate: " + dialog.getDateField().getText() +
-                    "\nAmount: " + dialog.getAmountField().getText() +
-                    "\nSelected Users: " + String.join(", ", dialog.getSelectedUsers().stream().map(User::getName).toArray(String[]::new)) +
-                    "\nSplit Type: " + dialog.getSplitType();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-            // Display the payment details in the transfersTextArea
-            transfersTextArea.append(paymentDetails + "\n");
+        if (dialog.isExpenseAdded()) {
+            try {
+                Expense expense = new Expense(
+                //todo
+                        new User("name", 1), //temp
+                        Double.parseDouble(dialog.getAmountField().getText()),
+                        new HashMap<>(), // temp
+                        dialog.getTitleField().getText(),
+                        dateFormat.parse(dialog.getDateField().getText()),
+                        ExpenseCategory.OTHER //temp
+                );
+                actionsPanel.add(expense.getPanel(), getActionPanelGbc());
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
+    private GridBagConstraints getActionPanelGbc() {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.gridheight = 100;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.anchor = GridBagConstraints.PAGE_START;
+        return gbc;
+    }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Main Screen");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(new MainScreen());
-        frame.setSize(800, 600);
-        frame.setVisible(true);
+    private void importActions() {
+        ArrayList<MoneyAction> actionsList = group.getActionsList();
+
+        for (MoneyAction action : actionsList) {
+                actionsPanel.add(action.getPanel(), getActionPanelGbc());
+        }
     }
 }

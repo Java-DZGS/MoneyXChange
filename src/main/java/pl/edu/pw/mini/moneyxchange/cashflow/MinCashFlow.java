@@ -3,7 +3,7 @@ package pl.edu.pw.mini.moneyxchange.cashflow;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -84,7 +84,7 @@ public class MinCashFlow {
     }
     private static List<Transfer> reconstructTransfers(int subset, List<Double> nonZeroBalances, List<User> users, int[] prevSubset) {
         List<Transfer> optimalTransfers = new ArrayList<>();
-        LocalDate today = LocalDate.now();
+        Date today = new Date();
         while (subset > 0) {
             int prev = prevSubset[subset];
             int diff = subset ^ prev;
@@ -103,9 +103,9 @@ public class MinCashFlow {
                     if(amount==0) continue;
 
                     if(amount > 0)
-                        transfer = new Transfer("", today.toString(),nonZeroBalances.get(j),users.get(k),users.get(j));
+                        transfer = new Transfer("", today, nonZeroBalances.get(j),users.get(k),users.get(j));
                     else
-                        transfer = new Transfer("", today.toString(),-nonZeroBalances.get(j),users.get(j),users.get(k));
+                        transfer = new Transfer("", today, -nonZeroBalances.get(j),users.get(j),users.get(k));
 
                     nonZeroBalances.set(k,nonZeroBalances.get(k)+amount);
                     nonZeroBalances.set(j, 0.0);

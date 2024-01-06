@@ -10,22 +10,17 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class TransfersScreen extends JPanel {
     private List<Transfer> transfers;
     private final JPanel transfersPanel;
 
+
     public TransfersScreen() {
-        transfers = new ArrayList<>();
-        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1",1), new User("User2",2)));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3",3), new User("User4",4)));
-        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1",1), new User("User2",2)));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3",3), new User("User4",4)));
-        transfers.add(new Transfer("Dinner", "2023-01-15", 50.0, new User("User1",1), new User("User2",2)));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 30.0, new User("User3",3), new User("User4",4)));
-        transfers.add(new Transfer("Dinner", "2023-01-15", 40.0, new User("User1",1), new User("User3",3)));
-        transfers.add(new Transfer("Groceries", "2023-01-20", 20.0, new User("User3",3), new User("User2",2)));
+        transfers = Group.getInstance().getPendingTransfers();
+
         // Create components
         transfersPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -72,7 +67,7 @@ public class TransfersScreen extends JPanel {
         transfersPanel.removeAll();
 
         for (Transfer transfer : transfers) {
-            JPanel transferPanel = createTransferPanel(transfer);
+            JPanel transferPanel = transfer.getPanel();
             transfersPanel.add(transferPanel);
         }
 
@@ -89,7 +84,7 @@ public class TransfersScreen extends JPanel {
 
         List<Transfer> optimalTransfers = MinCashFlow.minTransfers(transfers);
         for (Transfer transfer : optimalTransfers) {
-            JPanel transferPanel = createTransferPanel(transfer);
+            JPanel transferPanel = transfer.getPanel();
             transfersPanel.add(transferPanel, gbc);
         }
 
@@ -106,28 +101,29 @@ public class TransfersScreen extends JPanel {
     }
 
 
-    private JPanel createTransferPanel(Transfer transfer) {
-        JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        panel.setLayout(new GridLayout(5, 1));
-
-        JLabel titleLabel = new JLabel("Tytuł: " + transfer.getTitle());
-        JLabel dateLabel = new JLabel("Data: " + transfer.getDate());
-        JLabel amountLabel = new JLabel("Kwota: $" + transfer.getAmount());
-        JLabel fromLabel = new JLabel("Od: " + transfer.getFromUser().getName());
-        JLabel toLabel = new JLabel("Do: " + transfer.getToUser().getName());
-
-        panel.add(titleLabel);
-        panel.add(dateLabel);
-        panel.add(amountLabel);
-        panel.add(fromLabel);
-        panel.add(toLabel);
-
-        // Set a fixed size for the panel
-        panel.setPreferredSize(new Dimension(0, 100)); // Adjust the width and height as needed
-
-        return panel;
-    }
+    // moved to Transfer class
+//    private JPanel createTransferPanel(Transfer transfer) {
+//        JPanel panel = new JPanel();
+//        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//        panel.setLayout(new GridLayout(5, 1));
+//
+//        JLabel titleLabel = new JLabel("Tytuł: " + transfer.getTitle());
+//        JLabel dateLabel = new JLabel("Data: " + transfer.getDate());
+//        JLabel amountLabel = new JLabel("Kwota: $" + transfer.getAmount());
+//        JLabel fromLabel = new JLabel("Od: " + transfer.getFromUser().getName());
+//        JLabel toLabel = new JLabel("Do: " + transfer.getToUser().getName());
+//
+//        panel.add(titleLabel);
+//        panel.add(dateLabel);
+//        panel.add(amountLabel);
+//        panel.add(fromLabel);
+//        panel.add(toLabel);
+//
+//        // Set a fixed size for the panel
+//        panel.setPreferredSize(new Dimension(0, 100)); // Adjust the width and height as needed
+//
+//        return panel;
+//    }
 
     private void showAddTransferDialog() {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Dodaj przelew", true);
@@ -163,7 +159,8 @@ public class TransfersScreen extends JPanel {
         addButton.addActionListener(e -> {
             // Get input values
             String title = titleField.getText();
-            String date = dateField.getText();
+            // todo: temporary, change to datepicker
+            Date date = new Date();
             double amount = Double.parseDouble(amountField.getText());
 
             User fromUser = Group.getInstance().findUserByName(fromField.getText());
@@ -258,11 +255,14 @@ public class TransfersScreen extends JPanel {
         String keyword = JOptionPane.showInputDialog(this, "Enter Date Keyword:");
         if (keyword != null) {
             List<Transfer> filteredTransfers = new ArrayList<>();
+            // todo: filter transfers by date; commented out because date isn't a string anymore
+            /*
             for (Transfer transfer : transfers) {
                 if (transfer.getDate().toLowerCase().contains(keyword.toLowerCase())) {
                     filteredTransfers.add(transfer);
                 }
             }
+             */
             transfers = filteredTransfers;
             displayTransfers();
         }
