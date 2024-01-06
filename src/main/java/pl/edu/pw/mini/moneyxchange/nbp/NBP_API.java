@@ -31,7 +31,7 @@ public class NBP_API {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(EXCHANGE_RATE_ENDPOINT + endpoint))
-                .timeout(Duration.ofSeconds(5))
+                .timeout(Duration.ofSeconds(30))
                 .header("Accept", "application/json")
                 .build();
 
