@@ -47,7 +47,7 @@ public class Transfer implements MoneyAction, Serializable {
         transferPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         transferPanel.setLayout(new GridLayout(3, 1));
 
-        JLabel titleLabel = new JLabel("Przelew od " + fromUser + " do " + toUser);
+        JLabel titleLabel = new JLabel("Przelew od " + fromUser.getName() + " do " + toUser.getName());
         JLabel dateLabel = new JLabel("Data: " + date);
         JLabel amountLabel = new JLabel("Kwota: " + amount);
 
