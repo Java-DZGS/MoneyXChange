@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class PaymentDialog extends JDialog {
+public class ExpenseDialog extends JDialog {
     private final JTextField titleField;
     private final JTextField dateField;
     private final JTextField amountField;
@@ -15,7 +15,7 @@ public class PaymentDialog extends JDialog {
     private final JComboBox<String> splitTypeComboBox;
     private boolean paymentAdded;
 
-    public PaymentDialog(Group group) {
+    public ExpenseDialog(Group group) {
         super((JFrame) null, "Add New Payment", true);
 
         titleField = new JTextField();
@@ -79,7 +79,7 @@ public class PaymentDialog extends JDialog {
         return (String) splitTypeComboBox.getSelectedItem();
     }
 
-    public boolean isPaymentAdded() {
+    public boolean isExpenseAdded() {
         return paymentAdded;
     }
 

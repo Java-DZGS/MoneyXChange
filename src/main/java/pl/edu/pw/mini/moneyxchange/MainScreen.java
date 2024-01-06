@@ -1,14 +1,15 @@
 package pl.edu.pw.mini.moneyxchange;
 
-import pl.edu.pw.mini.moneyxchange.data.Group;
-import pl.edu.pw.mini.moneyxchange.data.MoneyAction;
-import pl.edu.pw.mini.moneyxchange.data.Transfer;
-import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.data.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainScreen extends JPanel {
     private Group group;
@@ -28,6 +29,7 @@ public class MainScreen extends JPanel {
         actionsPanel = new JPanel(new GridBagLayout());
         actionsPanel.setLayout(new GridLayout(0, 1));
         JScrollPane transfersScrollPane = new JScrollPane(actionsPanel);
+        importActions();
 
         JButton addPaymentButton = new JButton("Dodaj nową płatność");
 
@@ -87,38 +89,85 @@ public class MainScreen extends JPanel {
     }
 
     private void showPaymentDialog(Group group) {
-        PaymentDialog dialog = new PaymentDialog(group);
+        ExpenseDialog dialog = new ExpenseDialog(group);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setSize(400, 300);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
 
-        if (dialog.isPaymentAdded()) {
-            JPanel actionPanel = new JPanel();
-            actionPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            actionPanel.setLayout(new GridLayout(4, 1));
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-            JLabel titleLabel = new JLabel("Tytuł: " +  dialog.getTitleField().getText());
-            JLabel dateLabel = new JLabel("Data: " + dialog.getDateField().getText());
-            JLabel amountLabel = new JLabel("Kwota: " + dialog.getAmountField().getText());
-            JLabel usersLabel = new JLabel("Użytkownicy: " + String.join(", ", dialog.
-                    getSelectedUsers().stream().map(User::getName).toArray(String[]::new)));
+        if (dialog.isExpenseAdded()) {
+            try {
+                Expense expense = new Expense(
+                        new User("name", 1), //temp
+                        Double.parseDouble(dialog.getAmountField().getText()),
+                        new HashMap<>(), // temp
+                        dialog.getTitleField().getText(),
+                        dateFormat.parse(dialog.getDateField().getText()),
+                        ExpenseCategory.OTHER //temp
+                );
+                actionsPanel.add(createExpensePanel(expense), getActionPanelGbc());
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
-            actionPanel.add(titleLabel);
-            actionPanel.add(dateLabel);
-            actionPanel.add(amountLabel);
-            actionPanel.add(usersLabel);
+    private JPanel createTransferPanel(Transfer transfer) {
+        JPanel transferPanel = new JPanel();
+        transferPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        transferPanel.setLayout(new GridLayout(3, 1));
 
-            actionPanel.setPreferredSize(new Dimension(0, 100));
+        JLabel titleLabel = new JLabel("Przelew od " + transfer.getFromUser() + " do " + transfer.getToUser());
+        JLabel dateLabel = new JLabel("Data: " + transfer.getDate());
+        JLabel amountLabel = new JLabel("Kwota: " + transfer.getAmount());
 
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridwidth = GridBagConstraints.REMAINDER;
-            gbc.gridheight = 100;
-            gbc.weightx = 1;
-            gbc.weighty = 1;
-            gbc.anchor = GridBagConstraints.PAGE_START;
+        transferPanel.add(titleLabel);
+        transferPanel.add(dateLabel);
+        transferPanel.add(amountLabel);
 
-            actionsPanel.add(actionPanel, gbc);
+        return transferPanel;
+    }
+
+    private JPanel createExpensePanel(Expense expense) {
+        JPanel expensePanel = new JPanel();
+        expensePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        expensePanel.setLayout(new GridLayout(4, 1));
+
+        JLabel titleLabel = new JLabel("Tytuł: " + expense.getName());
+        JLabel dateLabel = new JLabel("Data: " + expense.getDate());
+        JLabel amountLabel = new JLabel("Kwota: " + expense.getAmount());
+        JLabel usersLabel = new JLabel("Użytkownicy: " + String.join(", ",
+                expense.getParticipants().stream().map(User::getName).toArray(String[]::new)));
+
+        expensePanel.add(titleLabel);
+        expensePanel.add(dateLabel);
+        expensePanel.add(amountLabel);
+        expensePanel.add(usersLabel);
+
+        return expensePanel;
+    }
+
+    private GridBagConstraints getActionPanelGbc() {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.gridheight = 100;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.anchor = GridBagConstraints.PAGE_START;
+        return gbc;
+    }
+
+    private void importActions() {
+        ArrayList<MoneyAction> actionsList = group.getActionsList();
+
+        for (MoneyAction action : actionsList) {
+            if (action instanceof Expense) {
+                actionsPanel.add(createExpensePanel((Expense) action), getActionPanelGbc());
+            } else if (action instanceof Transfer) {
+                actionsPanel.add(createTransferPanel((Transfer) action), getActionPanelGbc());
+            }
         }
     }
 }

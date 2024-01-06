@@ -11,9 +11,9 @@ public class Expense implements MoneyAction, Serializable {
     private final Date date;
     private final ExpenseCategory category;
 
-    public Expense(User creator, double amount, HashMap<User, Double> debts,
+    public Expense(User payer, double amount, HashMap<User, Double> debts,
                    String name, Date date, ExpenseCategory category) {
-        this.payer = creator;
+        this.payer = payer;
         this.amount = amount;
         this.debts = debts;
         this.name = name;
