@@ -1,7 +1,10 @@
 package pl.edu.pw.mini.moneyxchange.data;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.Serializable;
 import java.util.*;
+import java.util.List;
 
 public class Expense implements MoneyAction, Serializable {
     private final User payer;
@@ -57,5 +60,24 @@ public class Expense implements MoneyAction, Serializable {
                 ", name='" + name + '\'' +
                 ", date='" + date + '\'' +
                 '}';
+    }
+
+    public JPanel getPanel() {
+        JPanel expensePanel = new JPanel();
+        expensePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        expensePanel.setLayout(new GridLayout(4, 1));
+
+        JLabel titleLabel = new JLabel("Tytuł: " + name);
+        JLabel dateLabel = new JLabel("Data: " + date);
+        JLabel amountLabel = new JLabel("Kwota: " + amount);
+        JLabel usersLabel = new JLabel("Użytkownicy: " + String.join(", ",
+                getParticipants().stream().map(User::getName).toArray(String[]::new)));
+
+        expensePanel.add(titleLabel);
+        expensePanel.add(dateLabel);
+        expensePanel.add(amountLabel);
+        expensePanel.add(usersLabel);
+
+        return expensePanel;
     }
 }

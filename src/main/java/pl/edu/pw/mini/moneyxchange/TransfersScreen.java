@@ -20,7 +20,6 @@ public class TransfersScreen extends JPanel {
 
     public TransfersScreen() {
         transfers = Group.getInstance().getPendingTransfers();
-        transfers.clear();
 
         // Create components
         transfersPanel = new JPanel(new GridBagLayout());
@@ -68,7 +67,7 @@ public class TransfersScreen extends JPanel {
         transfersPanel.removeAll();
 
         for (Transfer transfer : transfers) {
-            JPanel transferPanel = createTransferPanel(transfer);
+            JPanel transferPanel = transfer.getPanel();
             transfersPanel.add(transferPanel);
         }
 
@@ -85,7 +84,7 @@ public class TransfersScreen extends JPanel {
 
         List<Transfer> optimalTransfers = MinCashFlow.minTransfers(transfers);
         for (Transfer transfer : optimalTransfers) {
-            JPanel transferPanel = createTransferPanel(transfer);
+            JPanel transferPanel = transfer.getPanel();
             transfersPanel.add(transferPanel, gbc);
         }
 
@@ -102,28 +101,29 @@ public class TransfersScreen extends JPanel {
     }
 
 
-    private JPanel createTransferPanel(Transfer transfer) {
-        JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        panel.setLayout(new GridLayout(5, 1));
-
-        JLabel titleLabel = new JLabel("Tytuł: " + transfer.getTitle());
-        JLabel dateLabel = new JLabel("Data: " + transfer.getDate());
-        JLabel amountLabel = new JLabel("Kwota: $" + transfer.getAmount());
-        JLabel fromLabel = new JLabel("Od: " + transfer.getFromUser().getName());
-        JLabel toLabel = new JLabel("Do: " + transfer.getToUser().getName());
-
-        panel.add(titleLabel);
-        panel.add(dateLabel);
-        panel.add(amountLabel);
-        panel.add(fromLabel);
-        panel.add(toLabel);
-
-        // Set a fixed size for the panel
-        panel.setPreferredSize(new Dimension(0, 100)); // Adjust the width and height as needed
-
-        return panel;
-    }
+    // moved to Transfer class
+//    private JPanel createTransferPanel(Transfer transfer) {
+//        JPanel panel = new JPanel();
+//        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//        panel.setLayout(new GridLayout(5, 1));
+//
+//        JLabel titleLabel = new JLabel("Tytuł: " + transfer.getTitle());
+//        JLabel dateLabel = new JLabel("Data: " + transfer.getDate());
+//        JLabel amountLabel = new JLabel("Kwota: $" + transfer.getAmount());
+//        JLabel fromLabel = new JLabel("Od: " + transfer.getFromUser().getName());
+//        JLabel toLabel = new JLabel("Do: " + transfer.getToUser().getName());
+//
+//        panel.add(titleLabel);
+//        panel.add(dateLabel);
+//        panel.add(amountLabel);
+//        panel.add(fromLabel);
+//        panel.add(toLabel);
+//
+//        // Set a fixed size for the panel
+//        panel.setPreferredSize(new Dimension(0, 100)); // Adjust the width and height as needed
+//
+//        return panel;
+//    }
 
     private void showAddTransferDialog() {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Dodaj przelew", true);
@@ -255,6 +255,7 @@ public class TransfersScreen extends JPanel {
         String keyword = JOptionPane.showInputDialog(this, "Enter Date Keyword:");
         if (keyword != null) {
             List<Transfer> filteredTransfers = new ArrayList<>();
+            // todo: filter transfers by date; commented out because date isn't a string anymore
             /*
             for (Transfer transfer : transfers) {
                 if (transfer.getDate().toLowerCase().contains(keyword.toLowerCase())) {

@@ -107,46 +107,11 @@ public class MainScreen extends JPanel {
                         dateFormat.parse(dialog.getDateField().getText()),
                         ExpenseCategory.OTHER //temp
                 );
-                actionsPanel.add(createExpensePanel(expense), getActionPanelGbc());
+                actionsPanel.add(expense.getPanel(), getActionPanelGbc());
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    private JPanel createTransferPanel(Transfer transfer) {
-        JPanel transferPanel = new JPanel();
-        transferPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        transferPanel.setLayout(new GridLayout(3, 1));
-
-        JLabel titleLabel = new JLabel("Przelew od " + transfer.getFromUser() + " do " + transfer.getToUser());
-        JLabel dateLabel = new JLabel("Data: " + transfer.getDate());
-        JLabel amountLabel = new JLabel("Kwota: " + transfer.getAmount());
-
-        transferPanel.add(titleLabel);
-        transferPanel.add(dateLabel);
-        transferPanel.add(amountLabel);
-
-        return transferPanel;
-    }
-
-    private JPanel createExpensePanel(Expense expense) {
-        JPanel expensePanel = new JPanel();
-        expensePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        expensePanel.setLayout(new GridLayout(4, 1));
-
-        JLabel titleLabel = new JLabel("Tytuł: " + expense.getName());
-        JLabel dateLabel = new JLabel("Data: " + expense.getDate());
-        JLabel amountLabel = new JLabel("Kwota: " + expense.getAmount());
-        JLabel usersLabel = new JLabel("Użytkownicy: " + String.join(", ",
-                expense.getParticipants().stream().map(User::getName).toArray(String[]::new)));
-
-        expensePanel.add(titleLabel);
-        expensePanel.add(dateLabel);
-        expensePanel.add(amountLabel);
-        expensePanel.add(usersLabel);
-
-        return expensePanel;
     }
 
     private GridBagConstraints getActionPanelGbc() {
@@ -163,11 +128,7 @@ public class MainScreen extends JPanel {
         ArrayList<MoneyAction> actionsList = group.getActionsList();
 
         for (MoneyAction action : actionsList) {
-            if (action instanceof Expense) {
-                actionsPanel.add(createExpensePanel((Expense) action), getActionPanelGbc());
-            } else if (action instanceof Transfer) {
-                actionsPanel.add(createTransferPanel((Transfer) action), getActionPanelGbc());
-            }
+                actionsPanel.add(action.getPanel(), getActionPanelGbc());
         }
     }
 }
