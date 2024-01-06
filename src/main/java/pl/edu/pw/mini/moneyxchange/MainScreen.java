@@ -100,6 +100,7 @@ public class MainScreen extends JPanel {
         if (dialog.isExpenseAdded()) {
             try {
                 Expense expense = new Expense(
+                //todo
                         new User("name", 1), //temp
                         Double.parseDouble(dialog.getAmountField().getText()),
                         new HashMap<>(), // temp
