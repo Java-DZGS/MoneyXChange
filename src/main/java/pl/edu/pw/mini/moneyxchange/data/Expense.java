@@ -1,21 +1,18 @@
 package pl.edu.pw.mini.moneyxchange.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class Expense implements MoneyMovement, Serializable {
+public class Expense implements MoneyAction, Serializable {
     private final User payer;
     private final double amount;
     private final HashMap<User, Double> debts;
     private final String name;
-    private final String date;
+    private final Date date;
     private final ExpenseCategory category;
 
     public Expense(User creator, double amount, HashMap<User, Double> debts,
-                   String name, String date, ExpenseCategory category) {
+                   String name, Date date, ExpenseCategory category) {
         this.payer = creator;
         this.amount = amount;
         this.debts = debts;
@@ -48,7 +45,7 @@ public class Expense implements MoneyMovement, Serializable {
         return name;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 

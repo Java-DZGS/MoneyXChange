@@ -10,6 +10,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class TransfersScreen extends JPanel {
@@ -19,6 +20,7 @@ public class TransfersScreen extends JPanel {
 
     public TransfersScreen() {
         transfers = Group.getInstance().getPendingTransfers();
+        transfers.clear();
 
         // Create components
         transfersPanel = new JPanel(new GridBagLayout());
@@ -157,7 +159,8 @@ public class TransfersScreen extends JPanel {
         addButton.addActionListener(e -> {
             // Get input values
             String title = titleField.getText();
-            String date = dateField.getText();
+            // todo: temporary, change to datepicker
+            Date date = new Date();
             double amount = Double.parseDouble(amountField.getText());
 
             User fromUser = Group.getInstance().findUserByName(fromField.getText());
@@ -252,11 +255,13 @@ public class TransfersScreen extends JPanel {
         String keyword = JOptionPane.showInputDialog(this, "Enter Date Keyword:");
         if (keyword != null) {
             List<Transfer> filteredTransfers = new ArrayList<>();
+            /*
             for (Transfer transfer : transfers) {
                 if (transfer.getDate().toLowerCase().contains(keyword.toLowerCase())) {
                     filteredTransfers.add(transfer);
                 }
             }
+             */
             transfers = filteredTransfers;
             displayTransfers();
         }

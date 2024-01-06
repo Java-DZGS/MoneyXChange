@@ -1,16 +1,17 @@
 package pl.edu.pw.mini.moneyxchange.data;
 
 import java.io.Serializable;
+import java.util.Date;
 
-public class Transfer implements MoneyMovement, Serializable {
+public class Transfer implements MoneyAction, Serializable {
     // to edit
     private final String title;
-    private final String date;
+    private final Date date;
     private final double amount;
     private final User fromUser;
     private final User toUser;
 
-    public Transfer(String title, String date, double amount, User fromUser, User toUser) {
+    public Transfer(String title, Date date, double amount, User fromUser, User toUser) {
         this.title = title;
         this.date = date;
         this.amount = amount;
@@ -22,7 +23,7 @@ public class Transfer implements MoneyMovement, Serializable {
         return title;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 

@@ -1,9 +1,13 @@
 package pl.edu.pw.mini.moneyxchange.data;
 
+//import jdk.internal.access.JavaNetHttpCookieAccess;
+
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.text.DateFormat;
 import java.util.HashMap;
-import java.util.List;
 
 public class Group implements Serializable {
     @Serial
@@ -59,6 +63,10 @@ public class Group implements Serializable {
         return completedTransfers;
     }
 
+    public ArrayList<MoneyAction> getActionsList() {
+        return null;
+    }
+
     public void addPendingTransfer(Transfer Transfer) {
         pendingTransfers.add(Transfer);
     }
@@ -101,14 +109,17 @@ public class Group implements Serializable {
         users.add(new User("Władysław", 3));
         users.add(new User("Krasnystaw", 4));
 
-        pendingTransfers.add(new Transfer("Dinner", "2023-01-15", 50.0, users.get(0), users.get(2)));
-        pendingTransfers.add(new Transfer("Groceries", "2023-01-20", 30.0, users.get(3), users.get(4)));
-        pendingTransfers.add(new Transfer("Dinner", "2023-01-15", 50.0, users.get(1), users.get(2)));
-        pendingTransfers.add(new Transfer("Groceries", "2023-01-20", 30.0, users.get(3), users.get(4)));
-        pendingTransfers.add(new Transfer("Dinner", "2023-01-15", 50.0, users.get(1), users.get(2)));
-        pendingTransfers.add(new Transfer("Groceries", "2023-01-20", 30.0, users.get(3), users.get(4)));
-        pendingTransfers.add(new Transfer("Dinner", "2023-01-15", 40.0, users.get(1), users.get(3)));
-        pendingTransfers.add(new Transfer("Groceries", "2023-01-20", 20.0, users.get(3), users.get(2)));
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), 50.0, users.get(0), users.get(2)));
+            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), 30.0, users.get(3), users.get(4)));
+            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), 50.0, users.get(1), users.get(2)));
+            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), 30.0, users.get(3), users.get(4)));
+            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), 50.0, users.get(1), users.get(2)));
+            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), 30.0, users.get(3), users.get(4)));
+            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), 40.0, users.get(1), users.get(3)));
+            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), 20.0, users.get(3), users.get(2)));
+
 
         expenses.add(new Expense(users.get(1), 50.0,
                 new HashMap<User, Double>() {{
@@ -118,7 +129,7 @@ public class Group implements Serializable {
                     put(users.get(3), 0.0);
                     put(users.get(4), 0.0);
                 }},
-                "Pizza", "2023-01-01", ExpenseCategory.FOOD
+                "Pizza", dateFormat.parse("2023-01-01"), ExpenseCategory.FOOD
         ));
         expenses.add(new Expense(users.get(4), 30.0,
                 new HashMap<User, Double>() {{
@@ -128,7 +139,7 @@ public class Group implements Serializable {
                     put(users.get(3), 0.0);
                     put(users.get(4), 0.0);
                 }},
-                "Uber", "2023-01-02", ExpenseCategory.TRANSPORT
+                "Uber", dateFormat.parse("2023-01-02"), ExpenseCategory.TRANSPORT
         ));
         expenses.add(new Expense(users.get(3), 45.0,
                 new HashMap<User, Double>() {{
@@ -138,8 +149,10 @@ public class Group implements Serializable {
                     put(users.get(3), 10.0);
                     put(users.get(4), 0.0);
                 }},
-                "Movies", "2023-01-03", ExpenseCategory.ENTERTAINMENT
+                "Movies", dateFormat.parse("2023-01-03"), ExpenseCategory.ENTERTAINMENT
         ));
-
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

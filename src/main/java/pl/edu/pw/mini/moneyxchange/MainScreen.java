@@ -1,16 +1,19 @@
 package pl.edu.pw.mini.moneyxchange;
 
 import pl.edu.pw.mini.moneyxchange.data.Group;
+import pl.edu.pw.mini.moneyxchange.data.MoneyAction;
+import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class MainScreen extends JPanel {
     private Group group;
 
-    private final JTextArea transfersTextArea;
+    private final JPanel actionsPanel;
     private final JList<String> userList;
 
     public MainScreen() {
@@ -22,19 +25,17 @@ public class MainScreen extends JPanel {
         JButton serializeButton = new JButton("Serializuj grupę do pliku");
         JButton deserializeButton = new JButton("Deserializuj grupę z pliku");
 
-        transfersTextArea = new JTextArea(10, 30);
-        transfersTextArea.setEditable(false);
-        JScrollPane transfersScrollPane = new JScrollPane(transfersTextArea);
+        actionsPanel = new JPanel(new GridBagLayout());
+        actionsPanel.setLayout(new GridLayout(0, 1));
+        JScrollPane transfersScrollPane = new JScrollPane(actionsPanel);
 
         JButton addPaymentButton = new JButton("Dodaj nową płatność");
 
         userList = new JList<>(group.getUsers().stream().map(User::getName).toArray(String[]::new));
-
         JScrollPane userListScrollPane = new JScrollPane(userList);
 
         int padding = 10;
         setBorder(new EmptyBorder(padding, padding, padding, padding));
-
         setLayout(new BorderLayout());
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -59,6 +60,7 @@ public class MainScreen extends JPanel {
         add(topPanel, BorderLayout.NORTH);
         add(splitPane, BorderLayout.CENTER);
 
+        // BUTTONS
         changeNameButton.addActionListener(e -> {
             String newName = JOptionPane.showInputDialog("Wprowadź nową nazwę grupy:");
             group.setName(newName);
@@ -92,24 +94,31 @@ public class MainScreen extends JPanel {
         dialog.setVisible(true);
 
         if (dialog.isPaymentAdded()) {
-            // Handle the payment details and split type here
-            String paymentDetails = "Title: " + dialog.getTitleField().getText() +
-                    "\nDate: " + dialog.getDateField().getText() +
-                    "\nAmount: " + dialog.getAmountField().getText() +
-                    "\nSelected Users: " + String.join(", ", dialog.getSelectedUsers().stream().map(User::getName).toArray(String[]::new)) +
-                    "\nSplit Type: " + dialog.getSplitType();
+            JPanel actionPanel = new JPanel();
+            actionPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            actionPanel.setLayout(new GridLayout(4, 1));
 
-            // Display the payment details in the transfersTextArea
-            transfersTextArea.append(paymentDetails + "\n");
+            JLabel titleLabel = new JLabel("Tytuł: " +  dialog.getTitleField().getText());
+            JLabel dateLabel = new JLabel("Data: " + dialog.getDateField().getText());
+            JLabel amountLabel = new JLabel("Kwota: " + dialog.getAmountField().getText());
+            JLabel usersLabel = new JLabel("Użytkownicy: " + String.join(", ", dialog.
+                    getSelectedUsers().stream().map(User::getName).toArray(String[]::new)));
+
+            actionPanel.add(titleLabel);
+            actionPanel.add(dateLabel);
+            actionPanel.add(amountLabel);
+            actionPanel.add(usersLabel);
+
+            actionPanel.setPreferredSize(new Dimension(0, 100));
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridwidth = GridBagConstraints.REMAINDER;
+            gbc.gridheight = 100;
+            gbc.weightx = 1;
+            gbc.weighty = 1;
+            gbc.anchor = GridBagConstraints.PAGE_START;
+
+            actionsPanel.add(actionPanel, gbc);
         }
-    }
-
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Main Screen");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(new MainScreen());
-        frame.setSize(800, 600);
-        frame.setVisible(true);
     }
 }

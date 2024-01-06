@@ -45,20 +45,17 @@ public class ChartsScreen extends JPanel {
         CategoryChart chart = new CategoryChartBuilder().width(800).height(600).title("Wydatki").xAxisTitle("Data").yAxisTitle("Kwota").build();
         chart.getStyler().setLegendVisible(false);
 
-        Map<String, Double> aggregatedExpenses = new HashMap<>();
-
+        List<Date> dates = new ArrayList<>();
+        List<Double> amounts = new ArrayList<>();
         // Accumulate expenses for each date
         for (Expense expense : expenses) {
-            String date = expense.getDate();
-            double amount = expense.getAmount();
-
-            aggregatedExpenses.put(date, aggregatedExpenses.getOrDefault(date, 0.0) + amount);
+            dates.add(expense.getDate());
+            amounts.add(expense.getAmount());
         }
 
-        List<String> dates = new ArrayList<>(aggregatedExpenses.keySet());
-        List<Double> amounts = new ArrayList<>(aggregatedExpenses.values());
-
         chart.addSeries("Expenses", dates, amounts).setMarker(SeriesMarkers.CIRCLE);
+        chart.getStyler().setDatePattern("yyyy-MM-dd");
+        chart.getStyler().setToolTipsEnabled(true);
 
         return chart;
     }
@@ -107,11 +104,6 @@ public class ChartsScreen extends JPanel {
     }
 
 
-
-
-
-
-
 }
 
 class FilterDialog extends JDialog {
@@ -155,7 +147,7 @@ class FilterDialog extends JDialog {
             }
 
             private String[] parseCSV(String input) {
-                if(input.isEmpty()) return new String[]{};
+                if (input.isEmpty()) return new String[]{};
                 return input.split("\\s*,\\s*");
             }
         });
