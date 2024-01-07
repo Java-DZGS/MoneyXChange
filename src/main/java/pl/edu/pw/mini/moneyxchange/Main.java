@@ -11,11 +11,12 @@ public class Main extends JFrame {
         tabbedPane.addTab("Ekran Główny", new MainScreen());
         tabbedPane.addTab("Przelewy", new TransfersScreen());
         tabbedPane.addTab("Wykresy", new ChartsScreen());
+        tabbedPane.addTab("Użytkownicy", new UsersScreen());
 
         // Podsumowanie
-        JPanel summaryPanel = new JPanel();
+        // JPanel summaryPanel = new JPanel();
         // Dodaj komponenty do summaryPanel
-        tabbedPane.addTab("Podsumowanie", summaryPanel);
+        // tabbedPane.addTab("Podsumowanie", summaryPanel);
 
         // Historia Wydatków
         tabbedPane.addTab("Historia wydatków", new HistoryScreen());
