@@ -102,8 +102,6 @@ public class ChartsScreen extends JPanel {
             add(chartPanel, BorderLayout.CENTER);
         }
     }
-
-
 }
 
 class FilterDialog extends JDialog {

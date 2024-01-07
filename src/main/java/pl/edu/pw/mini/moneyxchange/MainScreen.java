@@ -91,6 +91,8 @@ public class MainScreen extends JPanel {
     private void showPaymentDialog(Group group) {
         ExpenseDialog dialog = new ExpenseDialog(group);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        // todo: modalność trzeba ogarnąć ale jeszcze nie umiem
+        dialog.setModalityType(Dialog.ModalityType.MODELESS);
         dialog.setSize(400, 300);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
