@@ -1,129 +1,125 @@
 package pl.edu.pw.mini.moneyxchange;
 
-import pl.edu.pw.mini.moneyxchange.data.Group;
-import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.data.*;
+import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ExpenseDialog extends JDialog {
     private final JTextField titleField;
     private final JTextField dateField;
     private final JTextField amountField;
-    private final JTextField payerField;
-    private ArrayList<User> selectedUsers;
-    private final JComboBox<String> splitTypeComboBox;
+    //private final JComboBox<String> splitTypeComboBox;
     private final JComboBox<String> payerComboBox;
+
+    private final Group group;
+    private double amount;
+    private HashMap<User, Double> debtsHashMap;
     private final String[] userNames;
     private boolean paymentAdded;
+    private boolean splitTypeSet;
 
     public ExpenseDialog(Group group) {
-        super((JFrame) null, "Add New Payment", true);
+        super((JFrame) null, "Dodaj nowy wydatek", true);
+
+        this.group = group;
+        debtsHashMap = new HashMap<>();
 
         titleField = new JTextField();
-        dateField = new JTextField((new Date()).toString());
-        amountField = new JTextField();
-        payerField = new JTextField();
-        selectedUsers = new ArrayList<>();
-
+        dateField = new JTextField("2022-12-20");//(new Date()).toString());
+        amountField = new JTextField("20");
         userNames = group.getUsers().stream().map(User::getName).toArray(String[]::new);
         payerComboBox = new JComboBox<>(userNames);
-//        JList<String> userList = new JList<>(userNames);
-//        JScrollPane userListScrollPane = new JScrollPane(userList);
-//        JButton selectUsersButton = new JButton("Select Users");
 
-        String[] splitTypes = {"Equally", "Unequally"};
-        splitTypeComboBox = new JComboBox<>(splitTypes);
-
-        JButton addButton = new JButton("Add Payment");
+        JButton splitButton = new JButton("Podziel wydatek");
+        JButton addButton = new JButton("Dodaj wydatek");
 
         JPanel panel = new JPanel(new GridLayout(6, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
 
-        panel.add(new JLabel("Title:"));
+        panel.add(new JLabel("Tytuł:"));
         panel.add(titleField);
-        panel.add(new JLabel("Date:"));
+        panel.add(new JLabel("Data:"));
         panel.add(dateField);
-        panel.add(new JLabel("Amount:"));
+        panel.add(new JLabel("Kwota:"));
         panel.add(amountField);
-        panel.add(new JLabel("Paid by:"));
+        panel.add(new JLabel("Zapłacone przez:"));
         panel.add(payerComboBox);
-        panel.add(new JLabel("Split Type:"));
-        panel.add(splitTypeComboBox);
+        panel.add(splitButton);
         panel.add(addButton);
 
-        splitTypeComboBox.addActionListener(e -> showUserSplitDialog(group.getUsers()));
+        add(panel);
+
+        splitButton.addActionListener(e -> {
+            showUserSplitDialog(group.getUsers());
+        });
 
         addButton.addActionListener(e -> {
+            if (!splitTypeSet) {
+                parseAmount();
+                debtsHashMap = Division.splitEqually(new HashSet<>(group.getUsers()), amount);
+            }
             paymentAdded = true;
             dispose();
         });
 
-        add(panel);
     }
 
-    public JTextField getTitleField() {
-        return titleField;
-    }
-
-    public JTextField getDateField() {
-        return dateField;
-    }
-
-    public JTextField getAmountField() {
-        return amountField;
-    }
-
-    public ArrayList<User> getSelectedUsers() {
-        return selectedUsers;
-    }
-
-    public String getSplitType() {
-        return (String) splitTypeComboBox.getSelectedItem();
+    public Expense getExpense() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            return new Expense(
+                    group.findUserByName(Objects.requireNonNull(payerComboBox.getSelectedItem()).toString()),
+                    amount,
+                    debtsHashMap,
+                    titleField.getText(),
+                    dateFormat.parse(dateField.getText()),
+                    ExpenseCategory.OTHER // todo
+            );
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isExpenseAdded() {
         return paymentAdded;
     }
 
-    private ArrayList<User> showUserSplitDialog(ArrayList<User> users) {
-        double amount;
+    private void parseAmount() {
         try {
             amount = Double.parseDouble(amountField.getText());
         } catch (NumberFormatException e) {
             amount = 0;
         }
+    }
+
+    private ArrayList<User> showUserSplitDialog(ArrayList<User> users) {
+        parseAmount();
 
         SplitDialog dialog = new SplitDialog(users, amount);
+        dialog.setModalityType(ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setSize(300, 500);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        dialog.requestFocus();
 
-        //dialog.setModal(true);
-
-        //if (dialog.)
-
-//        ArrayList<User> selectedUsers = new ArrayList<>();
-//        for (User user : users) {
-//            boolean isSelected = JOptionPane.showConfirmDialog(
-//                    null,
-//                    "Include " + user.getName() + " in the payment?",
-//                    "Select Users",
-//                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
-//            if (isSelected) {
-//                selectedUsers.add(user);
-//            }
-//        }
-//        return selectedUsers;
+        if (dialog.isResultOK()) {
+            splitTypeSet = true;
+            debtsHashMap = dialog.getOutputHashMap();
+        }
 
         return null;
     }
 }
 
+// todo: moze w przyszłosci zrobić z tego część okienka, zamiast nowego
 class SplitDialog extends JDialog {
     enum DivisionType {
         EQUAL, EXACT, PERCENTAGE, SHARES
@@ -135,7 +131,13 @@ class SplitDialog extends JDialog {
     private final JComboBox<String> divisionTypeComboBox;
     // można to załatwić jedną haszmapą, ale tak jest imo czytelniej:
     private final HashMap<User, Double> textFieldInputs;
+
     private HashMap<User, Double> outputHashMap;
+
+    public HashMap<User, Double> getOutputHashMap() {
+        return outputHashMap;
+    }
+
     private final HashSet<User> equalSplitHashSet;
     private final ArrayList<User> users;
     private final double amount;
@@ -156,8 +158,6 @@ class SplitDialog extends JDialog {
 
         add(dialogPanel);
 
-        // todo: zrobić żeby to wyglądało normalnie
-
         divisionTypeComboBox = new JComboBox<>(
                 // convert enum values to string array
                 Stream.of(DivisionType.values())
@@ -175,25 +175,34 @@ class SplitDialog extends JDialog {
         });
 
         JPanel divisionTypePanel = new JPanel();
-        dialogPanel.add(divisionTypePanel);
         divisionTypePanel.add(divisionTypeComboBox);
+
+        // todo: te gbc poprawić
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weighty = 0.1;
+        dialogPanel.add(divisionTypePanel, gbc);
 
         divisionPanel = new JPanel(new GridBagLayout());
         divisionPanel.setLayout(new GridLayout(0, 1, 10, 10));
-        //divisionPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
         JScrollPane scrollPane = new JScrollPane(divisionPanel);
-        dialogPanel.add(scrollPane);
-        //divisionPanel.add(scrollPane);
+        gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 3.0;
+        dialogPanel.add(scrollPane, gbc);
 
         drawDivisionPanel();
 
         JButton okButton = new JButton("ok");
+        gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weighty = 0.1;
         okButton.addActionListener(e -> {
             resultOK = true;
             calculateSplits();
             dispose();
         });
-        dialogPanel.add(okButton);
+        dialogPanel.add(okButton, gbc);
     }
 
     private void drawDivisionPanel() {
@@ -231,7 +240,7 @@ class SplitDialog extends JDialog {
             default -> {
                 JTextField textField = new JTextField();
                 handleDoubleTextFieldValue(textField, user);
-                textField.addActionListener(e -> handleDoubleTextFieldValue(textField, user));
+                SwingUtils.addChangeListener(textField, e -> handleDoubleTextFieldValue(textField, user));
                 return textField;
             }
         }
@@ -256,47 +265,13 @@ class SplitDialog extends JDialog {
 
     private void calculateSplits() {
         switch (divisionType) {
-            case EQUAL -> calculateEqualSplits();
-            case EXACT -> calculateExactSplits();
-            case PERCENTAGE -> calculatePercentageSplits();
-            case SHARES -> calculateSharesSplits();
+            case EQUAL -> outputHashMap = Division.splitEqually(equalSplitHashSet, amount);
+            case EXACT -> outputHashMap = Division.splitExactly(textFieldInputs);
+            case PERCENTAGE -> outputHashMap = Division.splitByPercentages(textFieldInputs, amount);
+            case SHARES -> outputHashMap = Division.splitByShares(textFieldInputs, amount);
         }
     }
 
-    private void calculateEqualSplits() {
-        int n = equalSplitHashSet.size();
-        // todo: handle uneven division like 10 / 3
-        double splitAmount = amount / n;
-        textFieldInputs.clear();
-        for (User user : equalSplitHashSet) {
-            textFieldInputs.put(user, splitAmount);
-        }
-    }
-
-    private void calculateExactSplits() {
-        outputHashMap = (HashMap<User, Double>) textFieldInputs.clone();
-    }
-
-    private void calculatePercentageSplits() {
-        for (Map.Entry<User, Double> entry : textFieldInputs.entrySet()) {
-            User user = entry.getKey();
-            double percent = entry.getValue();
-
-            outputHashMap.put(user, (percent / 100) * amount);
-        }
-    }
-
-    private void calculateSharesSplits() {
-        // how many total shares
-        int n = (int)textFieldInputs.values().stream().mapToInt(Double::intValue).reduce(Integer::sum).orElse(1);
-
-        for (Map.Entry<User, Double> entry : textFieldInputs.entrySet()) {
-            User user = entry.getKey();
-            int shares = entry.getValue().intValue();
-
-            outputHashMap.put(user, (shares / n) * amount);
-        }
-    }
 
     public boolean isResultOK() {
         return resultOK;

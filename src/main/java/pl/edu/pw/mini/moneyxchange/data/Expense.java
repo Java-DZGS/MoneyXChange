@@ -65,18 +65,30 @@ public class Expense implements MoneyAction, Serializable {
     public JPanel getPanel() {
         JPanel expensePanel = new JPanel();
         expensePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        expensePanel.setLayout(new GridLayout(4, 1));
+        expensePanel.setLayout(new GridLayout(0, 1));
 
         JLabel titleLabel = new JLabel("Tytuł: " + name);
         JLabel dateLabel = new JLabel("Data: " + date);
         JLabel amountLabel = new JLabel("Kwota: " + amount);
-        JLabel usersLabel = new JLabel("Użytkownicy: " + String.join(", ",
-                getParticipants().stream().map(User::getName).toArray(String[]::new)));
+        JLabel payerLabel = new JLabel("Zapłacone przez: " + payer.getName());
+        JLabel debtsLabel = new JLabel("Długi: ");
 
         expensePanel.add(titleLabel);
         expensePanel.add(dateLabel);
         expensePanel.add(amountLabel);
-        expensePanel.add(usersLabel);
+        expensePanel.add(payerLabel);
+        expensePanel.add(debtsLabel);
+
+        for (Map.Entry<User, Double> entry : debts.entrySet()) {
+            JLabel label = new JLabel("- " +
+                    entry.getKey().getName() + ": " +
+                    entry.getValue().toString());
+            expensePanel.add(label);
+        }
+
+//        JLabel usersLabel = new JLabel("Użytkownicy: " + String.join(", ",
+//                getParticipants().stream().map(User::getName).toArray(String[]::new)));
+//        expensePanel.add(usersLabel);
 
         return expensePanel;
     }

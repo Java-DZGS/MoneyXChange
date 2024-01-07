@@ -29,7 +29,7 @@ public class MainScreen extends JPanel {
         actionsPanel = new JPanel(new GridBagLayout());
         actionsPanel.setLayout(new GridLayout(0, 1));
         JScrollPane transfersScrollPane = new JScrollPane(actionsPanel);
-        importActions();
+        //importActions();
 
         JButton addPaymentButton = new JButton("Dodaj nową płatność");
 
@@ -91,8 +91,7 @@ public class MainScreen extends JPanel {
     private void showPaymentDialog(Group group) {
         ExpenseDialog dialog = new ExpenseDialog(group);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        // todo: modalność trzeba ogarnąć ale jeszcze nie umiem
-        dialog.setModalityType(Dialog.ModalityType.MODELESS);
+        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setSize(400, 300);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
@@ -100,20 +99,9 @@ public class MainScreen extends JPanel {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         if (dialog.isExpenseAdded()) {
-            try {
-                Expense expense = new Expense(
-                //todo
-                        new User("name", 1), //temp
-                        Double.parseDouble(dialog.getAmountField().getText()),
-                        new HashMap<>(), // temp
-                        dialog.getTitleField().getText(),
-                        dateFormat.parse(dialog.getDateField().getText()),
-                        ExpenseCategory.OTHER //temp
-                );
-                actionsPanel.add(expense.getPanel(), getActionPanelGbc());
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
+            Expense expense = dialog.getExpense();
+            group.addExpense(expense);
+            actionsPanel.add(expense.getPanel(), getActionPanelGbc());
         }
     }
 
@@ -131,7 +119,7 @@ public class MainScreen extends JPanel {
         ArrayList<MoneyAction> actionsList = group.getActionsList();
 
         for (MoneyAction action : actionsList) {
-                actionsPanel.add(action.getPanel(), getActionPanelGbc());
+            actionsPanel.add(action.getPanel(), getActionPanelGbc());
         }
     }
 }
