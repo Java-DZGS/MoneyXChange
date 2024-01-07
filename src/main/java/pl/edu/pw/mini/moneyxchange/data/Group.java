@@ -75,6 +75,7 @@ public class Group implements Serializable {
                 .collect(Collectors.toList());
     }
 
+    public void addExpense(Expense expense) { expenses.add(expense); }
     public void addPendingTransfer(Transfer Transfer) {
         pendingTransfers.add(Transfer);
     }
