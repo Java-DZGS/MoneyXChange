@@ -128,22 +128,26 @@ class SplitDialog extends JDialog {
     enum DivisionType {
         EQUAL, EXACT, PERCENTAGE, SHARES
     }
+
     private DivisionType divisionType;
     private final JPanel dialogPanel;
     private final JPanel divisionPanel;
     private final JComboBox<String> divisionTypeComboBox;
     // można to załatwić jedną haszmapą, ale tak jest imo czytelniej:
-    private final HashMap<User, Double> splitHashMap;
+    private final HashMap<User, Double> textFieldInputs;
+    private HashMap<User, Double> outputHashMap;
     private final HashSet<User> equalSplitHashSet;
     private final ArrayList<User> users;
     private final double amount;
     private boolean resultOK;
+
     public SplitDialog(ArrayList<User> users, double amount) {
         resultOK = false;
         this.users = users;
         this.amount = amount;
         divisionType = DivisionType.EQUAL;
-        splitHashMap = new HashMap<>();
+        textFieldInputs = new HashMap<>();
+        outputHashMap = new HashMap<>();
         equalSplitHashSet = new HashSet<>();
 
         dialogPanel = new JPanel(new GridLayout());
@@ -164,9 +168,9 @@ class SplitDialog extends JDialog {
         divisionTypeComboBox.addActionListener(e -> {
             divisionType = DivisionType.valueOf(
                     Objects.requireNonNull(divisionTypeComboBox
-                    .getSelectedItem())
-                    .toString()
-                    .toUpperCase());
+                                    .getSelectedItem())
+                            .toString()
+                            .toUpperCase());
             drawDivisionPanel();
         });
 
@@ -226,26 +230,75 @@ class SplitDialog extends JDialog {
             }
             default -> {
                 JTextField textField = new JTextField();
-                textField.addActionListener(e -> {
-                    double amount;
-                    try {
-                        amount = Double.parseDouble(textField.getText());
-                    } catch (NumberFormatException ex) {
-                        amount = 0;
-                    }
-                    if (amount != 0)
-                        splitHashMap.put(user, amount);
-                    else
-                        splitHashMap.remove(user);
-                });
+                handleDoubleTextFieldValue(textField, user);
+                textField.addActionListener(e -> handleDoubleTextFieldValue(textField, user));
                 return textField;
             }
         }
     }
 
-    private void calculateSplits() {
+    private void handleDoubleTextFieldValue(JTextField textField, User user) {
+        // todo: handle invalid values:
+        // values larger than amount, values lesser than 0, non-integers in shares
+        double amount;
 
+        try {
+            amount = Double.parseDouble(textField.getText());
+        } catch (NumberFormatException ex) {
+            amount = 0;
+        }
+
+        if (amount != 0)
+            textFieldInputs.put(user, amount);
+        else
+            textFieldInputs.remove(user);
     }
 
-    public boolean isResultOK() { return resultOK; }
+    private void calculateSplits() {
+        switch (divisionType) {
+            case EQUAL -> calculateEqualSplits();
+            case EXACT -> calculateExactSplits();
+            case PERCENTAGE -> calculatePercentageSplits();
+            case SHARES -> calculateSharesSplits();
+        }
+    }
+
+    private void calculateEqualSplits() {
+        int n = equalSplitHashSet.size();
+        // todo: handle uneven division like 10 / 3
+        double splitAmount = amount / n;
+        textFieldInputs.clear();
+        for (User user : equalSplitHashSet) {
+            textFieldInputs.put(user, splitAmount);
+        }
+    }
+
+    private void calculateExactSplits() {
+        outputHashMap = (HashMap<User, Double>) textFieldInputs.clone();
+    }
+
+    private void calculatePercentageSplits() {
+        for (Map.Entry<User, Double> entry : textFieldInputs.entrySet()) {
+            User user = entry.getKey();
+            double percent = entry.getValue();
+
+            outputHashMap.put(user, (percent / 100) * amount);
+        }
+    }
+
+    private void calculateSharesSplits() {
+        // how many total shares
+        int n = (int)textFieldInputs.values().stream().mapToInt(Double::intValue).reduce(Integer::sum).orElse(1);
+
+        for (Map.Entry<User, Double> entry : textFieldInputs.entrySet()) {
+            User user = entry.getKey();
+            int shares = entry.getValue().intValue();
+
+            outputHashMap.put(user, (shares / n) * amount);
+        }
+    }
+
+    public boolean isResultOK() {
+        return resultOK;
+    }
 }
