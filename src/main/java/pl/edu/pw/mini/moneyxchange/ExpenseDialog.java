@@ -55,7 +55,6 @@ public class ExpenseDialog extends JDialog {
             paymentAdded = true;
             dispose();
         });
-        setSize(300, 200);
         add(panel);
     }
 
