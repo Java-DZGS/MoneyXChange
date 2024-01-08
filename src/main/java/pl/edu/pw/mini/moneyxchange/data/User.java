@@ -25,6 +25,7 @@ public class User implements Serializable {
     public String getName() {
         return name;
     }
+    public void setName(String newName){name = newName;}
     public int getId() { return id; }
     public List<Expense> getExpenses(){ return expenses; }
     public void addExpense(Expense expense){

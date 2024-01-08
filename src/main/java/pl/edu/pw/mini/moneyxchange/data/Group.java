@@ -54,6 +54,9 @@ public class Group implements Serializable {
     public ArrayList<User> getUsers() {
         return users;
     }
+    public void addUser(User user){
+        users.add(user);
+    }
 
     public ArrayList<Expense> getExpenses() {
         return expenses;
@@ -79,7 +82,9 @@ public class Group implements Serializable {
     public void addPendingTransfer(Transfer Transfer) {
         pendingTransfers.add(Transfer);
     }
-
+    public void addCompletedTransfer(Transfer Transfer) {
+        completedTransfers.add(Transfer);
+    }
     public void markTransferAsCompleted(Transfer Transfer) {
         pendingTransfers.remove(Transfer);
         completedTransfers.add(Transfer);
@@ -129,8 +134,7 @@ public class Group implements Serializable {
             pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), 40.0, users.get(1), users.get(3)));
             pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), 20.0, users.get(3), users.get(2)));
 
-
-            expenses.add(new Expense(users.get(1), 50.0,
+            Expense expense1 = new Expense(users.get(1), 50.0,
                     new HashMap<User, Double>() {{
                         put(users.get(0), 0.0);
                         put(users.get(1), 25.0);
@@ -139,8 +143,10 @@ public class Group implements Serializable {
                         put(users.get(4), 0.0);
                     }},
                     "Pizza", dateFormat.parse("2023-01-01"), ExpenseCategory.FOOD
-            ));
-            expenses.add(new Expense(users.get(4), 30.0,
+            );
+            expenses.add(expense1);
+
+            Expense expense2 = new Expense(users.get(4), 30.0,
                     new HashMap<User, Double>() {{
                         put(users.get(0), 10.0);
                         put(users.get(1), 15.0);
@@ -149,8 +155,10 @@ public class Group implements Serializable {
                         put(users.get(4), 0.0);
                     }},
                     "Uber", dateFormat.parse("2023-01-02"), ExpenseCategory.TRANSPORT
-            ));
-            expenses.add(new Expense(users.get(3), 45.0,
+            );
+            expenses.add(expense2);
+
+            Expense expense3 = new Expense(users.get(3), 45.0,
                     new HashMap<User, Double>() {{
                         put(users.get(0), 10.0);
                         put(users.get(1), 15.0);
@@ -159,7 +167,19 @@ public class Group implements Serializable {
                         put(users.get(4), 0.0);
                     }},
                     "Movies", dateFormat.parse("2023-01-03"), ExpenseCategory.ENTERTAINMENT
-            ));
+            );
+            users.get(3).addExpense(expense3);
+            Expense expense4 = new Expense(users.get(1), 50.0,
+                    new HashMap<User, Double>() {{
+                        put(users.get(0), 0.0);
+                        put(users.get(1), 25.0);
+                        put(users.get(2), 25.0);
+                        put(users.get(3), 0.0);
+                        put(users.get(4), 0.0);
+                    }},
+                    "Fries", dateFormat.parse("2023-01-01"), ExpenseCategory.FOOD
+            );
+            expenses.add(expense4);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

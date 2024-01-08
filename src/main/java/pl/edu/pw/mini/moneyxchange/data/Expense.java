@@ -22,6 +22,16 @@ public class Expense implements MoneyAction, Serializable {
         this.name = name;
         this.date = date;
         this.category = category;
+
+        payer.addExpense(this);
+
+        for (Map.Entry<User, Double> entry : debts.entrySet()) {
+            User user = entry.getKey();
+            Double debtAmount = entry.getValue();
+            if(user.getId()==payer.getId()) continue;
+            Transfer transfer = new Transfer(name,date,debtAmount,user,payer);
+            user.addPendingTransfer(transfer);
+        }
     }
 
     public User getPayer() {
