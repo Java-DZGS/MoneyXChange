@@ -9,6 +9,7 @@ import java.beans.PropertyChangeListener;
 import java.util.Objects;
 
 public class SwingUtils {
+    // https://stackoverflow.com/questions/3953208/value-change-listener-to-jtextfield
     /**
      * Installs a listener to receive notification when the text of any
      * {@code JTextComponent} is changed. Internally, it installs a
