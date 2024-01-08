@@ -12,6 +12,7 @@ import java.util.List;
 public class UsersScreen extends JPanel{
     private List<User> users;
     private final JPanel usersPanel;
+    private JPanel completedPanel;
     public UsersScreen() {
         users = Group.getInstance().getUsers();
 
@@ -60,10 +61,104 @@ public class UsersScreen extends JPanel{
         panel.setPreferredSize(new Dimension(panel.getPreferredSize().width, 10));
 
         panel.add(nameLabel, BorderLayout.WEST);
-        panel.add(detailsButton,BorderLayout.EAST);
+        panel.add(detailsButton, BorderLayout.EAST);
 
-        detailsButton.addActionListener(e -> displayUser(user));
+        detailsButton.addActionListener(e -> showUserDetails(user));
 
+        return panel;
+    }
+    private void showUserDetails(User user) {
+        JTabbedPane tabbedPane = new JTabbedPane();
+
+        JPanel userInfoPanel = createUserInfoPanel(user);
+        JPanel expensesPanel = createExpensesPanel(user);
+        JPanel completedTransfersPanel = createCompletedTransfersPanel(user);
+        JPanel pendingTransfersPanel = createPendingTransfersPanel(user, completedTransfersPanel);
+
+        tabbedPane.addTab("Informacje", userInfoPanel);
+        tabbedPane.addTab("Wydatki", expensesPanel);
+        tabbedPane.addTab("Wykonane przelewy", completedTransfersPanel);
+        tabbedPane.addTab("Oczekujące przelewy", pendingTransfersPanel);
+
+        JFrame userDetailsFrame = new JFrame("Szczegóły użytkownika - " + user.getName());
+        userDetailsFrame.setLayout(new BorderLayout());
+        userDetailsFrame.add(tabbedPane, BorderLayout.CENTER);
+        userDetailsFrame.setSize(500, 400);
+        userDetailsFrame.setLocationRelativeTo(null);
+        userDetailsFrame.setVisible(true);
+    }
+
+    private JPanel createUserInfoPanel(User user) {
+        JPanel panel = new JPanel(new BorderLayout());
+
+        JLabel userInfoLabel = new JLabel("Imię: " + user.getName());
+        panel.add(userInfoLabel, BorderLayout.NORTH);
+
+        JButton editButton = new JButton("Edytuj");
+        editButton.addActionListener(e -> showEditUserDialog(user));
+        panel.add(editButton, BorderLayout.SOUTH);
+
+        return panel;
+    }
+    private JPanel createExpensesPanel(User user) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createTitledBorder("Historia wydatków"));
+
+        JPanel expensesPanel = new JPanel(new GridBagLayout());  // Utwórz panel dla wydatków
+        expensesPanel.setLayout(new GridLayout(0, 1));  // Ustaw GridLayout z jedną kolumną
+        JScrollPane expensesScrollPane = new JScrollPane(expensesPanel);
+
+        panel.add(expensesScrollPane, BorderLayout.CENTER);
+
+        JButton addExpenseButton = new JButton("Dodaj wydatek");
+        addExpenseButton.addActionListener(e -> {
+            ExpenseDialog expenseDialog = new ExpenseDialog(Group.getInstance());
+            expenseDialog.setVisible(true);
+            expenseDialog.setLocationRelativeTo(null);
+            // Po dodaniu nowego wydatku odśwież historię wydatków
+            displayExpenses(user.getExpenses(), expensesPanel);
+        });
+        panel.add(addExpenseButton, BorderLayout.SOUTH);
+
+        displayExpenses(user.getExpenses(), expensesPanel);
+
+        return panel;
+    }
+
+    private JPanel createCompletedTransfersPanel(User user) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createTitledBorder("Historia przelewów"));
+
+        JPanel completedTransfersPanel = new JPanel(new GridBagLayout());  // Utwórz panel dla wydatków
+        completedTransfersPanel.setLayout(new GridLayout(0, 1));  // Ustaw GridLayout z jedną kolumną
+        completedPanel = completedTransfersPanel;
+        JScrollPane completedTransfersScrollPane = new JScrollPane(completedTransfersPanel);
+
+        panel.add(completedTransfersScrollPane, BorderLayout.CENTER);
+        JButton addTransferButton = new JButton("Dodaj przelew");
+
+        addTransferButton.addActionListener(e -> {
+            TransferDialog transferDialog = new TransferDialog(Group.getInstance());
+            transferDialog.setVisible(true);
+            transferDialog.setLocationRelativeTo(null);
+            displayCompletedTransfers(user.getCompletedTransfers(),completedTransfersPanel);
+        });
+        panel.add(addTransferButton, BorderLayout.SOUTH);
+
+        displayCompletedTransfers(user.getCompletedTransfers(), completedTransfersPanel);
+        return panel;
+    }
+    private JPanel createPendingTransfersPanel(User user, JPanel completedTransfersPanel) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createTitledBorder("Historia przelewów"));
+
+        JPanel pendingTransfersPanel = new JPanel(new GridBagLayout());  // Utwórz panel dla wydatków
+        pendingTransfersPanel.setLayout(new GridLayout(0, 1));  // Ustaw GridLayout z jedną kolumną
+        JScrollPane pendingTransfersScrollPane = new JScrollPane(pendingTransfersPanel);
+
+        panel.add(pendingTransfersScrollPane, BorderLayout.CENTER);
+
+        displayPendingTransfers(user.getPendingTransfers(), pendingTransfersPanel, user.getCompletedTransfers(),completedTransfersPanel);
         return panel;
     }
     private void showAddUserDialog() {
@@ -115,92 +210,6 @@ public class UsersScreen extends JPanel{
         dialog.setVisible(true);
     }
 
-    private void displayUser(User user){
-        usersPanel.removeAll();
-
-        JPanel userPanel = createUserDetailsPanel(user);
-        usersPanel.add(userPanel);
-        usersPanel.revalidate();
-
-        usersPanel.repaint();
-    }
-
-    private JPanel createUserDetailsPanel(User user){
-        JPanel panel = new JPanel(new GridLayout(0, 1));
-
-        // Informacje o użytkowniku
-        JPanel userInfoPanel = new JPanel();
-        userInfoPanel.setBorder(BorderFactory.createTitledBorder("Informacje o użytkowniku"));
-        userInfoPanel.setLayout(new BorderLayout());
-
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel userInfoLabel = new JLabel("Imię: ");
-        JTextField nameField = new JTextField(user.getName());
-        nameField.setEditable(false);
-        topPanel.add(userInfoLabel);
-        topPanel.add(nameField);
-
-        userInfoPanel.add(topPanel, BorderLayout.NORTH);
-
-        JButton editButton = new JButton("Edytuj");
-        editButton.addActionListener(e -> showEditUserDialog(user));
-        userInfoPanel.add(editButton, BorderLayout.SOUTH);
-
-        // Wydatki
-        JPanel expensesPanel = new JPanel(new GridBagLayout());
-        expensesPanel.setLayout(new GridLayout(0, 1));
-        JScrollPane expensesScrollPane = new JScrollPane(expensesPanel);
-        expensesPanel.setBorder(BorderFactory.createTitledBorder("Historia wydatków"));
-
-        JButton addExpenseButton = new JButton("Dodaj wydatek");
-        addExpenseButton.addActionListener(e -> {
-            ExpenseDialog expenseDialog = new ExpenseDialog(Group.getInstance());
-            expenseDialog.setLocationRelativeTo(null);
-            expenseDialog.setVisible(true);
-            displayExpenses(user.getExpenses(), expensesPanel);
-        });
-        displayExpenses(user.getExpenses(), expensesPanel);
-        expensesPanel.add(addExpenseButton, BorderLayout.SOUTH);
-        add(expensesScrollPane, BorderLayout.CENTER);
-
-// Dokonane przelewy
-        JPanel completedTransfersPanel = new JPanel(new GridBagLayout());
-        completedTransfersPanel.setLayout(new GridLayout(0, 1));
-        JScrollPane completedTransfersScrollPane = new JScrollPane(completedTransfersPanel);
-        completedTransfersPanel.setBorder(BorderFactory.createTitledBorder("Dokonane przelewy"));
-
-        JButton addTransferButton = new JButton("Dodaj przelew");
-        addTransferButton.addActionListener(e -> {
-            TransferDialog transferDialog = new TransferDialog(Group.getInstance());
-            transferDialog.setLocationRelativeTo(null);
-            transferDialog.setVisible(true);
-            displayCompletedTransfers(user.getCompletedTransfers(), completedTransfersPanel);
-        });
-        displayCompletedTransfers(user.getCompletedTransfers(), completedTransfersPanel);
-        completedTransfersPanel.add(addTransferButton, BorderLayout.SOUTH);
-        add(completedTransfersScrollPane, BorderLayout.CENTER);
-
-
-
-// Czekające przelewy
-        JPanel pendingTransfersPanel = new JPanel(new GridBagLayout());
-        pendingTransfersPanel.setLayout(new GridLayout(0, 1));
-        JScrollPane pendingTransfersScrollPane = new JScrollPane(pendingTransfersPanel);
-        pendingTransfersPanel.setBorder(BorderFactory.createTitledBorder("Oczekujące przelewy"));
-        JLabel pendingTransfersLabel = new JLabel("Przelewy do wykonania");
-        displayPendingTransfers(user.getPendingTransfers(), pendingTransfersPanel);
-        add(completedTransfersScrollPane, BorderLayout.CENTER);
-
-
-// Dodajemy sekcje do głównego panelu
-        panel.add(userInfoPanel, BorderLayout.NORTH);
-        panel.add(expensesPanel, BorderLayout.CENTER);
-        panel.add(completedTransfersPanel, BorderLayout.CENTER);
-        panel.add(pendingTransfersPanel, BorderLayout.CENTER);
-
-        return panel;
-    }
-
     private void showEditUserDialog(User user) {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Edytuj użytkownika", true);
         dialog.setLayout(new BorderLayout());
@@ -225,7 +234,7 @@ public class UsersScreen extends JPanel{
             user.setName(newName);
 
             // Update the display
-            displayUser(user);
+            // displayUser(user);
 
             // Close the dialog
             dialog.dispose();
@@ -235,22 +244,29 @@ public class UsersScreen extends JPanel{
         dialog.setVisible(true);
     }
     private void displayExpenses(List<Expense> expenses, JPanel expensesPanel){
+        expensesPanel.removeAll(); // Usunięcie wszystkich komponentów przed dodaniem nowych
+
         for (Expense expense : expenses) {
             JPanel expensePanel = expense.getPanel();
             expensesPanel.add(expensePanel);
         }
+
+        expensesPanel.revalidate();
+        expensesPanel.repaint();
     }
     private void displayCompletedTransfers(List<Transfer> transfers, JPanel transfersPanel){
-      //  transfersPanel.removeAll();
+        transfersPanel.removeAll();
 
         for (Transfer transfer:transfers) {
             JPanel transferPanel = transfer.getPanel();
             transfersPanel.add(transferPanel);
         }
-      //  transfersPanel.revalidate();
-      //  transfersPanel.repaint();
+
+        transfersPanel.revalidate();
+        transfersPanel.repaint();
     }
-    private void displayPendingTransfers(List<Transfer> transfers, JPanel transfersPanel){
+    private void displayPendingTransfers(List<Transfer> transfers, JPanel transfersPanel, List<Transfer> completedTransfers,JPanel completedTransfersPanel){
+        transfersPanel.removeAll();
         for (Transfer transfer:transfers) {
             JPanel transferPanel = transfer.getPanel();
             JButton doneButton = new JButton("Oznacz jako zrobiony");
@@ -259,8 +275,18 @@ public class UsersScreen extends JPanel{
             doneButton.addActionListener(e->{
                 transfer.getFromUser().addCompletedTransfer(transfer);
                 transfer.getFromUser().getPendingTransfers().remove(transfer);
+
+                //JPanel panel = transfer.getPanel();
+                //completedTransfersPanel.add(panel);
+                //completedTransfersPanel.revalidate();
+                //completedTransfersPanel.repaint();
+
+                displayPendingTransfers(transfers,transfersPanel, completedTransfers,completedTransfersPanel);
+                displayCompletedTransfers(completedTransfers, completedPanel);
             });
         }
+        transfersPanel.revalidate();
+        transfersPanel.repaint();
     }
 
 }

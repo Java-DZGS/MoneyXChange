@@ -26,6 +26,7 @@ public class MainScreen extends JPanel {
         JButton serializeButton = new JButton("Serializuj grupę do pliku");
         JButton deserializeButton = new JButton("Deserializuj grupę z pliku");
 
+
         actionsPanel = new JPanel(new GridBagLayout());
         actionsPanel.setLayout(new GridLayout(0, 1));
         JScrollPane transfersScrollPane = new JScrollPane(actionsPanel);
