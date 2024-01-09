@@ -1,7 +1,9 @@
 package pl.edu.pw.mini.moneyxchange.cashflow;
 
+import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import java.util.Date;
 import java.util.ArrayList;
@@ -17,14 +19,14 @@ public class MinCashFlow {
                 .flatMapToInt(transfer -> IntStream.of(transfer.getFromUser().getId(), transfer.getToUser().getId()))
                 .max()
                 .orElse(0);
-        double[] balance = new double[max+1];
-        User[] userIds = new User[max+1];
+        double[] balance = new double[max + 1];
+        User[] userIds = new User[max + 1];
         int userCount = 0;
 
         // Calculate the balance for each person involved in the transactions
         for (var transfer : transfers) {
-            balance[transfer.getFromUser().getId()] += transfer.getAmount();
-            balance[transfer.getToUser().getId()] -= transfer.getAmount();
+            balance[transfer.getFromUser().getId()] += transfer.getAmount().getNumber().doubleValue();
+            balance[transfer.getToUser().getId()] -= transfer.getAmount().getNumber().doubleValue();
             userIds[transfer.getFromUser().getId()] = transfer.getFromUser();
             userIds[transfer.getToUser().getId()] = transfer.getToUser();
         }
@@ -82,6 +84,7 @@ public class MinCashFlow {
         return optimalTransfers;
 
     }
+
     private static List<Transfer> reconstructTransfers(int subset, List<Double> nonZeroBalances, List<User> users, int[] prevSubset) {
         List<Transfer> optimalTransfers = new ArrayList<>();
         Date today = new Date();
@@ -93,21 +96,21 @@ public class MinCashFlow {
                 if ((diff >> j & 1) == 1) {
                     int k = -1;
                     for (int i = 0; i < users.size(); ++i) {
-                        if (i!=j&&nonZeroBalances.get(i)!=0&&(subset >> i & 1) == 1) {
+                        if (i != j && nonZeroBalances.get(i) != 0 && (subset >> i & 1) == 1) {
                             k = i;
                             break;
                         }
                     }
                     Transfer transfer;
                     Double amount = nonZeroBalances.get(j);
-                    if(amount==0) continue;
+                    if (amount == 0) continue;
 
-                    if(amount > 0)
-                        transfer = new Transfer("", today, nonZeroBalances.get(j),users.get(k),users.get(j));
+                    if (amount > 0)
+                        transfer = new Transfer("", today, Money.of(nonZeroBalances.get(j), Format.CURRENCY), users.get(k), users.get(j));
                     else
-                        transfer = new Transfer("", today, -nonZeroBalances.get(j),users.get(j),users.get(k));
+                        transfer = new Transfer("", today, Money.of(-nonZeroBalances.get(j), Format.CURRENCY), users.get(j), users.get(k));
 
-                    nonZeroBalances.set(k,nonZeroBalances.get(k)+amount);
+                    nonZeroBalances.set(k, nonZeroBalances.get(k) + amount);
                     nonZeroBalances.set(j, 0.0);
                     optimalTransfers.add(transfer);
                 }
@@ -120,7 +123,7 @@ public class MinCashFlow {
     private static int findIndex(List<User> users, List<Double> nonZeroBalances, int subset, int j) {
         double balance = nonZeroBalances.get(j);
 
-        for (int i = j+1; i < users.size(); ++i) {
+        for (int i = j + 1; i < users.size(); ++i) {
             if ((subset >> i & 1) == 1) {
                 return i;
             }

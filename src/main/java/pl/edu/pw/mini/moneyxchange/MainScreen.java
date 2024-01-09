@@ -1,15 +1,16 @@
 package pl.edu.pw.mini.moneyxchange;
 
-import pl.edu.pw.mini.moneyxchange.data.*;
+import pl.edu.pw.mini.moneyxchange.data.Expense;
+import pl.edu.pw.mini.moneyxchange.data.Group;
+import pl.edu.pw.mini.moneyxchange.data.MoneyAction;
+import pl.edu.pw.mini.moneyxchange.data.User;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 public class MainScreen extends JPanel {
     private Group group;
@@ -97,8 +98,6 @@ public class MainScreen extends JPanel {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
         if (dialog.isExpenseAdded()) {
             Expense expense = dialog.getExpense();
             group.addExpense(expense);
@@ -111,13 +110,13 @@ public class MainScreen extends JPanel {
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.gridheight = 100;
         gbc.weightx = 1;
-        gbc.weighty = 1;
+        gbc.weighty = 1; // TODO: nie każdy panel powinien mieć weighty=1, porównaj: TransfersScreen.displayOptimalTransfers()
         gbc.anchor = GridBagConstraints.PAGE_START;
         return gbc;
     }
 
     private void importActions() {
-        ArrayList<MoneyAction> actionsList = group.getActionsList();
+        List<MoneyAction> actionsList = group.getActionsList();
 
         for (MoneyAction action : actionsList) {
             actionsPanel.add(action.getPanel(), getActionPanelGbc());

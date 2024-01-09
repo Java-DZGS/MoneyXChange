@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.util.Date;
 
 public interface MoneyAction {
-    public Date getDate();
-    public JPanel getPanel();
+    Date getDate();
+
+    JPanel getPanel();
 }

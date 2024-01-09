@@ -1,6 +1,8 @@
 package pl.edu.pw.mini.moneyxchange;
 
+import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.*;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
 import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 
 import javax.swing.*;
@@ -8,8 +10,8 @@ import java.awt.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ExpenseDialog extends JDialog {
@@ -20,8 +22,8 @@ public class ExpenseDialog extends JDialog {
     private final JComboBox<String> payerComboBox;
 
     private final Group group;
-    private double amount;
-    private HashMap<User, Double> debtsHashMap;
+    private Money amount;
+    private Map<User, Money> debtsMap;
     private final String[] userNames;
     private boolean paymentAdded;
     private boolean splitTypeSet;
@@ -30,7 +32,7 @@ public class ExpenseDialog extends JDialog {
         super((JFrame) null, "Dodaj nowy wydatek", true);
 
         this.group = group;
-        debtsHashMap = new HashMap<>();
+        debtsMap = new HashMap<>();
 
         titleField = new JTextField();
         dateField = new JTextField("2022-12-20");//(new Date()).toString());
@@ -64,7 +66,7 @@ public class ExpenseDialog extends JDialog {
         addButton.addActionListener(e -> {
             if (!splitTypeSet) {
                 parseAmount();
-                debtsHashMap = Division.splitEqually(new HashSet<>(group.getUsers()), amount);
+                debtsMap = Division.splitEqually(new HashSet<>(group.getUsers()), amount);
             }
             paymentAdded = true;
             dispose();
@@ -78,7 +80,7 @@ public class ExpenseDialog extends JDialog {
             return new Expense(
                     group.findUserByName(Objects.requireNonNull(payerComboBox.getSelectedItem()).toString()),
                     amount,
-                    debtsHashMap,
+                    debtsMap,
                     titleField.getText(),
                     dateFormat.parse(dateField.getText()),
                     ExpenseCategory.OTHER // todo
@@ -94,13 +96,13 @@ public class ExpenseDialog extends JDialog {
 
     private void parseAmount() {
         try {
-            amount = Double.parseDouble(amountField.getText());
+            amount = Money.of(Double.parseDouble(amountField.getText()), Format.CURRENCY);
         } catch (NumberFormatException e) {
-            amount = 0;
+            amount = Money.zero(Format.CURRENCY);
         }
     }
 
-    private ArrayList<User> showUserSplitDialog(ArrayList<User> users) {
+    private void showUserSplitDialog(List<User> users) {
         parseAmount();
 
         SplitDialog dialog = new SplitDialog(users, amount);
@@ -112,10 +114,8 @@ public class ExpenseDialog extends JDialog {
 
         if (dialog.isResultOK()) {
             splitTypeSet = true;
-            debtsHashMap = dialog.getOutputHashMap();
+            debtsMap = dialog.getOutputMap();
         }
-
-        return null;
     }
 }
 
@@ -130,27 +130,27 @@ class SplitDialog extends JDialog {
     private final JPanel divisionPanel;
     private final JComboBox<String> divisionTypeComboBox;
     // można to załatwić jedną haszmapą, ale tak jest imo czytelniej:
-    private final HashMap<User, Double> textFieldInputs;
+    private final Map<User, Double> textFieldInputs;
 
-    private HashMap<User, Double> outputHashMap;
+    private Map<User, Money> outputMap;
 
-    public HashMap<User, Double> getOutputHashMap() {
-        return outputHashMap;
+    public Map<User, Money> getOutputMap() {
+        return outputMap;
     }
 
-    private final HashSet<User> equalSplitHashSet;
-    private final ArrayList<User> users;
-    private final double amount;
+    private final Set<User> equalSplitSet;
+    private final List<User> users;
+    private final Money amount;
     private boolean resultOK;
 
-    public SplitDialog(ArrayList<User> users, double amount) {
+    public SplitDialog(List<User> users, Money amount) {
         resultOK = false;
         this.users = users;
         this.amount = amount;
         divisionType = DivisionType.EQUAL;
         textFieldInputs = new HashMap<>();
-        outputHashMap = new HashMap<>();
-        equalSplitHashSet = new HashSet<>();
+        outputMap = new HashMap<>();
+        equalSplitSet = new HashSet<>();
 
         dialogPanel = new JPanel(new GridLayout());
         dialogPanel.setLayout(new GridLayout(3, 1, 10, 10));
@@ -224,26 +224,24 @@ class SplitDialog extends JDialog {
     }
 
     private JComponent getSplitField(User user) {
-        switch (divisionType) {
-            case EQUAL -> {
-                JCheckBox checkBox = new JCheckBox();
-                checkBox.setSelected(true);
-                equalSplitHashSet.add(user);
-                checkBox.addActionListener(e -> {
-                    if (checkBox.isSelected())
-                        equalSplitHashSet.add(user);
-                    else
-                        equalSplitHashSet.remove(user);
-                });
-                return checkBox;
-            }
-            default -> {
-                JTextField textField = new JTextField();
-                handleDoubleTextFieldValue(textField, user);
-                SwingUtils.addChangeListener(textField, e -> handleDoubleTextFieldValue(textField, user));
-                return textField;
-            }
+        if (Objects.requireNonNull(divisionType) == DivisionType.EQUAL) {
+            JCheckBox checkBox = new JCheckBox();
+            checkBox.setSelected(true);
+            equalSplitSet.add(user);
+            checkBox.addActionListener(e -> {
+                if (checkBox.isSelected())
+                    equalSplitSet.add(user);
+                else
+                    equalSplitSet.remove(user);
+            });
+
+            return checkBox;
         }
+
+        JTextField textField = new JTextField();
+        handleDoubleTextFieldValue(textField, user);
+        SwingUtils.addChangeListener(textField, e -> handleDoubleTextFieldValue(textField, user));
+        return textField;
     }
 
     private void handleDoubleTextFieldValue(JTextField textField, User user) {
@@ -265,10 +263,10 @@ class SplitDialog extends JDialog {
 
     private void calculateSplits() {
         switch (divisionType) {
-            case EQUAL -> outputHashMap = Division.splitEqually(equalSplitHashSet, amount);
-            case EXACT -> outputHashMap = Division.splitExactly(textFieldInputs);
-            case PERCENTAGE -> outputHashMap = Division.splitByPercentages(textFieldInputs, amount);
-            case SHARES -> outputHashMap = Division.splitByShares(textFieldInputs, amount);
+            case EQUAL -> outputMap = Division.splitEqually(equalSplitSet, amount);
+            case EXACT -> outputMap = Division.splitExactly(textFieldInputs);
+            case PERCENTAGE -> outputMap = Division.splitByPercentages(textFieldInputs, amount);
+            case SHARES -> outputMap = Division.splitByShares(textFieldInputs, amount);
         }
     }
 

@@ -1,5 +1,7 @@
 package pl.edu.pw.mini.moneyxchange;
+
 import com.formdev.flatlaf.FlatDarkLaf;
+
 import javax.swing.*;
 
 public class Main extends JFrame {
@@ -38,7 +40,7 @@ public class Main extends JFrame {
 
             SwingUtilities.invokeLater(Main::new);
         } catch (UnsupportedLookAndFeelException e) {
-			System.err.println("Nie udało się utworzyć aplikacji");
+            System.err.println("Nie udało się utworzyć aplikacji");
         }
     }
 }

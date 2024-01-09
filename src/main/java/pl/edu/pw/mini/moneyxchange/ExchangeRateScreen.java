@@ -13,65 +13,66 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class ExchangeRateScreen extends JPanel {
 
-	private List<ExchangeRate> exchangeData;
-	private JPanel chartPanel;
-	private JComboBox<Currency> currencySelector;
+    private List<ExchangeRate> exchangeData;
+    private JPanel chartPanel;
+    private JComboBox<Currency> currencySelector;
     private JProgressBar progressBar;
 
-	private XYChart chart;
+    private XYChart chart;
 
-	public ExchangeRateScreen() {
-		setLayout(new BorderLayout());
-		setBorder(new EmptyBorder(10, 10, 10, 10));
+    public ExchangeRateScreen() {
+        setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(10, 10, 10, 10));
 
-		chart = new XYChartBuilder()
-				.width(800).height(600)
-				.title("Kurs")
-				.xAxisTitle("Data")
-				.yAxisTitle("Średni kurs")
-				.build();
+        chart = new XYChartBuilder()
+                .width(800).height(600)
+                .title("Kurs")
+                .xAxisTitle("Data")
+                .yAxisTitle("Średni kurs")
+                .build();
 
-		chart.getStyler().setLegendVisible(false);
-		chart.getStyler().setToolTipsEnabled(true);
-		chart.getStyler().setDatePattern("yyyy-MM-dd");
+        chart.getStyler().setLegendVisible(false);
+        chart.getStyler().setToolTipsEnabled(true);
+        chart.getStyler().setDatePattern("yyyy-MM-dd");
 
-		chartPanel = new XChartPanel<>(chart);
-		add(chartPanel, BorderLayout.CENTER);
+        chartPanel = new XChartPanel<>(chart);
+        add(chartPanel, BorderLayout.CENTER);
 
-		currencySelector = new JComboBox<>(Currency.values());
-		currencySelector.addActionListener(e -> updateChart());
-		add(currencySelector, BorderLayout.NORTH);
+        currencySelector = new JComboBox<>(Currency.values());
+        currencySelector.addActionListener(e -> updateChart());
+        add(currencySelector, BorderLayout.NORTH);
 
-		progressBar = new JProgressBar();
+        progressBar = new JProgressBar();
         progressBar.setIndeterminate(true); // Set to true for an indeterminate (spinning) progress bar
         progressBar.setVisible(false); // Initially set to invisible
 
         add(progressBar, BorderLayout.SOUTH);
 
-		updateChart();
-	}
+        updateChart();
+    }
 
-	private void updateChart() {
+    private void updateChart() {
         progressBar.setVisible(true);
-		NBP_API.getCurrencyExchangeRate((Currency) currencySelector.getSelectedItem(), 255)
-				.thenAccept(data -> {
-					exchangeData = data;
+        NBP_API.getCurrencyExchangeRate((Currency) Objects.requireNonNull(currencySelector.getSelectedItem()), 255)
+                .thenAccept(data -> {
+                    exchangeData = data;
 
-					List<Date> xAxis = new ArrayList<>();
-					List<Double> yAxis = new ArrayList<>();
+                    List<Date> xAxis = new ArrayList<>();
+                    List<Double> yAxis = new ArrayList<>();
 
-					exchangeData.forEach(rate -> {
-						xAxis.add(rate.date);
-						yAxis.add(rate.value.getNumber().doubleValue());
-					});
+                    exchangeData.forEach(rate -> {
+                        xAxis.add(rate.date());
+                        yAxis.add(rate.value().getNumber().doubleValue());
+                    });
 
-					chart.removeSeries("Rate");
-					chart.addSeries("Rate", xAxis, yAxis);
-					repaint();
+                    chart.removeSeries("Rate");
+                    chart.addSeries("Rate", xAxis, yAxis);
+                    repaint();
                     progressBar.setVisible(false);
-				});
-	}
+                });
+    }
 }

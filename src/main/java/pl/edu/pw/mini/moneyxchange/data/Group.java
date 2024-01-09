@@ -1,15 +1,13 @@
 package pl.edu.pw.mini.moneyxchange.data;
 
-//import jdk.internal.access.JavaNetHttpCookieAccess;
+import org.javamoney.moneta.Money;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import java.io.*;
-import java.lang.reflect.Array;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.text.DateFormat;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,11 +18,11 @@ public class Group implements Serializable {
     private static Group instance;
 
     private String name = "Unnamed group 1";
-    private final ArrayList<User> users;
-    private final ArrayList<Expense> expenses;
+    private final List<User> users;
+    private final List<Expense> expenses;
 
-    private final ArrayList<Transfer> pendingTransfers;
-    private final ArrayList<Transfer> completedTransfers;
+    private final List<Transfer> pendingTransfers;
+    private final List<Transfer> completedTransfers;
 
     private Group() {
         // Private constructor to prevent instantiation
@@ -51,40 +49,46 @@ public class Group implements Serializable {
         this.name = name;
     }
 
-    public ArrayList<User> getUsers() {
+    public List<User> getUsers() {
         return users;
     }
-    public void addUser(User user){
+
+    public void addUser(User user) {
         users.add(user);
     }
 
-    public ArrayList<Expense> getExpenses() {
+    public List<Expense> getExpenses() {
         return expenses;
     }
 
-    public ArrayList<Transfer> getPendingTransfers() {
+    public List<Transfer> getPendingTransfers() {
         return pendingTransfers;
     }
 
-    public ArrayList<Transfer> getCompletedTransfers() {
+    public List<Transfer> getCompletedTransfers() {
         return completedTransfers;
     }
 
-    public ArrayList<MoneyAction> getActionsList() {
-        return (ArrayList<MoneyAction>) Stream.concat(
+    public List<MoneyAction> getActionsList() {
+        return Stream.concat(
                         expenses.stream().map(expense -> (MoneyAction) expense),
                         pendingTransfers.stream().map(transfer -> (MoneyAction) transfer))
                 .sorted(Comparator.comparing(MoneyAction::getDate))
                 .collect(Collectors.toList());
     }
 
-    public void addExpense(Expense expense) { expenses.add(expense); }
+    public void addExpense(Expense expense) {
+        expenses.add(expense);
+    }
+
     public void addPendingTransfer(Transfer Transfer) {
         pendingTransfers.add(Transfer);
     }
+
     public void addCompletedTransfer(Transfer Transfer) {
         completedTransfers.add(Transfer);
     }
+
     public void markTransferAsCompleted(Transfer Transfer) {
         pendingTransfers.remove(Transfer);
         completedTransfers.add(Transfer);
@@ -125,57 +129,57 @@ public class Group implements Serializable {
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), 50.0, users.get(0), users.get(2)));
-            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), 30.0, users.get(3), users.get(4)));
-            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), 50.0, users.get(1), users.get(2)));
-            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), 30.0, users.get(3), users.get(4)));
-            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), 50.0, users.get(1), users.get(2)));
-            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), 30.0, users.get(3), users.get(4)));
-            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), 40.0, users.get(1), users.get(3)));
-            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), 20.0, users.get(3), users.get(2)));
+            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), Money.of(50.0, Format.CURRENCY), users.get(0), users.get(2)));
+            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), Money.of(30.0, Format.CURRENCY), users.get(3), users.get(4)));
+            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), Money.of(50.0, Format.CURRENCY), users.get(1), users.get(2)));
+            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), Money.of(30.0, Format.CURRENCY), users.get(3), users.get(4)));
+            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), Money.of(50.0, Format.CURRENCY), users.get(1), users.get(2)));
+            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), Money.of(30.0, Format.CURRENCY), users.get(3), users.get(4)));
+            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), Money.of(40.0, Format.CURRENCY), users.get(1), users.get(3)));
+            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), Money.of(20.0, Format.CURRENCY), users.get(3), users.get(2)));
 
-            Expense expense1 = new Expense(users.get(1), 50.0,
-                    new HashMap<User, Double>() {{
-                        put(users.get(0), 0.0);
-                        put(users.get(1), 25.0);
-                        put(users.get(2), 25.0);
-                        put(users.get(3), 0.0);
-                        put(users.get(4), 0.0);
+            Expense expense1 = new Expense(users.get(1), Money.of(50.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(0.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(25.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(25.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(0.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
                     }},
                     "Pizza", dateFormat.parse("2023-01-01"), ExpenseCategory.FOOD
             );
             expenses.add(expense1);
 
-            Expense expense2 = new Expense(users.get(4), 30.0,
-                    new HashMap<User, Double>() {{
-                        put(users.get(0), 10.0);
-                        put(users.get(1), 15.0);
-                        put(users.get(2), 5.0);
-                        put(users.get(3), 0.0);
-                        put(users.get(4), 0.0);
+            Expense expense2 = new Expense(users.get(4), Money.of(30.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(15.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(5.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(0.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
                     }},
                     "Uber", dateFormat.parse("2023-01-02"), ExpenseCategory.TRANSPORT
             );
             expenses.add(expense2);
 
-            Expense expense3 = new Expense(users.get(3), 45.0,
-                    new HashMap<User, Double>() {{
-                        put(users.get(0), 10.0);
-                        put(users.get(1), 15.0);
-                        put(users.get(2), 10.0);
-                        put(users.get(3), 10.0);
-                        put(users.get(4), 0.0);
+            Expense expense3 = new Expense(users.get(3), Money.of(45.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(15.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
                     }},
                     "Movies", dateFormat.parse("2023-01-03"), ExpenseCategory.ENTERTAINMENT
             );
             users.get(3).addExpense(expense3);
-            Expense expense4 = new Expense(users.get(1), 50.0,
-                    new HashMap<User, Double>() {{
-                        put(users.get(0), 0.0);
-                        put(users.get(1), 25.0);
-                        put(users.get(2), 25.0);
-                        put(users.get(3), 0.0);
-                        put(users.get(4), 0.0);
+            Expense expense4 = new Expense(users.get(1), Money.of(50.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(0.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(25.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(25.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(0.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
                     }},
                     "Fries", dateFormat.parse("2023-01-01"), ExpenseCategory.FOOD
             );

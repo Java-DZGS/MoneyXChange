@@ -1,18 +1,21 @@
 package pl.edu.pw.mini.moneyxchange;
 
-import pl.edu.pw.mini.moneyxchange.data.*;
+import pl.edu.pw.mini.moneyxchange.data.Expense;
+import pl.edu.pw.mini.moneyxchange.data.Group;
+import pl.edu.pw.mini.moneyxchange.data.Transfer;
+import pl.edu.pw.mini.moneyxchange.data.User;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
 
 
-public class UsersScreen extends JPanel{
+public class UsersScreen extends JPanel {
     private List<User> users;
     private final JPanel usersPanel;
     private JPanel completedPanel;
+
     public UsersScreen() {
         users = Group.getInstance().getUsers();
 
@@ -38,16 +41,18 @@ public class UsersScreen extends JPanel{
 
         addUserButton.addActionListener(e -> showAddUserDialog());
     }
-    private void displayUsers(){
+
+    private void displayUsers() {
         usersPanel.removeAll();
 
-        for (User user: users) {
+        for (User user : users) {
             JPanel userPanel = createUserPanel(user);
             usersPanel.add(userPanel);
         }
         usersPanel.revalidate();
         usersPanel.repaint();
     }
+
     private JPanel createUserPanel(User user) {
         JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -67,6 +72,7 @@ public class UsersScreen extends JPanel{
 
         return panel;
     }
+
     private void showUserDetails(User user) {
         JTabbedPane tabbedPane = new JTabbedPane();
 
@@ -100,6 +106,7 @@ public class UsersScreen extends JPanel{
 
         return panel;
     }
+
     private JPanel createExpensesPanel(User user) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Historia wydatków"));
@@ -141,13 +148,14 @@ public class UsersScreen extends JPanel{
             TransferDialog transferDialog = new TransferDialog(Group.getInstance());
             transferDialog.setVisible(true);
             transferDialog.setLocationRelativeTo(null);
-            displayCompletedTransfers(user.getCompletedTransfers(),completedTransfersPanel);
+            displayCompletedTransfers(user.getCompletedTransfers(), completedTransfersPanel);
         });
         panel.add(addTransferButton, BorderLayout.SOUTH);
 
         displayCompletedTransfers(user.getCompletedTransfers(), completedTransfersPanel);
         return panel;
     }
+
     private JPanel createPendingTransfersPanel(User user, JPanel completedTransfersPanel) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Historia przelewów"));
@@ -158,9 +166,10 @@ public class UsersScreen extends JPanel{
 
         panel.add(pendingTransfersScrollPane, BorderLayout.CENTER);
 
-        displayPendingTransfers(user.getPendingTransfers(), pendingTransfersPanel, user.getCompletedTransfers(),completedTransfersPanel);
+        displayPendingTransfers(user.getPendingTransfers(), pendingTransfersPanel, user.getCompletedTransfers(), completedTransfersPanel);
         return panel;
     }
+
     private void showAddUserDialog() {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Dodaj użytkownika", true);
         dialog.setLayout(new BorderLayout());
@@ -243,7 +252,8 @@ public class UsersScreen extends JPanel{
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
-    private void displayExpenses(List<Expense> expenses, JPanel expensesPanel){
+
+    private void displayExpenses(List<Expense> expenses, JPanel expensesPanel) {
         expensesPanel.removeAll(); // Usunięcie wszystkich komponentów przed dodaniem nowych
 
         for (Expense expense : expenses) {
@@ -254,10 +264,11 @@ public class UsersScreen extends JPanel{
         expensesPanel.revalidate();
         expensesPanel.repaint();
     }
-    private void displayCompletedTransfers(List<Transfer> transfers, JPanel transfersPanel){
+
+    private void displayCompletedTransfers(List<Transfer> transfers, JPanel transfersPanel) {
         transfersPanel.removeAll();
 
-        for (Transfer transfer:transfers) {
+        for (Transfer transfer : transfers) {
             JPanel transferPanel = transfer.getPanel();
             transfersPanel.add(transferPanel);
         }
@@ -265,14 +276,15 @@ public class UsersScreen extends JPanel{
         transfersPanel.revalidate();
         transfersPanel.repaint();
     }
-    private void displayPendingTransfers(List<Transfer> transfers, JPanel transfersPanel, List<Transfer> completedTransfers,JPanel completedTransfersPanel){
+
+    private void displayPendingTransfers(List<Transfer> transfers, JPanel transfersPanel, List<Transfer> completedTransfers, JPanel completedTransfersPanel) {
         transfersPanel.removeAll();
-        for (Transfer transfer:transfers) {
+        for (Transfer transfer : transfers) {
             JPanel transferPanel = transfer.getPanel();
             JButton doneButton = new JButton("Oznacz jako zrobiony");
             transferPanel.add(doneButton);
             transfersPanel.add(transferPanel);
-            doneButton.addActionListener(e->{
+            doneButton.addActionListener(e -> {
                 transfer.getFromUser().addCompletedTransfer(transfer);
                 transfer.getFromUser().getPendingTransfers().remove(transfer);
 
@@ -281,7 +293,7 @@ public class UsersScreen extends JPanel{
                 //completedTransfersPanel.revalidate();
                 //completedTransfersPanel.repaint();
 
-                displayPendingTransfers(transfers,transfersPanel, completedTransfers,completedTransfersPanel);
+                displayPendingTransfers(transfers, transfersPanel, completedTransfers, completedTransfersPanel);
                 displayCompletedTransfers(completedTransfers, completedPanel);
             });
         }
