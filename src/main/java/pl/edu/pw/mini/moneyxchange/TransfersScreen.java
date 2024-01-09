@@ -1,12 +1,13 @@
 package pl.edu.pw.mini.moneyxchange;
 
+import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.cashflow.MinCashFlow;
 import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
@@ -74,6 +75,7 @@ public class TransfersScreen extends JPanel {
         transfersPanel.revalidate();
         transfersPanel.repaint();
     }
+
     private void displayOptimalTransfers() {
         transfersPanel.removeAll();
 
@@ -93,7 +95,7 @@ public class TransfersScreen extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JPanel spacer = new JPanel();
-        spacer.setPreferredSize(new Dimension(0,0));
+        spacer.setPreferredSize(new Dimension(0, 0));
         transfersPanel.add(spacer, gbc);
 
         transfersPanel.revalidate();
@@ -161,7 +163,7 @@ public class TransfersScreen extends JPanel {
             String title = titleField.getText();
             // todo: temporary, change to datepicker
             Date date = new Date();
-            double amount = Double.parseDouble(amountField.getText());
+            Money amount = Money.of(Double.parseDouble(amountField.getText()), Format.CURRENCY);
 
             User fromUser = Group.getInstance().findUserByName(fromField.getText());
             User toUser = Group.getInstance().findUserByName(toField.getText());
@@ -275,7 +277,7 @@ public class TransfersScreen extends JPanel {
                 double amount = Double.parseDouble(keyword);
                 List<Transfer> filteredTransfers = new ArrayList<>();
                 for (Transfer transfer : transfers) {
-                    if (transfer.getAmount() == amount) {
+                    if (transfer.getAmount().getNumber().doubleValue() == amount) {
                         filteredTransfers.add(transfer);
                     }
                 }

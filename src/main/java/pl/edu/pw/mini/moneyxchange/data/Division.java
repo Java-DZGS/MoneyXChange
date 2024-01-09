@@ -1,57 +1,62 @@
 package pl.edu.pw.mini.moneyxchange.data;
 
+import org.javamoney.moneta.Money;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
+
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Division {
 
-    public static HashMap<User, Double> splitEqually(HashSet<User> users, double amount) {
+    public static Map<User, Money> splitEqually(Set<User> users, Money amount) {
         int n = users.size();
         // todo: handle uneven division like 10 / 3
-        double splitAmount = amount / n;
-        HashMap<User, Double> map = new HashMap<>();
+        Money splitAmount = amount.divide(n);
+        Map<User, Money> map = new HashMap<>();
         for (User user : users) {
             map.put(user, splitAmount);
         }
         return map;
     }
 
-    public static HashMap<User, Double> splitExactly(HashMap<User, Double> userToAmountMap) {
-        HashMap<User, Double> map = new HashMap<>();
-        for (Map.Entry<User, Double> entry : userToAmountMap.entrySet()) {
+    public static Map<User, Money> splitExactly(Map<User, Double> userToAmountMap) {
+        Map<User, Money> map = new HashMap<>();
+        for (var entry : userToAmountMap.entrySet()) {
             User user = entry.getKey();
-            double exactAmount = entry.getValue();
+            Double exactAmount = entry.getValue();
 
             if (exactAmount != 0)
-                map.put(user, exactAmount);
+                map.put(user, Money.of(exactAmount, Format.CURRENCY));
 
         }
 
         return map;
     }
 
-    public static HashMap<User, Double> splitByPercentages(HashMap<User, Double> userToAmountMap, double amount) {
-        HashMap<User, Double> map = new HashMap<>();
-        for (Map.Entry<User, Double> entry : userToAmountMap.entrySet()) {
+    public static Map<User, Money> splitByPercentages(Map<User, Double> userToAmountMap, Money amount) {
+        Map<User, Money> map = new HashMap<>();
+        for (var entry : userToAmountMap.entrySet()) {
             User user = entry.getKey();
             double percent = entry.getValue();
 
-            map.put(user, (percent / 100) * amount);
+            if (percent != 0)
+                map.put(user, amount.multiply(percent / 100.0));
         }
         return map;
     }
 
-    public static HashMap<User, Double> splitByShares(HashMap<User, Double> userToAmountMap, double amount) {
+    public static Map<User, Money> splitByShares(Map<User, Double> userToAmountMap, Money amount) {
         // how many total shares
         int n = (int) userToAmountMap.values().stream().mapToInt(Double::intValue).reduce(Integer::sum).orElse(1);
-        HashMap<User, Double> map = new HashMap<>();
+        Map<User, Money> map = new HashMap<>();
 
-        for (Map.Entry<User, Double> entry : userToAmountMap.entrySet()) {
+        for (var entry : userToAmountMap.entrySet()) {
             User user = entry.getKey();
             int shares = entry.getValue().intValue();
 
-            map.put(user, (1.0 * shares / n) * amount);
+            if (shares != 0)
+                map.put(user, amount.multiply(1.0 * shares / n));
         }
 
         return map;

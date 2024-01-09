@@ -4,16 +4,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.javamoney.moneta.Money;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
 
-import javax.money.CurrencyUnit;
-import javax.money.Monetary;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
 import java.util.List;
@@ -23,8 +21,6 @@ import java.util.stream.StreamSupport;
 
 public class NBP_API {
     private static final String EXCHANGE_RATE_ENDPOINT = "https://api.nbp.pl/api/exchangerates/rates/";
-    private static final SimpleDateFormat JsonDate = new SimpleDateFormat("yyyy-MM-dd");
-    public static final CurrencyUnit PLN = Monetary.getCurrency("PLN");
 
     private static CompletableFuture<JsonObject> getApiResponse(String endpoint) {
         HttpClient client = HttpClient.newHttpClient();
@@ -59,16 +55,16 @@ public class NBP_API {
         return getApiResponse("A/" + currency.getCode() + "/last/" + count + "/")
                 .thenApply(response -> response.getAsJsonArray("rates"))
                 .thenApply(rates -> StreamSupport.stream(rates.spliterator(), true)
-                            .map(JsonElement::getAsJsonObject)
-                            .map(rate -> {
-                                try {
-                                    Date date = JsonDate.parse(rate.get("effectiveDate").getAsString());
-                                    Money money = Money.of(rate.get("mid").getAsBigDecimal(), PLN);
-                                    return new ExchangeRate(date, money);
-                                } catch (ParseException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            })
-                            .collect(Collectors.toList()));
+                        .map(JsonElement::getAsJsonObject)
+                        .map(rate -> {
+                            try {
+                                Date date = Format.SIMPLE_DATE_FORMAT.parse(rate.get("effectiveDate").getAsString());
+                                Money money = Money.of(rate.get("mid").getAsBigDecimal(), Format.CURRENCY);
+                                return new ExchangeRate(date, money);
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
+                        .collect(Collectors.toList()));
     }
 }

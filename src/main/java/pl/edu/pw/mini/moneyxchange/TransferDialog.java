@@ -1,17 +1,18 @@
 package pl.edu.pw.mini.moneyxchange;
 
+import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import javax.swing.*;
 import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
-public class TransferDialog extends JDialog{
+public class TransferDialog extends JDialog {
     private final JTextField titleField;
     private final JTextField dateField;
     private final JTextField amountField;
@@ -60,7 +61,7 @@ public class TransferDialog extends JDialog{
         addButton.addActionListener(e -> {
             String title = titleField.getText();
             String dateString = dateField.getText();
-            double amount = Double.parseDouble(amountField.getText());
+            Money amount = Money.of(Double.parseDouble(amountField.getText()), Format.CURRENCY);
             String fromUserName = (String) fromUserComboBox.getSelectedItem();
             String toUserName = (String) toUserComboBox.getSelectedItem();
 
@@ -77,7 +78,7 @@ public class TransferDialog extends JDialog{
             User fromUser = Group.getInstance().findUserByName(fromUserName);
             User toUser = Group.getInstance().findUserByName(toUserName);
 
-            Transfer transfer = new Transfer(title,date,amount,fromUser,toUser);
+            Transfer transfer = new Transfer(title, date, amount, fromUser, toUser);
             Group.getInstance().addCompletedTransfer(transfer);
             fromUser.addCompletedTransfer(transfer);
             dispose();
@@ -86,6 +87,7 @@ public class TransferDialog extends JDialog{
         setSize(300, 200);
         add(panel);
     }
+
     public JTextField getTitleField() {
         return titleField;
     }
@@ -97,8 +99,15 @@ public class TransferDialog extends JDialog{
     public JTextField getAmountField() {
         return amountField;
     }
-    public JTextField getFromUserField() {return fromUserField;}
-    public JTextField getToUserField() {return toUserField;}
+
+    public JTextField getFromUserField() {
+        return fromUserField;
+    }
+
+    public JTextField getToUserField() {
+        return toUserField;
+    }
+
     public JComboBox<String> getFromUserComboBox() {
         return fromUserComboBox;
     }

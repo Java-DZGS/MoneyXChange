@@ -6,16 +6,13 @@ import pl.edu.pw.mini.moneyxchange.data.Group;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.util.List;
 
 public class HistoryScreen extends JPanel {
     private final JPanel historyPanel;
-    private final ArrayList<Expense> expenses;
+    private final List<Expense> expenses;
 
     public HistoryScreen() {
-        Group group = Group.getInstance();
-
         historyPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;

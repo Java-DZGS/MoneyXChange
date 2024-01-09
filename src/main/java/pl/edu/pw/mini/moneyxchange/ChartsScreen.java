@@ -5,15 +5,18 @@ import org.knowm.xchart.CategoryChartBuilder;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.internal.chartpart.Chart;
 import org.knowm.xchart.style.markers.SeriesMarkers;
-import pl.edu.pw.mini.moneyxchange.data.*;
+import pl.edu.pw.mini.moneyxchange.data.Expense;
+import pl.edu.pw.mini.moneyxchange.data.Group;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.*;
 
 public class ChartsScreen extends JPanel {
 
@@ -50,7 +53,7 @@ public class ChartsScreen extends JPanel {
         // Accumulate expenses for each date
         for (Expense expense : expenses) {
             dates.add(expense.getDate());
-            amounts.add(expense.getAmount());
+            amounts.add(expense.getAmount().getNumber().doubleValue());
         }
 
         chart.addSeries("Expenses", dates, amounts).setMarker(SeriesMarkers.CIRCLE);
