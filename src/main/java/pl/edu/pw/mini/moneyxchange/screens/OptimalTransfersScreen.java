@@ -2,6 +2,7 @@ package pl.edu.pw.mini.moneyxchange.screens;
 
 import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
+import pl.edu.pw.mini.moneyxchange.utils.Layout;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -13,18 +14,13 @@ import static pl.edu.pw.mini.moneyxchange.cashflow.MinCashFlow.minTransfers;
 public class OptimalTransfersScreen extends JPanel {
     private List<Transfer> transfers;
     private final JPanel transfersPanel;
+
     public OptimalTransfersScreen() {
         transfers = Group.getInstance().getPendingTransfers();
         transfers = minTransfers(transfers);
 
         // Create components
         transfersPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        transfersPanel.add(new JPanel(), gbc);
-
         JScrollPane transfersScrollPane = new JScrollPane(transfersPanel);
 
         // Add padding to the main panel
@@ -36,20 +32,23 @@ public class OptimalTransfersScreen extends JPanel {
         add(transfersScrollPane, BorderLayout.CENTER);
 
         // Set up the transfers panel
-        transfersPanel.setLayout(new GridLayout(0, 1));  // Use GridLayout with one column
         displayTransfers();
 
     }
+
     private void displayTransfers() {
         transfersPanel.removeAll();
 
         for (Transfer transfer : transfers) {
             JPanel transferPanel = transfer.getOptimalPanel();
-            transfersPanel.add(transferPanel);
+            transfersPanel.add(transferPanel, Layout.getGridBagElementConstraints());
         }
+
+        JPanel spacer = new JPanel();
+        spacer.setPreferredSize(new Dimension(0, 0));
+        transfersPanel.add(spacer, Layout.getGridBagSpacerConstraints());
 
         transfersPanel.revalidate();
         transfersPanel.repaint();
     }
-
 }

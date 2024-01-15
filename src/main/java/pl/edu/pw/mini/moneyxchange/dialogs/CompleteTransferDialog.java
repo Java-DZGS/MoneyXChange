@@ -28,7 +28,6 @@ public class CompleteTransferDialog extends JDialog {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = dateFormat.format(today);
 
-
         titleField = new JTextField(transfer.getTitle());
         titleField.setEditable(false);
         dateField = new JTextField(formattedDate);

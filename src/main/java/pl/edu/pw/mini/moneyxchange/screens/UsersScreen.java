@@ -6,6 +6,7 @@ import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.utils.Layout;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,12 +28,6 @@ public class UsersScreen extends JPanel {
         users = Group.getInstance().getUsers();
 
         usersPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        usersPanel.add(new JPanel(), gbc);
-
         JScrollPane usersScrollPlane = new JScrollPane(usersPanel);
         JButton addUserButton = new JButton("Dodaj użytkownika");
 
@@ -43,7 +38,6 @@ public class UsersScreen extends JPanel {
         add(usersScrollPlane, BorderLayout.CENTER);
         add(addUserButton, BorderLayout.SOUTH);
 
-        usersPanel.setLayout(new GridLayout(0, 1));  // Use GridLayout with one column
         displayUsers();
 
         addUserButton.addActionListener(e -> showAddUserDialog());
@@ -54,8 +48,13 @@ public class UsersScreen extends JPanel {
 
         for (User user : users) {
             JPanel userPanel = createUserPanel(user);
-            usersPanel.add(userPanel);
+            usersPanel.add(userPanel, Layout.getGridBagElementConstraints());
         }
+
+        JPanel spacer = new JPanel();
+        spacer.setPreferredSize(new Dimension(0,0));
+        usersPanel.add(spacer, Layout.getGridBagSpacerConstraints());
+
         usersPanel.revalidate();
         usersPanel.repaint();
     }
