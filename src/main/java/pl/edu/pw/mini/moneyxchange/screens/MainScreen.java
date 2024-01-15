@@ -26,7 +26,6 @@ public class MainScreen extends JPanel {
         JButton serializeButton = new JButton("Serializuj grupę do pliku");
         JButton deserializeButton = new JButton("Deserializuj grupę z pliku");
 
-
         actionsPanel = new JPanel(new GridBagLayout());
         actionsPanel.setLayout(new GridLayout(0, 1));
         JScrollPane transfersScrollPane = new JScrollPane(actionsPanel);
@@ -63,7 +62,6 @@ public class MainScreen extends JPanel {
         add(topPanel, BorderLayout.NORTH);
         add(splitPane, BorderLayout.CENTER);
 
-        // BUTTONS
         changeNameButton.addActionListener(e -> {
             String newName = JOptionPane.showInputDialog("Wprowadź nową nazwę grupy:");
             group.setName(newName);

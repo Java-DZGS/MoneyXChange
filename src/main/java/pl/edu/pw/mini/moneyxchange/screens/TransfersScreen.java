@@ -18,9 +18,8 @@ public class TransfersScreen extends JPanel {
     private List<Transfer> transfers;
     private final JPanel transfersPanel;
 
-
     public TransfersScreen() {
-        transfers = Group.getInstance().getPendingTransfers();
+        transfers = Group.getInstance().getCompletedTransfers();
 
         // Create components
         transfersPanel = new JPanel(new GridBagLayout());
@@ -31,36 +30,23 @@ public class TransfersScreen extends JPanel {
         transfersPanel.add(new JPanel(), gbc);
 
         JScrollPane transfersScrollPane = new JScrollPane(transfersPanel);
-        JButton addTransferButton = new JButton("Dodaj przelew");
         JButton filterButton = new JButton("Filtruj...");
-        JButton optimalTransfersButton = new JButton("Optymalne przelewy");
 
         // Add padding to the main panel
         int padding = 10;
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(padding, padding, padding, padding));
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(addTransferButton);
-        buttonPanel.add(optimalTransfersButton);
-
         // Add components to the layout
         add(transfersScrollPane, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
         add(filterButton, BorderLayout.NORTH);
 
         // Set up the transfers panel
         transfersPanel.setLayout(new GridLayout(0, 1));  // Use GridLayout with one column
         displayTransfers();
 
-        // Add action listener for the "Add Transfer" button
-        addTransferButton.addActionListener(e -> showAddTransferDialog());
-
         // Add action listener for the "Filter" button
         filterButton.addActionListener(e -> showFilterDialog());
-
-        // Add action listener for the "Optimal transfers" button
-        optimalTransfersButton.addActionListener(e -> displayOptimalTransfers());
 
     }
 
@@ -75,57 +61,6 @@ public class TransfersScreen extends JPanel {
         transfersPanel.revalidate();
         transfersPanel.repaint();
     }
-
-    private void displayOptimalTransfers() {
-        transfersPanel.removeAll();
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        List<Transfer> optimalTransfers = MinCashFlow.minTransfers(transfers);
-        for (Transfer transfer : optimalTransfers) {
-            JPanel transferPanel = transfer.getPanel();
-            transfersPanel.add(transferPanel, gbc);
-        }
-
-        gbc = new GridBagConstraints();
-        gbc.weighty = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        JPanel spacer = new JPanel();
-        spacer.setPreferredSize(new Dimension(0, 0));
-        transfersPanel.add(spacer, gbc);
-
-        transfersPanel.revalidate();
-        transfersPanel.repaint();
-    }
-
-
-    // moved to Transfer class
-//    private JPanel createTransferPanel(Transfer transfer) {
-//        JPanel panel = new JPanel();
-//        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//        panel.setLayout(new GridLayout(5, 1));
-//
-//        JLabel titleLabel = new JLabel("Tytuł: " + transfer.getTitle());
-//        JLabel dateLabel = new JLabel("Data: " + transfer.getDate());
-//        JLabel amountLabel = new JLabel("Kwota: $" + transfer.getAmount());
-//        JLabel fromLabel = new JLabel("Od: " + transfer.getFromUser().getName());
-//        JLabel toLabel = new JLabel("Do: " + transfer.getToUser().getName());
-//
-//        panel.add(titleLabel);
-//        panel.add(dateLabel);
-//        panel.add(amountLabel);
-//        panel.add(fromLabel);
-//        panel.add(toLabel);
-//
-//        // Set a fixed size for the panel
-//        panel.setPreferredSize(new Dimension(0, 100)); // Adjust the width and height as needed
-//
-//        return panel;
-//    }
 
     private void showAddTransferDialog() {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Dodaj przelew", true);
@@ -157,9 +92,7 @@ public class TransfersScreen extends JPanel {
         dialog.add(inputPanel, BorderLayout.CENTER);
         dialog.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add action listener for the "Add Transfer" button
         addButton.addActionListener(e -> {
-            // Get input values
             String title = titleField.getText();
             // todo: temporary, change to datepicker
             Date date = new Date();
@@ -168,14 +101,11 @@ public class TransfersScreen extends JPanel {
             User fromUser = Group.getInstance().findUserByName(fromField.getText());
             User toUser = Group.getInstance().findUserByName(toField.getText());
 
-            // Create a new transfer
             Transfer newTransfer = new Transfer(title, date, amount, fromUser, toUser);
             transfers.add(newTransfer);
 
-            // Update the display
             displayTransfers();
 
-            // Close the dialog
             dialog.dispose();
         });
 

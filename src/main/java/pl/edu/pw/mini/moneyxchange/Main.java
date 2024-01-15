@@ -12,19 +12,11 @@ public class Main extends JFrame {
         JTabbedPane tabbedPane = new JTabbedPane();
 
         tabbedPane.addTab("Ekran Główny", new MainScreen());
-        tabbedPane.addTab("Przelewy", new TransfersScreen());
+        tabbedPane.addTab("Optymalne przelewy",new OptimalTransfersScreen());
         tabbedPane.addTab("Wykresy", new ChartsScreen());
         tabbedPane.addTab("Użytkownicy", new UsersScreen());
-
-        // Podsumowanie
-        // JPanel summaryPanel = new JPanel();
-        // Dodaj komponenty do summaryPanel
-        // tabbedPane.addTab("Podsumowanie", summaryPanel);
-
-        // Historia Wydatków
         tabbedPane.addTab("Historia wydatków", new HistoryScreen());
-
-        // Kursy Walutowe
+        tabbedPane.addTab("Historia przelewów", new TransfersScreen());
         tabbedPane.addTab("Kursy walutowe", new ExchangeRateScreen());
 
         add(tabbedPane);
