@@ -21,6 +21,7 @@ public class User implements Serializable {
         this.expenses = new ArrayList<>();
         this.pendingTransfers = new ArrayList<>();
         this.completedTransfers = new ArrayList<>();
+        this.image = null;
     }
 
     public String getName() {
@@ -62,5 +63,8 @@ public class User implements Serializable {
 
     public void setImage(BufferedImage image) {
         this.image = image;
+    }
+    public BufferedImage getImage(){
+        return image;
     }
 }
