@@ -1,4 +1,4 @@
-package pl.edu.pw.mini.moneyxchange;
+package pl.edu.pw.mini.moneyxchange.dialogs;
 
 import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.*;

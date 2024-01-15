@@ -1,4 +1,4 @@
-package pl.edu.pw.mini.moneyxchange;
+package pl.edu.pw.mini.moneyxchange.screens;
 
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;

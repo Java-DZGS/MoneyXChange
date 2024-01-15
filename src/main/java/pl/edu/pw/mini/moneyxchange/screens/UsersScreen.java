@@ -1,5 +1,7 @@
-package pl.edu.pw.mini.moneyxchange;
+package pl.edu.pw.mini.moneyxchange.screens;
 
+import pl.edu.pw.mini.moneyxchange.dialogs.ExpenseDialog;
+import pl.edu.pw.mini.moneyxchange.dialogs.TransferDialog;
 import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
@@ -287,11 +289,6 @@ public class UsersScreen extends JPanel {
             doneButton.addActionListener(e -> {
                 transfer.getFromUser().addCompletedTransfer(transfer);
                 transfer.getFromUser().getPendingTransfers().remove(transfer);
-
-                //JPanel panel = transfer.getPanel();
-                //completedTransfersPanel.add(panel);
-                //completedTransfersPanel.revalidate();
-                //completedTransfersPanel.repaint();
 
                 displayPendingTransfers(transfers, transfersPanel, completedTransfers, completedTransfersPanel);
                 displayCompletedTransfers(completedTransfers, completedPanel);

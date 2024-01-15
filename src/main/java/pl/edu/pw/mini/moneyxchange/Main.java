@@ -1,6 +1,7 @@
 package pl.edu.pw.mini.moneyxchange;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import pl.edu.pw.mini.moneyxchange.screens.*;
 
 import javax.swing.*;
 

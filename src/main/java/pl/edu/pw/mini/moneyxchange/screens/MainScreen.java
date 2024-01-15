@@ -1,5 +1,6 @@
-package pl.edu.pw.mini.moneyxchange;
+package pl.edu.pw.mini.moneyxchange.screens;
 
+import pl.edu.pw.mini.moneyxchange.dialogs.ExpenseDialog;
 import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.MoneyAction;
@@ -8,8 +9,6 @@ import pl.edu.pw.mini.moneyxchange.data.User;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class MainScreen extends JPanel {

@@ -1,4 +1,4 @@
-package pl.edu.pw.mini.moneyxchange;
+package pl.edu.pw.mini.moneyxchange.screens;
 
 import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.Group;
