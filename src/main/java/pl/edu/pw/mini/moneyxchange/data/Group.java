@@ -3,6 +3,8 @@ package pl.edu.pw.mini.moneyxchange.data;
 import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -126,6 +128,16 @@ public class Group implements Serializable {
         users.add(new User("Radosław", 2));
         users.add(new User("Władysław", 3));
         users.add(new User("Krasnystaw", 4));
+
+        try {
+            File image = new File("test.png");
+            users.get(0).setImage(ImageIO.read(image));
+
+            image = new File("test2.png");
+            users.get(4).setImage(ImageIO.read(image));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {

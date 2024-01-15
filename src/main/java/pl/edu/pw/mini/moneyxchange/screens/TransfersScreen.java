@@ -6,6 +6,7 @@ import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
+import pl.edu.pw.mini.moneyxchange.utils.Layout;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -23,11 +24,6 @@ public class TransfersScreen extends JPanel {
 
         // Create components
         transfersPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        transfersPanel.add(new JPanel(), gbc);
 
         JScrollPane transfersScrollPane = new JScrollPane(transfersPanel);
         JButton filterButton = new JButton("Filtruj...");
@@ -42,7 +38,6 @@ public class TransfersScreen extends JPanel {
         add(filterButton, BorderLayout.NORTH);
 
         // Set up the transfers panel
-        transfersPanel.setLayout(new GridLayout(0, 1));  // Use GridLayout with one column
         displayTransfers();
 
         // Add action listener for the "Filter" button
@@ -55,8 +50,12 @@ public class TransfersScreen extends JPanel {
 
         for (Transfer transfer : transfers) {
             JPanel transferPanel = transfer.getPanel();
-            transfersPanel.add(transferPanel);
+            transfersPanel.add(transferPanel, Layout.getGridBagElementConstraints());
         }
+
+        JPanel spacer = new JPanel();
+        spacer.setPreferredSize(new Dimension(0,0));
+        transfersPanel.add(spacer, Layout.getGridBagSpacerConstraints());
 
         transfersPanel.revalidate();
         transfersPanel.repaint();

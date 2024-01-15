@@ -5,6 +5,7 @@ import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.MoneyAction;
 import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.utils.Layout;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -27,7 +28,10 @@ public class MainScreen extends JPanel {
         JButton deserializeButton = new JButton("Deserializuj grupę z pliku");
 
         actionsPanel = new JPanel(new GridBagLayout());
-        actionsPanel.setLayout(new GridLayout(0, 1));
+
+        JPanel spacer = new JPanel();
+        spacer.setPreferredSize(new Dimension(0,0));
+        actionsPanel.add(spacer, Layout.getGridBagSpacerConstraints());
         JScrollPane transfersScrollPane = new JScrollPane(actionsPanel);
         //importActions();
 
@@ -98,25 +102,16 @@ public class MainScreen extends JPanel {
         if (dialog.isExpenseAdded()) {
             Expense expense = dialog.getExpense();
             group.addExpense(expense);
-            actionsPanel.add(expense.getPanel(), getActionPanelGbc());
+            // Moim zdaniem wygodniej jest, żeby akcje nowsze były na górze, tak jak np. historia przelewów w banku
+            actionsPanel.add(expense.getPanel(), Layout.getGridBagElementConstraints(), 0);
         }
-    }
-
-    private GridBagConstraints getActionPanelGbc() {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.gridheight = 100;
-        gbc.weightx = 1;
-        gbc.weighty = 1; // TODO: nie każdy panel powinien mieć weighty=1, porównaj: TransfersScreen.displayOptimalTransfers()
-        gbc.anchor = GridBagConstraints.PAGE_START;
-        return gbc;
     }
 
     private void importActions() {
         List<MoneyAction> actionsList = group.getActionsList();
 
         for (MoneyAction action : actionsList) {
-            actionsPanel.add(action.getPanel(), getActionPanelGbc());
+            actionsPanel.add(action.getPanel(), Layout.getGridBagElementConstraints());
         }
     }
 }
