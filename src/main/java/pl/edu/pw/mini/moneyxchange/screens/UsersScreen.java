@@ -7,9 +7,13 @@ import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -17,6 +21,7 @@ public class UsersScreen extends JPanel {
     private List<User> users;
     private final JPanel usersPanel;
     private JPanel completedPanel;
+    private BufferedImage[] userImage = new BufferedImage[1];
 
     public UsersScreen() {
         users = Group.getInstance().getUsers();
@@ -60,14 +65,24 @@ public class UsersScreen extends JPanel {
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         int padding = 10;
-        panel.setLayout(new GridLayout(1, 1));
+        panel.setLayout(new BorderLayout());
 
         JLabel nameLabel = new JLabel(user.getName());
         JButton detailsButton = new JButton("Szczegóły");
 
-        panel.setPreferredSize(new Dimension(panel.getPreferredSize().width, 10));
+        if (user.getImage() != null) {
+            BufferedImage resizedImage = new BufferedImage(50, 50, BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics2D = resizedImage.createGraphics();
+            graphics2D.drawImage(user.getImage(), 0, 0, 50, 50, null);
+            graphics2D.dispose();
 
-        panel.add(nameLabel, BorderLayout.WEST);
+            ImageIcon imageIcon = new ImageIcon(resizedImage);
+            panel.add(new JLabel(imageIcon), BorderLayout.WEST);
+        } else {
+            panel.add(Box.createRigidArea(new Dimension(50, 50)), BorderLayout.WEST);
+        }
+
+        panel.add(nameLabel, BorderLayout.CENTER);
         panel.add(detailsButton, BorderLayout.EAST);
 
         detailsButton.addActionListener(e -> showUserDetails(user));
@@ -101,6 +116,15 @@ public class UsersScreen extends JPanel {
 
         JLabel userInfoLabel = new JLabel("Imię: " + user.getName());
         panel.add(userInfoLabel, BorderLayout.NORTH);
+
+        if (user.getImage() != null) {
+            ImageIcon imageIcon = new ImageIcon(user.getImage());
+            Image scaledImage = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            imageIcon = new ImageIcon(scaledImage);
+
+            JLabel profilePictureLabel = new JLabel(imageIcon);
+            panel.add(profilePictureLabel, BorderLayout.CENTER);
+        }
 
         JButton editButton = new JButton("Edytuj");
         editButton.addActionListener(e -> showEditUserDialog(user));
@@ -181,11 +205,30 @@ public class UsersScreen extends JPanel {
 
         JButton addButton = new JButton("Dodaj użytkownika");
 
-        JPanel inputPanel = new JPanel(new GridLayout(2, 2));
+        JPanel inputPanel = new JPanel(new GridLayout(3, 2));
         inputPanel.add(new JLabel("Imię:"));
         inputPanel.add(nameField);
         inputPanel.add(new JLabel("Id:"));
         inputPanel.add(idField);
+
+        inputPanel.add(new JLabel("Obraz:"));
+        JButton loadButton = new JButton("Wczytaj obraz");
+        inputPanel.add(loadButton);
+
+        loadButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showOpenDialog(null);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                try {
+                    userImage[0] = ImageIO.read(selectedFile);
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+            }
+        });
+
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addButton);
@@ -207,6 +250,7 @@ public class UsersScreen extends JPanel {
                 return;
             }
             User newUser = new User(name, id);
+            newUser.setImage(userImage[0]);
             Group.getInstance().addUser(newUser);
 
             // Update the display
@@ -229,9 +273,27 @@ public class UsersScreen extends JPanel {
 
         JButton saveButton = new JButton("Zapisz zmiany");
 
-        JPanel inputPanel = new JPanel(new GridLayout(1, 2));
+        JPanel inputPanel = new JPanel(new GridLayout(2, 2));
         inputPanel.add(new JLabel("Imię:"));
         inputPanel.add(nameField);
+
+        inputPanel.add(new JLabel("Obraz:"));
+        JButton loadButton = new JButton("Wczytaj obraz");
+        inputPanel.add(loadButton);
+
+        loadButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showOpenDialog(null);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                try {
+                    userImage[0] = ImageIO.read(selectedFile);
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+            }
+        });
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(saveButton);
@@ -240,14 +302,11 @@ public class UsersScreen extends JPanel {
         dialog.add(buttonPanel, BorderLayout.SOUTH);
 
         saveButton.addActionListener(e -> {
-            // Get input values
             String newName = nameField.getText();
             user.setName(newName);
-
-            // Update the display
-            // displayUser(user);
-
-            // Close the dialog
+            if(userImage[0]!=null) {
+                user.setImage(userImage[0]);
+            }
             dialog.dispose();
         });
         dialog.setSize(300, 200);
