@@ -11,8 +11,8 @@ import java.util.Date;
 
 public class Transfer implements MoneyAction, Serializable {
     private final String title;
-    private final Date date;
-    private final Money amount;
+    private Date date;
+    private Money amount;
     private final User fromUser;
     private final User toUser;
 
@@ -31,10 +31,12 @@ public class Transfer implements MoneyAction, Serializable {
     public Date getDate() {
         return date;
     }
+    public void setDate(Date date) { this.date = date;}
 
     public Money getAmount() {
         return amount;
     }
+    public void setAmount(Money amount) { this.amount = amount;}
 
     public User getToUser() {
         return toUser;

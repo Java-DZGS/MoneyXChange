@@ -79,7 +79,6 @@ public class MinCashFlow {
             }
         }
         int optimalSubset = (1 << numAccounts) - 1;
-        //return minTransfers[(1 << numAccounts) - 1];
         List<Transfer> optimalTransfers = reconstructTransfers(optimalSubset, nonZeroBalances, users, prevSubset);
         return optimalTransfers;
 
