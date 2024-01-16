@@ -43,6 +43,13 @@ public class TransfersScreen extends JPanel {
         // Add action listener for the "Filter" button
         filterButton.addActionListener(e -> showFilterDialog());
 
+        Group.getInstance().addListener(evt -> {
+            if(!evt.getPropertyName().equals("completedTransfers")) return;
+
+            //noinspection unchecked
+            transfers = (List<Transfer>) evt.getNewValue();
+            displayTransfers();
+        });
     }
 
     private void displayTransfers() {

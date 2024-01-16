@@ -26,7 +26,7 @@ public class TransferDialog extends JDialog {
         super((JFrame) null, "Add New Payment", true);
 
         titleField = new JTextField();
-        dateField = new JTextField();
+        dateField = new JTextField(Format.SIMPLE_DATE_FORMAT.format(new Date()));
         amountField = new JTextField();
         fromUserField = new JTextField();
         toUserField = new JTextField();

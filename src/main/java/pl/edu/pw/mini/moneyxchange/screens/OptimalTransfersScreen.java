@@ -34,6 +34,13 @@ public class OptimalTransfersScreen extends JPanel {
         // Set up the transfers panel
         displayTransfers();
 
+        Group.getInstance().addListener(evt -> {
+            if(!evt.getPropertyName().equals("pendingTransfers")) return;
+
+            //noinspection unchecked
+            transfers = minTransfers((List<Transfer>) evt.getNewValue());
+        });
+
     }
 
     private void displayTransfers() {

@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Transfer implements MoneyAction, Serializable {
-    // to edit
     private final String title;
     private final Date date;
     private final Money amount;
@@ -46,54 +45,81 @@ public class Transfer implements MoneyAction, Serializable {
         return fromUser;
     }
 
-    public JPanel getPanel()
-    {
-        JPanel transferPanel = new JPanel();
-        transferPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        transferPanel.setLayout(new GridLayout(3, 1));
-
-        JLabel titleLabel = new JLabel("Przelew od " + fromUser.getName() + " do " + toUser.getName());
-        JLabel dateLabel = new JLabel("Data: " + Format.SIMPLE_DATE_FORMAT.format(date));
-        JLabel amountLabel = new JLabel("Kwota: " + Format.MONETARY_FORMAT.format(amount));
-
-        transferPanel.add(titleLabel);
-        transferPanel.add(dateLabel);
-        transferPanel.add(amountLabel);
-
-        return transferPanel;
+    public JPanel getPanel() {
+        return new TransferPanel();
     }
+
     public JPanel getOptimalPanel() {
-        JPanel transferPanel = new JPanel(new GridBagLayout());
-        transferPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        return new OptimalTransferPanel();
+    }
 
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.anchor = GridBagConstraints.WEST; // Ustawienie anchor na WEST wyrówna elementy do lewej
+    public JPanel getPendingPanel() {
+        return new PendingTransferPanel();
+    }
 
-        JLabel usersLabel = new JLabel("Przelew od " + fromUser.getName() + " do " + toUser.getName());
-        JLabel titleLabel = new JLabel("Tytuł: " + getTitle());
-        JLabel amountLabel = new JLabel("Kwota: " + Format.MONETARY_FORMAT.format(amount));
+    public class TransferPanel extends JPanel {
+        public TransferPanel() {
+            super();
 
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        transferPanel.add(usersLabel, constraints);
+            setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            setLayout(new GridLayout(3, 1));
 
-        constraints.gridy = 1;
-        transferPanel.add(titleLabel, constraints);
+            JLabel titleLabel = new JLabel("Przelew od " + fromUser.getName() + " do " + toUser.getName());
+            JLabel dateLabel = new JLabel("Data: " + Format.SIMPLE_DATE_FORMAT.format(date));
+            JLabel amountLabel = new JLabel("Kwota: " + Format.MONETARY_FORMAT.format(amount));
 
-        constraints.gridy = 2;
-        transferPanel.add(amountLabel, constraints);
+            add(titleLabel);
+            add(dateLabel);
+            add(amountLabel);
+        }
+    }
 
-        JButton completeButton = new JButton("Zrób przelew");
-        constraints.anchor = GridBagConstraints.EAST; // Ustawienie anchor na EAST wyrówna przycisk do prawej
-        constraints.gridx = 1;
-        constraints.gridy = 1;
-        transferPanel.add(completeButton, constraints);
+    public class OptimalTransferPanel extends JPanel {
+        public OptimalTransferPanel() {
+            super(new GridBagLayout());
 
-        completeButton.addActionListener(e -> {
-            CompleteTransferDialog completeTransferDialog = new CompleteTransferDialog(Group.getInstance(), this);
-        });
+            setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        return transferPanel;
+            GridBagConstraints constraints = new GridBagConstraints();
+            constraints.anchor = GridBagConstraints.WEST; // Ustawienie anchor na WEST wyrówna elementy do lewej
+
+            JLabel usersLabel = new JLabel("Przelew od " + fromUser.getName() + " do " + toUser.getName());
+            JLabel titleLabel = new JLabel("Tytuł: " + getTitle());
+            JLabel amountLabel = new JLabel("Kwota: " + Format.MONETARY_FORMAT.format(amount));
+
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            add(usersLabel, constraints);
+
+            constraints.gridy = 1;
+            add(titleLabel, constraints);
+
+            constraints.gridy = 2;
+            add(amountLabel, constraints);
+
+            JButton completeButton = new JButton("Zrób przelew");
+            constraints.anchor = GridBagConstraints.EAST; // Ustawienie anchor na EAST wyrówna przycisk do prawej
+            constraints.gridx = 1;
+            constraints.gridy = 1;
+            add(completeButton, constraints);
+
+            completeButton.addActionListener(e -> {
+                CompleteTransferDialog completeTransferDialog = new CompleteTransferDialog(Group.getInstance(), Transfer.this);
+                // TODO
+            });
+        }
+    }
+
+    public class PendingTransferPanel extends TransferPanel {
+        private JButton doneButton;
+
+        public PendingTransferPanel() {
+            doneButton = new JButton("Oznacz jako zrobiony");
+            add(doneButton);
+            doneButton.addActionListener(e -> {
+                Transfer.this.getFromUser().addCompletedTransfer(Transfer.this);
+            });
+        }
     }
 }
 

@@ -35,7 +35,7 @@ public class ExpenseDialog extends JDialog {
         debtsMap = new HashMap<>();
 
         titleField = new JTextField();
-        dateField = new JTextField("2022-12-20");//(new Date()).toString());
+        dateField = new JTextField(Format.SIMPLE_DATE_FORMAT.format(new Date()));
         amountField = new JTextField("20");
         userNames = group.getUsers().stream().map(User::getName).toArray(String[]::new);
         payerComboBox = new JComboBox<>(userNames);
