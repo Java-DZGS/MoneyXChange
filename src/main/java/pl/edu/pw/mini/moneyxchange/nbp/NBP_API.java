@@ -13,6 +13,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -64,7 +65,12 @@ public class NBP_API {
                             } catch (ParseException e) {
                                 throw new RuntimeException(e);
                             }
-                        })
-                        .collect(Collectors.toList()));
+                        }).iterator())
+                //HACK: Fore some reason .toList ain't working 💀
+                .thenApply(iterator -> {
+                    List<ExchangeRate> rates = new ArrayList<>();
+                    iterator.forEachRemaining(rates::add);
+                    return rates;
+                });
     }
 }
