@@ -1,4 +1,4 @@
-package pl.edu.pw.mini.moneyxchange.data.divisions;
+package pl.edu.pw.mini.moneyxchange.utils.splitters;
 
 import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.User;
@@ -37,6 +37,11 @@ public class PercentageSplitter implements ISplitter {
     }
 
     @Override
+    public boolean isReadyToSplit() {
+        return percentages.values().stream().reduce(Double::sum).orElse(0.0).equals(100.0);
+    }
+
+    @Override
     public Map<User, Money> split() {
         Map<User, Money> map = new HashMap<>();
         for (var entry : percentages.entrySet()) {
@@ -47,6 +52,11 @@ public class PercentageSplitter implements ISplitter {
                 map.put(user, expenseAmount.multiply(percent / 100.0));
         }
         return map;
+    }
+
+    @Override
+    public String getFeedback() {
+        return "Do podzielenia zostało " + String.format("%.2f", getRemainder()) + "%";
     }
 
     private boolean parse(String text) {
@@ -66,5 +76,13 @@ public class PercentageSplitter implements ISplitter {
             return false;
 
         return true;
+    }
+
+    private double getRemainder() {
+        return 100.0 - percentages.values()
+                        .stream()
+                        .reduce(Double::sum)
+                        .orElse(0.0);
+
     }
 }

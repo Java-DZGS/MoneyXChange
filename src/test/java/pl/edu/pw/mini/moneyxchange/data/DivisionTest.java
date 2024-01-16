@@ -2,7 +2,7 @@ package pl.edu.pw.mini.moneyxchange.data;
 
 import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.Test;
-import pl.edu.pw.mini.moneyxchange.data.divisions.Division;
+import pl.edu.pw.mini.moneyxchange.data.splitters.Division;
 
 import java.util.HashMap;
 import java.util.HashSet;

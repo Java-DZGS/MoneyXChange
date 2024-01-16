@@ -1,8 +1,10 @@
-package pl.edu.pw.mini.moneyxchange.data.divisions;
+package pl.edu.pw.mini.moneyxchange.utils.splitters;
 
 import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
 
+import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,6 +32,11 @@ public class EqualSplitter implements ISplitter {
     }
 
     @Override
+    public boolean isReadyToSplit() {
+        return !includedUsers.isEmpty();
+    }
+
+    @Override
     public Map<User, Money> split() {
         int n = includedUsers.size();
         // todo: handle uneven division like 10 / 3
@@ -41,4 +48,12 @@ public class EqualSplitter implements ISplitter {
         return outputMap;
     }
 
+    @Override
+    public String getFeedback() {
+        if (includedUsers.isEmpty())
+            return "Zaznacz użytkowników biorących udział w wydatku";
+
+        return "Zaznaczeni użytkownicy płacą po " + Format.MONETARY_FORMAT.format(
+                expenseAmount.divide(includedUsers.size()));
+    }
 }

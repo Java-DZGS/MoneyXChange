@@ -2,7 +2,7 @@ package pl.edu.pw.mini.moneyxchange.dialogs;
 
 import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.User;
-import pl.edu.pw.mini.moneyxchange.data.divisions.*;
+import pl.edu.pw.mini.moneyxchange.utils.splitters.*;
 import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 
 import javax.swing.*;
@@ -21,7 +21,7 @@ public class SplitDialog extends JDialog {
     private DivisionType divisionType;
     private final JPanel dialogPanel;
     private final JPanel inputPanel;
-    private final JPanel leftAmountPanel;
+    private final JPanel feedbackPanel;
     private final JComboBox<String> divisionTypeComboBox;
     private Map<User, Money> outputMap;
 
@@ -46,8 +46,6 @@ public class SplitDialog extends JDialog {
 
         {
             dialogPanel = new JPanel(new GridBagLayout());
-            //dialogPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
-
             add(dialogPanel);
 
             divisionTypeComboBox = new JComboBox<>(
@@ -65,6 +63,7 @@ public class SplitDialog extends JDialog {
                                 .toUpperCase());
                 setSplitter();
                 drawInputPanel();
+                drawFeedbackPanel();
             });
 
             JPanel divisionTypePanel = new JPanel();
@@ -77,10 +76,9 @@ public class SplitDialog extends JDialog {
             gbc.weighty = 0.1;
             dialogPanel.add(divisionTypePanel, gbc);
 
-            leftAmountPanel = new JPanel();
+            feedbackPanel = new JPanel();
             gbc.gridy = 1;
-            dialogPanel.add(leftAmountPanel, gbc);
-            drawLeftAmountPanel();
+            dialogPanel.add(feedbackPanel, gbc);
 
             inputPanel = new JPanel(new GridBagLayout());
             inputPanel.setLayout(new GridLayout(0, 1, 10, 10));
@@ -93,17 +91,24 @@ public class SplitDialog extends JDialog {
 
             drawInputPanel();
 
-            JButton okButton = new JButton("ok");
+            JButton okButton = new JButton("Zatwierdź");
             gbc = new GridBagConstraints();
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.gridy = 3;
             gbc.weighty = 0.1;
             okButton.addActionListener(e -> {
                 resultOK = true;
-                calculateSplits();
-                dispose();
+                if (splitter.isReadyToSplit()) {
+                    calculateSplits();
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(
+                            null, "Błędne dane", "Błąd", JOptionPane.ERROR_MESSAGE);
+                }
             });
             dialogPanel.add(okButton, gbc);
+
+            drawFeedbackPanel();
         }
     }
 
@@ -116,16 +121,15 @@ public class SplitDialog extends JDialog {
         }
     }
 
-    private void drawLeftAmountPanel() {
-        leftAmountPanel.removeAll();
+    private void drawFeedbackPanel() {
+        feedbackPanel.removeAll();
 
-        JLabel label = new JLabel("Do podzielenia zostało: " + leftAmount);
-        leftAmountPanel.add(label);
+        JLabel label = new JLabel(splitter.getFeedback());
+        feedbackPanel.add(label);
 
-        leftAmountPanel.revalidate();
-        leftAmountPanel.repaint();
+        feedbackPanel.revalidate();
+        feedbackPanel.repaint();
     }
-
 
     private void drawInputPanel() {
         inputPanel.removeAll();
@@ -166,8 +170,8 @@ public class SplitDialog extends JDialog {
             splitter.addUser(user, "");
         else
             splitter.removeUser(user);
-        // todo: removeUser is called only for exact splitter,
-        // maybe don't make it abstract and delete it for other splitters
+
+        drawFeedbackPanel();
     }
 
     private void handleSplitTextInputChange(JTextField textField, User user) {
@@ -178,16 +182,7 @@ public class SplitDialog extends JDialog {
         else
             textField.setBorder(BorderFactory.createLineBorder(Color.RED));
 
-        // todo: if exact or percentage, get left amount
-        leftAmount = 0;
-        //leftAmount = splitter.
-//        leftAmount = expenseAmount.subtract(
-//                exactFieldInputs.values()
-//                        .stream()
-//                        .reduce(Money::add)
-//                        .orElse(Money.zero(expenseAmount.getCurrency())));
-//
-//        drawLeftAmountPanel();
+        drawFeedbackPanel();
     }
 
     private void calculateSplits() {

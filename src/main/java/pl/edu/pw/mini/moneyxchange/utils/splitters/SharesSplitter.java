@@ -1,13 +1,14 @@
-package pl.edu.pw.mini.moneyxchange.data.divisions;
+package pl.edu.pw.mini.moneyxchange.utils.splitters;
 
 import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SharesSplitter implements ISplitter {
-    private Map<User, Integer> shares;
+    private final Map<User, Integer> shares;
     private final Money expenseAmount;
 
     private int parsedAmount;
@@ -38,6 +39,11 @@ public class SharesSplitter implements ISplitter {
     }
 
     @Override
+    public boolean isReadyToSplit() {
+        return !shares.isEmpty();
+    }
+
+    @Override
     public Map<User, Money> split() {
         // how many total shares
         int n = (int) shares.values().stream().reduce(Integer::sum).orElse(1);
@@ -52,6 +58,15 @@ public class SharesSplitter implements ISplitter {
         }
 
         return map;
+    }
+
+    @Override
+    public String getFeedback() {
+        if (shares.isEmpty())
+            return "Wpisz udziały użykowników";
+
+        int n = (int) shares.values().stream().reduce(Integer::sum).orElse(1);
+        return "Jeden udział wynosi " + Format.MONETARY_FORMAT.format(expenseAmount.divide(n));
     }
 
     private boolean parse(String text) {

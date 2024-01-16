@@ -2,9 +2,9 @@ package pl.edu.pw.mini.moneyxchange.dialogs;
 
 import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.*;
-import pl.edu.pw.mini.moneyxchange.data.divisions.*;
+import pl.edu.pw.mini.moneyxchange.utils.splitters.*;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
-import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
+import pl.edu.pw.mini.moneyxchange.utils.splitters.EqualSplitter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +13,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class ExpenseDialog extends JDialog {
     private final JTextField titleField;
@@ -65,8 +64,11 @@ public class ExpenseDialog extends JDialog {
         addButton.addActionListener(e -> {
             if (!splitTypeSet) {
                 parseAmount();
-                debtsMap = new HashMap<>(); // todo
-                //debtsMap = //Division.splitEqually(new HashSet<>(group.getUsers()), amount);
+                EqualSplitter splitter = new EqualSplitter(amount);
+                for (User user : group.getUsers()) {
+                    splitter.addUser(user, "");
+                }
+                debtsMap = splitter.split();
             }
             paymentAdded = true;
             dispose();
