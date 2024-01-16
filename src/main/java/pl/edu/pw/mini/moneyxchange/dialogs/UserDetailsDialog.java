@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class UserDetailsDialog extends JDialog {
-    private User user;
+    private final User user;
 
     private JLabel userInfoLabel;
     private JLabel profilePictureLabel;

@@ -1,16 +1,12 @@
 package pl.edu.pw.mini.moneyxchange.data;
 
 import pl.edu.pw.mini.moneyxchange.dialogs.UserDetailsDialog;
-import pl.edu.pw.mini.moneyxchange.dialogs.UserDialog;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.SwingPropertyChangeSupport;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

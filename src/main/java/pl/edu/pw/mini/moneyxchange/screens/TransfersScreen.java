@@ -1,7 +1,6 @@
 package pl.edu.pw.mini.moneyxchange.screens;
 
 import org.javamoney.moneta.Money;
-import pl.edu.pw.mini.moneyxchange.cashflow.MinCashFlow;
 import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
@@ -44,7 +43,7 @@ public class TransfersScreen extends JPanel {
         filterButton.addActionListener(e -> showFilterDialog());
 
         Group.getInstance().addListener(evt -> {
-            if(!evt.getPropertyName().equals("completedTransfers")) return;
+            if (!evt.getPropertyName().equals("completedTransfers")) return;
 
             //noinspection unchecked
             transfers = (List<Transfer>) evt.getNewValue();
@@ -61,7 +60,7 @@ public class TransfersScreen extends JPanel {
         }
 
         JPanel spacer = new JPanel();
-        spacer.setPreferredSize(new Dimension(0,0));
+        spacer.setPreferredSize(new Dimension(0, 0));
         transfersPanel.add(spacer, Layout.getGridBagSpacerConstraints());
 
         transfersPanel.revalidate();

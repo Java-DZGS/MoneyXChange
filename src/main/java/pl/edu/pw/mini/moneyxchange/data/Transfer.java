@@ -2,7 +2,6 @@ package pl.edu.pw.mini.moneyxchange.data;
 
 import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.dialogs.CompleteTransferDialog;
-import pl.edu.pw.mini.moneyxchange.dialogs.ExpenseDialog;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import javax.swing.*;
@@ -111,14 +110,11 @@ public class Transfer implements MoneyAction, Serializable {
     }
 
     public class PendingTransferPanel extends TransferPanel {
-        private JButton doneButton;
 
         public PendingTransferPanel() {
-            doneButton = new JButton("Oznacz jako zrobiony");
+            JButton doneButton = new JButton("Oznacz jako zrobiony");
             add(doneButton);
-            doneButton.addActionListener(e -> {
-                Transfer.this.getFromUser().addCompletedTransfer(Transfer.this);
-            });
+            doneButton.addActionListener(e -> Transfer.this.getFromUser().addCompletedTransfer(Transfer.this));
         }
     }
 }

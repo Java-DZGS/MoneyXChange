@@ -59,9 +59,7 @@ public class ExpenseDialog extends JDialog {
 
         add(panel);
 
-        splitButton.addActionListener(e -> {
-            showUserSplitDialog(group.getUsers());
-        });
+        splitButton.addActionListener(e -> showUserSplitDialog(group.getUsers()));
 
         addButton.addActionListener(e -> {
             if (!splitTypeSet) {
@@ -126,7 +124,6 @@ class SplitDialog extends JDialog {
     }
 
     private DivisionType divisionType;
-    private final JPanel dialogPanel;
     private final JPanel divisionPanel;
     private final JComboBox<String> divisionTypeComboBox;
     // można to załatwić jedną haszmapą, ale tak jest imo czytelniej:
@@ -152,7 +149,7 @@ class SplitDialog extends JDialog {
         outputMap = new HashMap<>();
         equalSplitSet = new HashSet<>();
 
-        dialogPanel = new JPanel(new GridLayout());
+        JPanel dialogPanel = new JPanel(new GridLayout());
         dialogPanel.setLayout(new GridLayout(3, 1, 10, 10));
         dialogPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
 

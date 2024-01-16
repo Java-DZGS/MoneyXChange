@@ -1,21 +1,14 @@
 package pl.edu.pw.mini.moneyxchange.screens;
 
-import pl.edu.pw.mini.moneyxchange.dialogs.ExpenseDialog;
-import pl.edu.pw.mini.moneyxchange.dialogs.TransferDialog;
-import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.Group;
-import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
 import pl.edu.pw.mini.moneyxchange.dialogs.UserDialog;
 import pl.edu.pw.mini.moneyxchange.utils.Layout;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 
@@ -43,7 +36,7 @@ public class UsersScreen extends JPanel {
         addUserButton.addActionListener(e -> showAddUserDialog());
 
         Group.getInstance().addListener(evt -> {
-            if(!evt.getPropertyName().equals("users")) return;
+            if (!evt.getPropertyName().equals("users")) return;
 
             //noinspection unchecked
             users = (List<User>) evt.getNewValue();
@@ -60,7 +53,7 @@ public class UsersScreen extends JPanel {
         }
 
         JPanel spacer = new JPanel();
-        spacer.setPreferredSize(new Dimension(0,0));
+        spacer.setPreferredSize(new Dimension(0, 0));
         usersPanel.add(spacer, Layout.getGridBagSpacerConstraints());
 
         usersPanel.revalidate();

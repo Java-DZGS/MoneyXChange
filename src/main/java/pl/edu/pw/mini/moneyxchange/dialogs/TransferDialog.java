@@ -31,9 +31,6 @@ public class TransferDialog extends JDialog {
         fromUserField = new JTextField();
         toUserField = new JTextField();
 
-        String[] userNames = group.getUsers().stream().map(User::getName).toArray(String[]::new);
-        JList<String> userList = new JList<>(userNames);
-        JScrollPane userListScrollPane = new JScrollPane(userList);
         fromUserComboBox = new JComboBox<>(group.getUsers().stream()
                 .map(User::getName)
                 .toArray(String[]::new));
@@ -70,7 +67,7 @@ public class TransferDialog extends JDialog {
             try {
                 date = dateFormat.parse(dateString);
             } catch (ParseException ex) {
-                // Obsługa błędu parsowania daty
+                //TODO: Obsługa błędu parsowania daty
                 ex.printStackTrace();
                 return;
             }

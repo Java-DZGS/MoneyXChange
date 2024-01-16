@@ -3,7 +3,6 @@ package pl.edu.pw.mini.moneyxchange.screens;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
 import org.knowm.xchart.XChartPanel;
-import org.knowm.xchart.internal.chartpart.Chart;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.Group;
@@ -13,16 +12,14 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ChartsScreen extends JPanel {
 
     private List<Expense> expenses;
-    private CategoryChart chart;
-    private XChartPanel<CategoryChart> chartPanel;
-    private JButton filterButton;
+    private final CategoryChart chart;
 
     public ChartsScreen() {
         expenses = Group.getInstance().getExpenses();
@@ -35,12 +32,12 @@ public class ChartsScreen extends JPanel {
         chart.getStyler().setLegendVisible(false);
         chart.getStyler().setDatePattern("yyyy-MM-dd");
         chart.getStyler().setToolTipsEnabled(true);
-        chartPanel = new XChartPanel<>(chart);
+        XChartPanel<CategoryChart> chartPanel = new XChartPanel<>(chart);
 
         updateChart();
 
         // Create filter button
-        filterButton = new JButton("Filtruj...");
+        JButton filterButton = new JButton("Filtruj...");
         filterButton.addActionListener(e -> showFilterDialog());
 
         // Add components to the main panel

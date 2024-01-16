@@ -4,15 +4,16 @@ import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import javax.swing.event.SwingPropertyChangeSupport;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

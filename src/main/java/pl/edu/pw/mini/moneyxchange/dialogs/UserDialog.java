@@ -13,14 +13,10 @@ import java.io.IOException;
 public class UserDialog extends JDialog{
     private final User user;
 
-    private JPanel inputPanel;
     private JTextField nameField;
     private JTextField idField; // TODO: remove
     private JLabel imageLabel;
-    private JPanel buttonPanel;
-    private JButton loadButton;
     private JButton addButton;
-    private JButton cancelButton;
 
     private BufferedImage image;
 
@@ -34,7 +30,7 @@ public class UserDialog extends JDialog{
         addButton.addActionListener(e -> {
             // Get input values
             String name = nameField.getText();
-            int id = 0;
+            int id;
             try {
                 // Konwersja tekstu z pola tekstowego na int
                 id = Integer.parseInt(idField.getText());
@@ -77,7 +73,7 @@ public class UserDialog extends JDialog{
     private void build() {
         setLayout(new BorderLayout());
 
-        inputPanel = new JPanel(new GridLayout(3, 2)); // TODO: Do poprawki
+        JPanel inputPanel = new JPanel(new GridLayout(3, 2)); // TODO: Do poprawki
 
         inputPanel.add(new JLabel("Imię:"));
         nameField = new JTextField();
@@ -93,15 +89,15 @@ public class UserDialog extends JDialog{
             imageLabel.setIcon(new ImageIcon(image.getScaledInstance(50, 50, Image.SCALE_SMOOTH)));
         inputPanel.add(imageLabel);
 
-        buttonPanel = new JPanel();
+        JPanel buttonPanel = new JPanel();
 
-        loadButton = new JButton("Wczytaj obraz");
+        JButton loadButton = new JButton("Wczytaj obraz");
         buttonPanel.add(loadButton);
 
         addButton = new JButton(user == null ? "Dodaj" : "Zapisz");
         buttonPanel.add(addButton);
 
-        cancelButton = new JButton("Anuluj");
+        JButton cancelButton = new JButton("Anuluj");
         buttonPanel.add(cancelButton);
 
         add(inputPanel, BorderLayout.CENTER);
@@ -122,8 +118,6 @@ public class UserDialog extends JDialog{
             }
         });
 
-        cancelButton.addActionListener(e -> {
-            dispose();
-        });
+        cancelButton.addActionListener(e -> dispose());
     }
 }
