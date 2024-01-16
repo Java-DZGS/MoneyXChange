@@ -11,7 +11,7 @@ import java.util.List;
 
 public class HistoryScreen extends JPanel {
     private final JPanel historyPanel;
-    private final List<Expense> expenses;
+    private List<Expense> expenses;
 
     public HistoryScreen() {
         historyPanel = new JPanel(new GridBagLayout());
@@ -26,6 +26,14 @@ public class HistoryScreen extends JPanel {
 
         expenses = Group.getInstance().getExpenses();
         displayExpenses();
+
+        Group.getInstance().addListener(evt -> {
+            if(!evt.getPropertyName().equals("expenses")) return;
+
+            //noinspection unchecked
+            expenses = (List<Expense>) evt.getNewValue();
+            displayExpenses();
+        });
     }
 
     private void displayExpenses() {

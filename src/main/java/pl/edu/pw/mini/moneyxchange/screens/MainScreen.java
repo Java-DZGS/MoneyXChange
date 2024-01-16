@@ -27,6 +27,7 @@ public class MainScreen extends JPanel {
         JButton serializeButton = new JButton("Serializuj grupę do pliku");
         JButton deserializeButton = new JButton("Deserializuj grupę z pliku");
 
+        // TODO: wszystkie akcje, nie tylko dodawanie przelewów
         actionsPanel = new JPanel(new GridBagLayout());
 
         JPanel spacer = new JPanel();

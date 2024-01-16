@@ -4,12 +4,16 @@ import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+import javax.swing.event.SwingPropertyChangeSupport;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,12 +30,16 @@ public class Group implements Serializable {
     private final List<Transfer> pendingTransfers;
     private final List<Transfer> completedTransfers;
 
+    private SwingPropertyChangeSupport propertyChangeSupport;
+
     private Group() {
         // Private constructor to prevent instantiation
         users = new ArrayList<>();
         expenses = new ArrayList<>();
         pendingTransfers = new ArrayList<>();
         completedTransfers = new ArrayList<>();
+
+        propertyChangeSupport = new SwingPropertyChangeSupport(this);
 
         createDummyData();
     }
@@ -48,6 +56,7 @@ public class Group implements Serializable {
     }
 
     public void setName(String name) {
+        propertyChangeSupport.firePropertyChange("name", this.name, name);
         this.name = name;
     }
 
@@ -57,6 +66,7 @@ public class Group implements Serializable {
 
     public void addUser(User user) {
         users.add(user);
+        propertyChangeSupport.firePropertyChange("users", null, users);
     }
 
     public List<Expense> getExpenses() {
@@ -81,19 +91,25 @@ public class Group implements Serializable {
 
     public void addExpense(Expense expense) {
         expenses.add(expense);
+        propertyChangeSupport.firePropertyChange("expenses", null, expenses);
     }
 
-    public void addPendingTransfer(Transfer Transfer) {
-        pendingTransfers.add(Transfer);
+    public void addPendingTransfer(Transfer transfer) {
+        pendingTransfers.add(transfer);
+        propertyChangeSupport.firePropertyChange("pendingTransfers", null, pendingTransfers);
     }
 
-    public void addCompletedTransfer(Transfer Transfer) {
-        completedTransfers.add(Transfer);
+    public void addCompletedTransfer(Transfer transfer) {
+        completedTransfers.add(transfer);
+        propertyChangeSupport.firePropertyChange("completedTransfers", null, completedTransfers);
     }
 
-    public void markTransferAsCompleted(Transfer Transfer) {
-        pendingTransfers.remove(Transfer);
-        completedTransfers.add(Transfer);
+    public void markTransferAsCompleted(Transfer transfer) {
+        pendingTransfers.remove(transfer);
+        completedTransfers.add(transfer);
+
+        propertyChangeSupport.firePropertyChange("pendingTransfers", null, pendingTransfers);
+        propertyChangeSupport.firePropertyChange("completedTransfers", null, completedTransfers);
     }
 
     public void serialize() {
@@ -120,6 +136,10 @@ public class Group implements Serializable {
             }
         }
         return null; // User not found
+    }
+
+    public void addListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
     }
 
     public void createDummyData() {
@@ -199,5 +219,7 @@ public class Group implements Serializable {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+
+        markTransferAsCompleted(pendingTransfers.get(0));
     }
 }
