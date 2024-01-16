@@ -1,7 +1,10 @@
 package pl.edu.pw.mini.moneyxchange.utils;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import java.beans.PropertyChangeEvent;
@@ -17,11 +20,11 @@ public class SwingUtils {
      * and a {@link PropertyChangeListener} on the text component to detect
      * if the {@code Document} itself is replaced.
      *
-     * @param text any text component, such as a {@link JTextField}
-     *        or {@link JTextArea}
+     * @param text           any text component, such as a {@link JTextField}
+     *                       or {@link JTextArea}
      * @param changeListener a listener to receieve {@link ChangeEvent}s
-     *        when the text is changed; the source object for the events
-     *        will be the text component
+     *                       when the text is changed; the source object for the events
+     *                       will be the text component
      * @throws NullPointerException if either parameter is null
      */
     public static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
@@ -53,8 +56,8 @@ public class SwingUtils {
             }
         };
         text.addPropertyChangeListener("document", (PropertyChangeEvent e) -> {
-            Document d1 = (Document)e.getOldValue();
-            Document d2 = (Document)e.getNewValue();
+            Document d1 = (Document) e.getOldValue();
+            Document d2 = (Document) e.getNewValue();
             if (d1 != null) d1.removeDocumentListener(dl);
             if (d2 != null) d2.addDocumentListener(dl);
             dl.changedUpdate(null);

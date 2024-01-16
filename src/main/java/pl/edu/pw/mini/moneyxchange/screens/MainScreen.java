@@ -1,15 +1,16 @@
-package pl.edu.pw.mini.moneyxchange;
+package pl.edu.pw.mini.moneyxchange.screens;
 
-import pl.edu.pw.mini.moneyxchange.data.*;
+import pl.edu.pw.mini.moneyxchange.dialogs.ExpenseDialog;
+import pl.edu.pw.mini.moneyxchange.data.Expense;
+import pl.edu.pw.mini.moneyxchange.data.Group;
+import pl.edu.pw.mini.moneyxchange.data.MoneyAction;
+import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.utils.Layout;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 public class MainScreen extends JPanel {
     private Group group;
@@ -27,7 +28,10 @@ public class MainScreen extends JPanel {
         JButton deserializeButton = new JButton("Deserializuj grupę z pliku");
 
         actionsPanel = new JPanel(new GridBagLayout());
-        actionsPanel.setLayout(new GridLayout(0, 1));
+
+        JPanel spacer = new JPanel();
+        spacer.setPreferredSize(new Dimension(0,0));
+        actionsPanel.add(spacer, Layout.getGridBagSpacerConstraints());
         JScrollPane transfersScrollPane = new JScrollPane(actionsPanel);
         //importActions();
 
@@ -62,7 +66,6 @@ public class MainScreen extends JPanel {
         add(topPanel, BorderLayout.NORTH);
         add(splitPane, BorderLayout.CENTER);
 
-        // BUTTONS
         changeNameButton.addActionListener(e -> {
             String newName = JOptionPane.showInputDialog("Wprowadź nową nazwę grupy:");
             group.setName(newName);
@@ -96,30 +99,19 @@ public class MainScreen extends JPanel {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
         if (dialog.isExpenseAdded()) {
             Expense expense = dialog.getExpense();
             group.addExpense(expense);
-            actionsPanel.add(expense.getPanel(), getActionPanelGbc());
+            // Moim zdaniem wygodniej jest, żeby akcje nowsze były na górze, tak jak np. historia przelewów w banku
+            actionsPanel.add(expense.getPanel(), Layout.getGridBagElementConstraints(), 0);
         }
     }
 
-    private GridBagConstraints getActionPanelGbc() {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.gridheight = 100;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        gbc.anchor = GridBagConstraints.PAGE_START;
-        return gbc;
-    }
-
     private void importActions() {
-        ArrayList<MoneyAction> actionsList = group.getActionsList();
+        List<MoneyAction> actionsList = group.getActionsList();
 
         for (MoneyAction action : actionsList) {
-            actionsPanel.add(action.getPanel(), getActionPanelGbc());
+            actionsPanel.add(action.getPanel(), Layout.getGridBagElementConstraints());
         }
     }
 }

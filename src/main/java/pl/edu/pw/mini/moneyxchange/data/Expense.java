@@ -1,20 +1,24 @@
 package pl.edu.pw.mini.moneyxchange.data;
 
+import org.javamoney.moneta.Money;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class Expense implements MoneyAction, Serializable {
     private final User payer;
-    private final double amount;
-    private final HashMap<User, Double> debts;
+    private final Money amount;
+    private final Map<User, Money> debts;
     private final String name;
     private final Date date;
     private final ExpenseCategory category;
 
-    public Expense(User payer, double amount, HashMap<User, Double> debts,
+    public Expense(User payer, Money amount, Map<User, Money> debts,
                    String name, Date date, ExpenseCategory category) {
         this.payer = payer;
         this.amount = amount;
@@ -22,26 +26,32 @@ public class Expense implements MoneyAction, Serializable {
         this.name = name;
         this.date = date;
         this.category = category;
+
+        payer.addExpense(this);
+
+        for (var entry : debts.entrySet()) {
+            User user = entry.getKey();
+            Money debtAmount = entry.getValue();
+            if (user.getId() == payer.getId()) continue;
+            Transfer transfer = new Transfer(name, date, debtAmount, user, payer);
+            user.addPendingTransfer(transfer);
+        }
     }
 
     public User getPayer() {
         return payer;
     }
 
-    public double getAmount() {
+    public Money getAmount() {
         return amount;
     }
 
-    public List<User> getParticipants()
-    {
+    public List<User> getParticipants() {
         // Get users with a non-zero debt
-        List<User> ret = new ArrayList<User>();
-        for (Map.Entry<User, Double> entry : debts.entrySet()) {
-            if (entry.getValue() != 0) {
-                ret.add(entry.getKey());
-            }
-        }
-        return ret;
+        return debts.entrySet().stream()
+                .filter(entry -> entry.getValue().getNumber().doubleValue() != 0)
+                .map(Map.Entry::getKey)
+                .toList();
     }
 
     public String getName() {
@@ -68,8 +78,8 @@ public class Expense implements MoneyAction, Serializable {
         expensePanel.setLayout(new GridLayout(0, 1));
 
         JLabel titleLabel = new JLabel("Tytuł: " + name);
-        JLabel dateLabel = new JLabel("Data: " + date);
-        JLabel amountLabel = new JLabel("Kwota: " + amount);
+        JLabel dateLabel = new JLabel("Data: " + Format.SIMPLE_DATE_FORMAT.format(date));
+        JLabel amountLabel = new JLabel("Kwota: " + Format.MONETARY_FORMAT.format(amount));
         JLabel payerLabel = new JLabel("Zapłacone przez: " + payer.getName());
         JLabel debtsLabel = new JLabel("Długi: ");
 
@@ -79,10 +89,10 @@ public class Expense implements MoneyAction, Serializable {
         expensePanel.add(payerLabel);
         expensePanel.add(debtsLabel);
 
-        for (Map.Entry<User, Double> entry : debts.entrySet()) {
+        for (var entry : debts.entrySet()) {
             JLabel label = new JLabel("- " +
                     entry.getKey().getName() + ": " +
-                    entry.getValue().toString());
+                    Format.MONETARY_FORMAT.format(entry.getValue()));
             expensePanel.add(label);
         }
 

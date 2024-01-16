@@ -1,6 +1,14 @@
 package pl.edu.pw.mini.moneyxchange;
+
 import com.formdev.flatlaf.FlatDarkLaf;
+import pl.edu.pw.mini.moneyxchange.screens.*;
+
 import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class Main extends JFrame {
     public Main() {
@@ -9,18 +17,11 @@ public class Main extends JFrame {
         JTabbedPane tabbedPane = new JTabbedPane();
 
         tabbedPane.addTab("Ekran Główny", new MainScreen());
-        tabbedPane.addTab("Przelewy", new TransfersScreen());
+        tabbedPane.addTab("Optymalne przelewy", new OptimalTransfersScreen());
         tabbedPane.addTab("Wykresy", new ChartsScreen());
-
-        // Podsumowanie
-        JPanel summaryPanel = new JPanel();
-        // Dodaj komponenty do summaryPanel
-        tabbedPane.addTab("Podsumowanie", summaryPanel);
-
-        // Historia Wydatków
+        tabbedPane.addTab("Użytkownicy", new UsersScreen());
         tabbedPane.addTab("Historia wydatków", new HistoryScreen());
-
-        // Kursy Walutowe
+        tabbedPane.addTab("Historia przelewów", new TransfersScreen());
         tabbedPane.addTab("Kursy walutowe", new ExchangeRateScreen());
 
         add(tabbedPane);
@@ -37,7 +38,7 @@ public class Main extends JFrame {
 
             SwingUtilities.invokeLater(Main::new);
         } catch (UnsupportedLookAndFeelException e) {
-			System.err.println("Nie udało się utworzyć aplikacji");
+            System.err.println("Nie udało się utworzyć aplikacji");
         }
     }
 }

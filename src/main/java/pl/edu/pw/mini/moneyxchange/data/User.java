@@ -21,25 +21,50 @@ public class User implements Serializable {
         this.expenses = new ArrayList<>();
         this.pendingTransfers = new ArrayList<>();
         this.completedTransfers = new ArrayList<>();
+        this.image = null;
     }
+
     public String getName() {
         return name;
     }
-    public int getId() { return id; }
-    public List<Expense> getExpenses(){ return expenses; }
-    public void addExpense(Expense expense){
+
+    public void setName(String newName) {
+        name = newName;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public List<Expense> getExpenses() {
+        return expenses;
+    }
+
+    public void addExpense(Expense expense) {
         expenses.add(expense);
     }
-    public List<Transfer> getPendingTransfers() { return pendingTransfers; }
-    public void addPendingTransfer(Transfer transfer){
+
+    public List<Transfer> getPendingTransfers() {
+        return pendingTransfers;
+    }
+
+    public void addPendingTransfer(Transfer transfer) {
         pendingTransfers.add(transfer);
     }
-    public List<Transfer> getCompletedTransfers() { return completedTransfers; }
-    public void addCompletedTransfer(Transfer transfer){
+
+    public List<Transfer> getCompletedTransfers() {
+        return completedTransfers;
+    }
+
+    public void addCompletedTransfer(Transfer transfer) {
         pendingTransfers.remove(transfer);
         completedTransfers.add(transfer);
     }
-    public void setImage(BufferedImage image){
+
+    public void setImage(BufferedImage image) {
         this.image = image;
+    }
+    public BufferedImage getImage(){
+        return image;
     }
 }

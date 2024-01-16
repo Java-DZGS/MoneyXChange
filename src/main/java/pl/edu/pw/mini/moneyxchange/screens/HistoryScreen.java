@@ -1,28 +1,20 @@
-package pl.edu.pw.mini.moneyxchange;
+package pl.edu.pw.mini.moneyxchange.screens;
 
 import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.Group;
+import pl.edu.pw.mini.moneyxchange.utils.Layout;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.util.List;
 
 public class HistoryScreen extends JPanel {
     private final JPanel historyPanel;
-    private final ArrayList<Expense> expenses;
+    private final List<Expense> expenses;
 
     public HistoryScreen() {
-        Group group = Group.getInstance();
-
         historyPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        historyPanel.add(new JPanel(), gbc);
-        historyPanel.setLayout(new GridLayout(0, 1));
 
         JScrollPane historyScrollPane = new JScrollPane(historyPanel);
 
@@ -40,8 +32,12 @@ public class HistoryScreen extends JPanel {
         historyPanel.removeAll();
 
         for (Expense expense : expenses) {
-            historyPanel.add(expense.getPanel());
+            historyPanel.add(expense.getPanel(), Layout.getGridBagElementConstraints());
         }
+
+        JPanel spacer = new JPanel();
+        spacer.setPreferredSize(new Dimension(0,0));
+        historyPanel.add(spacer, Layout.getGridBagSpacerConstraints());
 
         historyPanel.revalidate();
         historyPanel.repaint();
