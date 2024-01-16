@@ -44,7 +44,7 @@ public class ExpenseDialog extends JDialog {
         JButton splitButton = new JButton("Podziel wydatek");
         JButton addButton = new JButton("Dodaj wydatek");
 
-        JPanel panel = new JPanel(new GridLayout(6, 2, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
 
         panel.add(new JLabel("Tytuł:"));
@@ -108,7 +108,7 @@ public class ExpenseDialog extends JDialog {
         SplitDialog dialog = new SplitDialog(users, amount);
         dialog.setModalityType(ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.setSize(300, 500);
+        dialog.setSize(300, 400);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
 

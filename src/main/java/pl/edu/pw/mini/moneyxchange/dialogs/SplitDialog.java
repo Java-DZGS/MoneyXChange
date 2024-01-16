@@ -45,9 +45,8 @@ public class SplitDialog extends JDialog {
         setSplitter();
 
         {
-            dialogPanel = new JPanel(new GridLayout());
-            dialogPanel.setLayout(new GridLayout(4, 1, 10, 10));
-            dialogPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
+            dialogPanel = new JPanel(new GridBagLayout());
+            //dialogPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
 
             add(dialogPanel);
 
@@ -71,14 +70,16 @@ public class SplitDialog extends JDialog {
             JPanel divisionTypePanel = new JPanel();
             divisionTypePanel.add(divisionTypeComboBox);
 
-            // todo: te gbc poprawić
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = 0;
+            gbc.gridy = 0;
             gbc.weighty = 0.1;
             dialogPanel.add(divisionTypePanel, gbc);
 
             leftAmountPanel = new JPanel();
-            dialogPanel.add(leftAmountPanel);
+            gbc.gridy = 1;
+            dialogPanel.add(leftAmountPanel, gbc);
             drawLeftAmountPanel();
 
             inputPanel = new JPanel(new GridBagLayout());
@@ -86,6 +87,7 @@ public class SplitDialog extends JDialog {
             JScrollPane scrollPane = new JScrollPane(inputPanel);
             gbc = new GridBagConstraints();
             gbc.fill = GridBagConstraints.BOTH;
+            gbc.gridy = 2;
             gbc.weighty = 3.0;
             dialogPanel.add(scrollPane, gbc);
 
@@ -94,6 +96,7 @@ public class SplitDialog extends JDialog {
             JButton okButton = new JButton("ok");
             gbc = new GridBagConstraints();
             gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridy = 3;
             gbc.weighty = 0.1;
             okButton.addActionListener(e -> {
                 resultOK = true;
@@ -190,6 +193,7 @@ public class SplitDialog extends JDialog {
     private void calculateSplits() {
         outputMap = splitter.split();
     }
+
     public boolean isResultOK() {
         return resultOK;
     }
