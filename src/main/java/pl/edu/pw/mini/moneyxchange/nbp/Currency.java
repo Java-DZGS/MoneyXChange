@@ -4,7 +4,7 @@ import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 
 /**
- * Enum walut dla komunikacji z API NBP
+ * Currency enum for communication with NBP API.
  */
 public enum Currency {
     USD("dolar amerykański"),
@@ -30,8 +30,8 @@ public enum Currency {
     }
 
     /**
-     * Kod waluty dla API NBP
-     * @return kod waluty
+     * Currency code (maybe ISO?) for communication with NBP API
+     * @return currency code
      */
     public String getCode() {
         return super.name();

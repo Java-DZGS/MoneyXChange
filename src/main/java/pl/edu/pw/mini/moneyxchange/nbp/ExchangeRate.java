@@ -5,9 +5,9 @@ import org.javamoney.moneta.Money;
 import java.util.Date;
 
 /**
- * Record reprezentujący jedno notowanie waluty
- * @param date Data notowania
- * @param value Wartość notowania
+ * Record representing one exchange rate
+ * @param date Date of the exchange rate
+ * @param value Value of the exchange rate
  */
 public record ExchangeRate(Date date, Money value) {
 }

@@ -20,14 +20,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.StreamSupport;
 
 /**
- * Klasa służąca do asynchronicznej komunikacji z API Narodowego Banku Polskiego.
+ * Class for async communication with Narodowy Bank Polski API.
  */
 public class NBP_API {
+    /**
+     * Main exchange rate endpoint
+     */
     private static final String EXCHANGE_RATE_ENDPOINT = "https://api.nbp.pl/api/exchangerates/rates/";
 
     /**
-     * Funkcja pomocnicza do asynchronicznej komunikacji z API NBP przy użyciu zapytań GET.
-     * Domyślny timeout - 30 sekund.
+     * Helper function for async communication with NBP API using GET requests.
+     * Default timeout - 30 seconds
      *
      * @param endpoint API endpoint to send GET request to
      * @return API JSON response
@@ -49,14 +52,15 @@ public class NBP_API {
     }
 
     /**
-     * Funkcja pobierająca asynchronicznie ostatnie {@code count} notowań waluty {@code currency} z API NBP.
+     * Function for async retrieval of last {@code count} exchange rates of {@code currency} from NBP API.
      * <br><br>
-     * <b>Uwaga: </b> Ze względu na błąd poza naszym zasięgiem, metoda {@code Stream::toList()} na niektórych komputerach
-     * nie kończy działania. Z tego powodu zastosowaliśmy rozwiązanie zastępcze i mniej efektywne — zebranie strumienia
-     * do iteratora używając {@code Stream::iterator()}, a następnie dodanie wszystkich elementów iteratora do listy.
-     * @param currency waluta, której notowania chcemy
-     * @param count ilość żądanych notowań
-     * @return lista żądanych notowań
+     * <b>Note:</b> Due to bug beyond our influence, the {@code Stream::toList()} method gets stuck on some machines.
+     * To fix that we use less efficient but working solution — we collect the stream to Iterator using {@code Stream::iterator()},
+     * and then we put all objects from said iterator into a List.
+     *
+     * @param currency currency for which to return the exchange rates
+     * @param count number of exchange rates to return
+     * @return list of exchange rates
      */
     public static CompletableFuture<List<ExchangeRate>> getCurrencyExchangeRate(Currency currency, int count) {
         return getApiResponse("A/" + currency.getCode() + "/last/" + count + "/")
