@@ -2,7 +2,10 @@ package pl.edu.pw.mini.moneyxchange.data;
 
 import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.Test;
-import pl.edu.pw.mini.moneyxchange.data.splitters.Division;
+import pl.edu.pw.mini.moneyxchange.utils.splitters.EqualSplitter;
+import pl.edu.pw.mini.moneyxchange.utils.splitters.ExactSplitter;
+import pl.edu.pw.mini.moneyxchange.utils.splitters.PercentageSplitter;
+import pl.edu.pw.mini.moneyxchange.utils.splitters.SharesSplitter;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,19 +19,20 @@ public class DivisionTest {
 
 	@Test
 	public void testSplitEqually() {
-		Set<User> users = new HashSet<>();
 		var A = new User("A", 1);
 		var B = new User("B", 1);
 		var C = new User("C", 1);
 		var D = new User("D", 1);
-		users.add(A);
-		users.add(B);
-		users.add(C);
-		users.add(D);
 
 		Money amount = Money.of(100, "PLN");
 
-		var result = Division.splitEqually(users, amount);
+		EqualSplitter splitter = new EqualSplitter(amount);
+		splitter.addUser(A, "");
+		splitter.addUser(B, "");
+		splitter.addUser(C, "");
+		splitter.addUser(D, "");
+
+		var result = splitter.split();
 
 		assertEquals(Money.of(25, "PLN"), result.get(A));
 		assertEquals(Money.of(25, "PLN"), result.get(B));
@@ -38,17 +42,20 @@ public class DivisionTest {
 
 	@Test
 	public void testSplitExactly() {
-		Map<User, Double> users = new HashMap<>();
+		Money amount = Money.of(61, "PLN");
+
 		var A = new User("A", 1);
 		var B = new User("B", 1);
 		var C = new User("C", 1);
 		var D = new User("D", 1);
-		users.put(A, 0.0);
-		users.put(B, 10.0);
-		users.put(C, 50.0);
-		users.put(D, 1.0);
 
-		var result = Division.splitExactly(users);
+		ExactSplitter exactSplitter = new ExactSplitter(amount);
+		exactSplitter.addUser(A, "0");
+		exactSplitter.addUser(B, "10 PLN");
+		exactSplitter.addUser(C, "50 PLN");
+		exactSplitter.addUser(D, "1 PLN");
+
+		var result = exactSplitter.split();
 
 		assertNull(result.get(A));
 		assertEquals(Money.of(10, "PLN"), result.get(B));
@@ -58,17 +65,20 @@ public class DivisionTest {
 
 	@Test
 	public void testSplitByPercentages() {
-		Map<User, Double> users = new HashMap<>();
+		Money amount = Money.of(100, "PLN");
+		PercentageSplitter percentageSplitter = new PercentageSplitter(amount);
+
 		var A = new User("A", 1);
 		var B = new User("B", 1);
 		var C = new User("C", 1);
 		var D = new User("D", 1);
-		users.put(A, 0.0);
-		users.put(B, 10.0);
-		users.put(C, 50.0);
-		users.put(D, 40.0);
 
-		var result = Division.splitByPercentages(users, Money.of(100, "PLN"));
+		percentageSplitter.addUser(A, "0");
+		percentageSplitter.addUser(B, "10");
+		percentageSplitter.addUser(C, "50");
+		percentageSplitter.addUser(D, "40");
+
+		var result = percentageSplitter.split();
 
 		assertNull(result.get(A));
 		assertEquals(Money.of(10, "PLN"), result.get(B));
@@ -78,17 +88,19 @@ public class DivisionTest {
 
 	@Test
 	public void testSplitByShares() {
-		Map<User, Double> users = new HashMap<>();
+		Money amount = Money.of(60, "PLN");
+		SharesSplitter sharesSplitter = new SharesSplitter(amount);
+
 		var A = new User("A", 1);
 		var B = new User("B", 1);
 		var C = new User("C", 1);
 		var D = new User("D", 1);
-		users.put(A, 0.0);
-		users.put(B, 4.0);
-		users.put(C, 5.0);
-		users.put(D, 1.0);
+		sharesSplitter.addUser(A, "0");
+		sharesSplitter.addUser(B, "4");
+		sharesSplitter.addUser(C, "5");
+		sharesSplitter.addUser(D, "1");
 
-		var result = Division.splitByShares(users, Money.of(60, "PLN"));
+		var result = sharesSplitter.split();
 
 		assertNull(result.get(A));
 		assertEquals(Money.of(24, "PLN"), result.get(B));
