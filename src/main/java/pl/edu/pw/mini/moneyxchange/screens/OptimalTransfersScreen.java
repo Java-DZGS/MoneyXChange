@@ -13,11 +13,17 @@ import static pl.edu.pw.mini.moneyxchange.cashflow.MinCashFlow.minTransfers;
 
 public class OptimalTransfersScreen extends JPanel {
     private List<Transfer> transfers;
+    private final Group group;
     private final JPanel transfersPanel;
-
     public OptimalTransfersScreen() {
-        transfers = Group.getInstance().getPendingTransfers();
+        group = Group.getInstance();
+        transfers = group.getPendingTransfers();
         transfers = minTransfers(transfers);
+
+        group.getPendingTransfers().clear();
+        for(Transfer transfer: transfers) {
+            group.addPendingTransfer(transfer);
+        }
 
         // Create components
         transfersPanel = new JPanel(new GridBagLayout());
