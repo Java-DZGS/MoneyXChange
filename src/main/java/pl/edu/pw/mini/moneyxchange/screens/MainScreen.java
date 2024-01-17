@@ -87,7 +87,6 @@ public class MainScreen extends JPanel {
         });
 
         addPaymentButton.addActionListener(e -> {
-            // TODO
             showPaymentDialog(group);
         });
     }

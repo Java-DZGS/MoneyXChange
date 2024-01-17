@@ -73,7 +73,15 @@ public class ExpenseDialog extends JDialog {
 
         SwingUtils.addChangeListener(amountField, e -> handleAmountFieldTextChange());
 
-        splitButton.addActionListener(e -> showUserSplitDialog(group.getUsers()));
+        splitButton.addActionListener(e -> {
+            if (!amountValidationOK) {
+                JOptionPane.showMessageDialog(
+                        null, "Podaj poprawną kwotę wydatku", "Błąd", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            showUserSplitDialog(group.getUsers());
+        });
 
         addButton.addActionListener(e -> {
             if (!isDataSet())
@@ -93,10 +101,18 @@ public class ExpenseDialog extends JDialog {
 
     }
 
+    public ExpenseDialog(Group group, User payer) {
+        this(group);
+
+        payerComboBox.setSelectedItem(payer.getName());
+        payerComboBox.revalidate();
+        payerComboBox.repaint();
+    }
+
     private boolean isDataSet() {
         if (!amountValidationOK) {
             JOptionPane.showMessageDialog(
-                    null, "Niepoprawna kwota wydatku", "Błąd", JOptionPane.ERROR_MESSAGE);
+                    null, "Podaj poprawną kwotę wydatku", "Błąd", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
