@@ -1,15 +1,17 @@
 package pl.edu.pw.mini.moneyxchange.screens;
 
+import pl.edu.pw.mini.moneyxchange.data.*;
 import pl.edu.pw.mini.moneyxchange.dialogs.ExpenseDialog;
-import pl.edu.pw.mini.moneyxchange.data.Expense;
-import pl.edu.pw.mini.moneyxchange.data.Group;
-import pl.edu.pw.mini.moneyxchange.data.MoneyAction;
-import pl.edu.pw.mini.moneyxchange.data.User;
 import pl.edu.pw.mini.moneyxchange.utils.Layout;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class MainScreen extends JPanel {
@@ -30,15 +32,45 @@ public class MainScreen extends JPanel {
         // TODO: wszystkie akcje, nie tylko dodawanie przelewów
         actionsPanel = new JPanel(new GridBagLayout());
 
-        JPanel spacer = new JPanel();
-        spacer.setPreferredSize(new Dimension(0,0));
-        actionsPanel.add(spacer, Layout.getGridBagSpacerConstraints());
+// Create a list to hold both Transfer and Expense objects
+        List<SortablePanel> sortedPanels = new ArrayList<>();
+
+// Add completed transfers to the list
+        for (Transfer transfer : group.getCompletedTransfers()) {
+            sortedPanels.add(new SortablePanel(transfer.getDate(), transfer.getPanel()));
+        }
+
+// Add expenses to the list
+        for (Expense expense : group.getExpenses()) {
+            sortedPanels.add(new SortablePanel(expense.getDate(), expense.getPanel()));
+        }
+
+// Sort the panels based on date
+        sortedPanels.sort(Comparator.comparing(SortablePanel::getDate).reversed());
+
+// Add sorted panels to the actionsPanel
+        for (SortablePanel sortablePanel : sortedPanels) {
+            actionsPanel.add(sortablePanel.getPanel(), Layout.getGridBagElementConstraints());
+        }
+
         JScrollPane transfersScrollPane = new JScrollPane(actionsPanel);
+
+
         //importActions();
 
         JButton addPaymentButton = new JButton("Dodaj nową płatność");
 
         userList = new JList<>(group.getUsers().stream().map(User::getName).toArray(String[]::new));
+        userList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int selectedIndex = userList.getSelectedIndex();
+
+                if (selectedIndex != -1) {
+                    User selectedUser = group.getUsers().get(selectedIndex);
+                    selectedUser.showUserDetails();
+                }
+            }
+        });
         JScrollPane userListScrollPane = new JScrollPane(userList);
 
         int padding = 10;
@@ -114,6 +146,30 @@ public class MainScreen extends JPanel {
 
         for (MoneyAction action : actionsList) {
             actionsPanel.add(action.getPanel(), Layout.getGridBagElementConstraints());
+        }
+    }
+
+    class SortablePanel implements Comparable<SortablePanel> {
+        private Date date;
+        private JPanel panel;
+
+        public SortablePanel(Date date, JPanel panel) {
+            this.date = date;
+            this.panel = panel;
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        public JPanel getPanel() {
+            return panel;
+        }
+
+        @Override
+        public int compareTo(SortablePanel other) {
+            // Compare based on the date
+            return this.date.compareTo(other.date);
         }
     }
 }

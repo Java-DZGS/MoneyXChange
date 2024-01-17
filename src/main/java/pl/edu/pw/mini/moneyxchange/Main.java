@@ -26,7 +26,7 @@ public class Main extends JFrame {
 
         add(tabbedPane);
 
-        setSize(800, 600);
+        setSize(1000, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);

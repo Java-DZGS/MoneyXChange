@@ -30,17 +30,8 @@ public class UserDialog extends JDialog{
         addButton.addActionListener(e -> {
             // Get input values
             String name = nameField.getText();
-            int id;
-            try {
-                // Konwersja tekstu z pola tekstowego na int
-                id = Integer.parseInt(idField.getText());
-            } catch (NumberFormatException ex) {
-                // Obsługa błędu, gdy wprowadzony tekst nie jest liczbą całkowitą
-                JOptionPane.showMessageDialog(this, "To nie jest liczba całkowita. Spróbuj ponownie.", "Błąd", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
 
-            User newUser = new User(name, id);
+            User newUser = new User(name);
             newUser.setImage(image);
             Group.getInstance().addUser(newUser);
 
@@ -78,10 +69,6 @@ public class UserDialog extends JDialog{
         inputPanel.add(new JLabel("Imię:"));
         nameField = new JTextField();
         inputPanel.add(nameField);
-
-        inputPanel.add(new JLabel("Id:"));
-        idField = new JTextField();
-        inputPanel.add(idField);
 
         inputPanel.add(new JLabel("Obraz:"));
         imageLabel = new JLabel((ImageIcon) null); // TODO: Szczególnie to trzeba poprawić!!!
