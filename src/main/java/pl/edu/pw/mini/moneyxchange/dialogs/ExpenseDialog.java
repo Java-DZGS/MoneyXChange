@@ -20,7 +20,7 @@ public class ExpenseDialog extends JDialog {
     private final JTextField titleField;
     private final JDatePickerImpl datePicker;
     private final JTextField amountField;
-    //private final JComboBox<String> splitTypeComboBox;
+    private boolean amountValidationOK;
     private final JComboBox<String> payerComboBox;
 
     private final Group group;
@@ -71,7 +71,7 @@ public class ExpenseDialog extends JDialog {
 
         add(panel);
 
-        SwingUtils.addChangeListener(amountField, e -> parseAmount());
+        SwingUtils.addChangeListener(amountField, e -> handleAmountFieldTextChange());
 
         splitButton.addActionListener(e -> showUserSplitDialog(group.getUsers()));
 
@@ -80,7 +80,7 @@ public class ExpenseDialog extends JDialog {
                 return;
 
             if (!splitTypeSet) {
-                parseAmount();
+                handleAmountFieldTextChange();
                 EqualSplitter splitter = new EqualSplitter(amount);
                 for (User user : group.getUsers()) {
                     splitter.addUser(user, "");
@@ -93,12 +93,16 @@ public class ExpenseDialog extends JDialog {
 
     }
 
-    private boolean isDataSet()
-    {
-        if (amount == null || amount.isNegativeOrZero())
-        {
+    private boolean isDataSet() {
+        if (!amountValidationOK) {
             JOptionPane.showMessageDialog(
-                    null, "Podaj wartość wydatku większą od 0", "Błąd", JOptionPane.ERROR_MESSAGE);
+                    null, "Niepoprawna kwota wydatku", "Błąd", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (amount == null || amount.isNegativeOrZero()) {
+            JOptionPane.showMessageDialog(
+                    null, "Podaj kwotę wydatku większą od 0", "Błąd", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -127,12 +131,20 @@ public class ExpenseDialog extends JDialog {
         return paymentAdded;
     }
 
-    private void parseAmount() {
+    private void handleAmountFieldTextChange() {
         try {
+            // todo: obsługiwanie różnych walut?
             amount = Money.of(Double.parseDouble(amountField.getText()), Format.CURRENCY);
-        } catch (MonetaryException e) {
+            amountValidationOK = true;
+        } catch (MonetaryException | NumberFormatException e) {
             amount = Money.zero(Format.CURRENCY);
+            amountValidationOK = false;
         }
+
+        if (amountValidationOK)
+            amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        else
+            amountField.setBorder(BorderFactory.createLineBorder(Color.RED));
     }
 
     private void showUserSplitDialog(List<User> users) {

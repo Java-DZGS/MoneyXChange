@@ -103,8 +103,6 @@ public class MainScreen extends JPanel {
         if (dialog.isExpenseAdded()) {
             Expense expense = dialog.getExpense();
             group.addExpense(expense);
-            // Moim zdaniem wygodniej jest, żeby akcje nowsze były na górze, tak jak np. historia przelewów w banku
-            // Zgadzam się, nie umiałem :)
             actionsPanel.add(expense.getPanel(), Layout.getGridBagElementConstraints(), 0);
         }
     }
