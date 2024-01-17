@@ -1,8 +1,11 @@
 package pl.edu.pw.mini.moneyxchange.dialogs;
 
 import org.javamoney.moneta.Money;
+//import org.jdatepicker.JDatePicker;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
 import pl.edu.pw.mini.moneyxchange.data.*;
-import pl.edu.pw.mini.moneyxchange.utils.splitters.*;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 import pl.edu.pw.mini.moneyxchange.utils.splitters.EqualSplitter;
 
@@ -16,7 +19,7 @@ import java.util.*;
 
 public class ExpenseDialog extends JDialog {
     private final JTextField titleField;
-    private final JTextField dateField;
+    private final JDatePickerImpl datePicker;
     private final JTextField amountField;
     //private final JComboBox<String> splitTypeComboBox;
     private final JComboBox<String> payerComboBox;
@@ -35,7 +38,17 @@ public class ExpenseDialog extends JDialog {
         debtsMap = new HashMap<>();
 
         titleField = new JTextField();
-        dateField = new JTextField(Format.SIMPLE_DATE_FORMAT.format(new Date()));
+
+        UtilDateModel model = new UtilDateModel();
+        //model.setdate
+        Properties p = new Properties();
+        p.put("text.today", "Dzisiaj");
+        p.put("text.month", "Miesiąc");
+        p.put("text.year", "Rok");
+
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+        datePicker = new JDatePickerImpl(datePanel, new Format.DateLabelFormatter());//Format.DATE_LABEL_FORMATTER);
+
         amountField = new JTextField("20");
         userNames = group.getUsers().stream().map(User::getName).toArray(String[]::new);
         payerComboBox = new JComboBox<>(userNames);
@@ -49,7 +62,7 @@ public class ExpenseDialog extends JDialog {
         panel.add(new JLabel("Tytuł:"));
         panel.add(titleField);
         panel.add(new JLabel("Data:"));
-        panel.add(dateField);
+        panel.add(datePicker);
         panel.add(new JLabel("Kwota:"));
         panel.add(amountField);
         panel.add(new JLabel("Zapłacone przez:"));
@@ -84,7 +97,8 @@ public class ExpenseDialog extends JDialog {
                     amount,
                     debtsMap,
                     titleField.getText(),
-                    dateFormat.parse(dateField.getText()),
+                    // todo
+                    dateFormat.parse("22"),//datePicker.getText()),
                     ExpenseCategory.OTHER // todo
             );
         } catch (ParseException e) {
