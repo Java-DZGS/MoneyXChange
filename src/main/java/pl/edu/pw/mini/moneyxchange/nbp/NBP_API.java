@@ -17,12 +17,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+/**
+ * Klasa służąca do asynchronicznej komunikacji z API Narodowego Banku Polskiego.
+ */
 public class NBP_API {
     private static final String EXCHANGE_RATE_ENDPOINT = "https://api.nbp.pl/api/exchangerates/rates/";
 
+    /**
+     * Funkcja pomocnicza do asynchronicznej komunikacji z API NBP przy użyciu zapytań GET.
+     * Domyślny timeout - 30 sekund.
+     *
+     * @param endpoint API endpoint to send GET request to
+     * @return API JSON response
+     */
     private static CompletableFuture<JsonObject> getApiResponse(String endpoint) {
         HttpClient client = HttpClient.newHttpClient();
 
@@ -33,25 +42,22 @@ public class NBP_API {
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
-//                .thenApply(inputStreamHttpResponse -> {
-//                    System.out.println(inputStreamHttpResponse.statusCode());
-//                    return inputStreamHttpResponse;
-//                })
-                //TODO: Temporary, just for testing
-                .thenApply(v -> {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    return v;
-                })
                 .thenApply(HttpResponse::body)
                 .thenApply(InputStreamReader::new)
                 .thenApply(JsonParser::parseReader)
                 .thenApply(JsonElement::getAsJsonObject);
     }
 
+    /**
+     * Funkcja pobierająca asynchronicznie ostatnie {@code count} notowań waluty {@code currency} z API NBP.
+     * <br><br>
+     * <b>Uwaga: </b> Ze względu na błąd poza naszym zasięgiem, metoda {@code Stream::toList()} na niektórych komputerach
+     * nie kończy działania. Z tego powodu zastosowaliśmy rozwiązanie zastępcze i mniej efektywne — zebranie strumienia
+     * do iteratora używając {@code Stream::iterator()}, a następnie dodanie wszystkich elementów iteratora do listy.
+     * @param currency waluta, której notowania chcemy
+     * @param count ilość żądanych notowań
+     * @return lista żądanych notowań
+     */
     public static CompletableFuture<List<ExchangeRate>> getCurrencyExchangeRate(Currency currency, int count) {
         return getApiResponse("A/" + currency.getCode() + "/last/" + count + "/")
                 .thenApply(response -> response.getAsJsonArray("rates"))
