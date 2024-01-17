@@ -74,6 +74,12 @@ public class ExpenseDialog extends JDialog {
             dispose();
         });
 
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+        setVisible(true);
+
     }
 
     public Expense getExpense() {
