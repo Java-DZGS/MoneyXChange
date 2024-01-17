@@ -219,7 +219,7 @@ public class User implements Serializable {
             imageLabel.setMaximumSize(imageLabel.getPreferredSize());
 
             nameLabel = new JLabel(name);
-            JButton detailsButton = new JButton("Details");
+            JButton detailsButton = new JButton("Szczegóły");
 
             if (image != null) {
                 ImageIcon imageIcon = new ImageIcon(image.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
