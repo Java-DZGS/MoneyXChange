@@ -60,7 +60,7 @@ public class Group implements Serializable {
     /**
      * Support for property change events.
      */
-    private SwingPropertyChangeSupport propertyChangeSupport;
+    private transient SwingPropertyChangeSupport propertyChangeSupport;
 
     /**
      * Private constructor to prevent instantiation.
@@ -219,26 +219,31 @@ public class Group implements Serializable {
 
     /**
      * Serializes the group to a file named "group.ser".
+     *
+     * @throws IOException Any exception thrown by the underlying OutputStream.
      */
-    public void serialize() {
+    public void serialize() throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("group.ser"))) {
             oos.writeObject(instance);
-        } catch (IOException e) {
-            System.out.println("Nie udało się zserializować grupy");
         }
     }
 
     /**
      * Deserializes the group from the file named "group.ser".
      *
-     * @return The deserialized group.
+     * @throws IOException Any exception thrown by the underlying OutputStream.
+     * @throws ClassNotFoundException Class of Group cannot be found.
      */
-    public static Group deserialize() {
+    public static void deserialize() throws IOException, ClassNotFoundException {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("group.ser"))) {
-            return (Group) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Nie udało się zdeserializować grupy");
-            return null;
+            Group deserialized = (Group) ois.readObject();
+            deserialized.propertyChangeSupport = instance.propertyChangeSupport;
+            instance = deserialized;
+
+            instance.propertyChangeSupport.firePropertyChange("users", null, instance.users);
+            instance.propertyChangeSupport.firePropertyChange("expenses", null, instance.expenses);
+            instance.propertyChangeSupport.firePropertyChange("pendingTransfers", null, instance.pendingTransfers);
+            instance.propertyChangeSupport.firePropertyChange("completedTransfers", null, instance.completedTransfers);
         }
     }
 
