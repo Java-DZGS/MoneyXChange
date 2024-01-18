@@ -74,14 +74,12 @@ public class Expense implements MoneyAction, Serializable {
 
         this.propertyChangeSupport = new SwingPropertyChangeSupport(this);
 
-        payer.addExpense(this);
-
         for (var entry : debts.entrySet()) {
             User user = entry.getKey();
             Money debtAmount = entry.getValue();
-            if (user.getId() == payer.getId()) continue;
-            Transfer transfer = new Transfer(name, date, debtAmount, user, payer);
-            user.addPendingTransfer(transfer);
+            if (user.getId() == payer.getId()|| debtAmount.isZero()) continue;
+            Transfer transfer = new Transfer(date, debtAmount, user, payer);
+            Group.getInstance().addPendingTransfer(transfer);
         }
     }
 

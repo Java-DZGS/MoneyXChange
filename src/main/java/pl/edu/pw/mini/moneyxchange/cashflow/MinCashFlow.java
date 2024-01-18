@@ -105,9 +105,9 @@ public class MinCashFlow {
                     if (amount == 0) continue;
 
                     if (amount > 0)
-                        transfer = new Transfer("", today, Money.of(nonZeroBalances.get(j), Format.CURRENCY), users.get(k), users.get(j));
+                        transfer = new Transfer( today, Money.of(nonZeroBalances.get(j), Format.CURRENCY), users.get(k), users.get(j));
                     else
-                        transfer = new Transfer("", today, Money.of(-nonZeroBalances.get(j), Format.CURRENCY), users.get(j), users.get(k));
+                        transfer = new Transfer(today, Money.of(-nonZeroBalances.get(j), Format.CURRENCY), users.get(j), users.get(k));
 
                     nonZeroBalances.set(k, nonZeroBalances.get(k) + amount);
                     nonZeroBalances.set(j, 0.0);

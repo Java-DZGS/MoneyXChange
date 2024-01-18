@@ -106,7 +106,7 @@ public class TransfersScreen extends JPanel {
             User fromUser = Group.getInstance().findUserByName(fromField.getText());
             User toUser = Group.getInstance().findUserByName(toField.getText());
 
-            Transfer newTransfer = new Transfer(title, date, amount, fromUser, toUser);
+            Transfer newTransfer = new Transfer(date, amount, fromUser, toUser);
             transfers.add(newTransfer);
 
             displayTransfers();
@@ -125,13 +125,11 @@ public class TransfersScreen extends JPanel {
         filterDialog.setLayout(new BorderLayout());
 
         // Create radio buttons for filter options
-        JRadioButton titleRadioButton = new JRadioButton("Filter by Title");
         JRadioButton dateRadioButton = new JRadioButton("Filter by Date");
         JRadioButton amountRadioButton = new JRadioButton("Filter by Amount");
 
         // Group the radio buttons
         ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(titleRadioButton);
         buttonGroup.add(dateRadioButton);
         buttonGroup.add(amountRadioButton);
 
@@ -139,8 +137,7 @@ public class TransfersScreen extends JPanel {
         JButton applyFilterButton = new JButton("Apply Filter");
 
         // Add components to the filter dialog
-        JPanel optionsPanel = new JPanel(new GridLayout(3, 1));
-        optionsPanel.add(titleRadioButton);
+        JPanel optionsPanel = new JPanel(new GridLayout(2, 1));
         optionsPanel.add(dateRadioButton);
         optionsPanel.add(amountRadioButton);
 
@@ -153,10 +150,7 @@ public class TransfersScreen extends JPanel {
         // Add action listener for the "Apply Filter" button
         applyFilterButton.addActionListener(e -> {
             // Determine the selected filter option
-            if (titleRadioButton.isSelected()) {
-                // Filter by title
-                applyTitleFilter();
-            } else if (dateRadioButton.isSelected()) {
+            if (dateRadioButton.isSelected()) {
                 // Filter by date
                 applyDateFilter();
             } else if (amountRadioButton.isSelected()) {
@@ -173,21 +167,6 @@ public class TransfersScreen extends JPanel {
         filterDialog.setLocationRelativeTo(this);
         filterDialog.setVisible(true);
     }
-
-    private void applyTitleFilter() {
-        String keyword = JOptionPane.showInputDialog(this, "Enter Title Keyword:");
-        if (keyword != null) {
-            List<Transfer> filteredTransfers = new ArrayList<>();
-            for (Transfer transfer : transfers) {
-                if (transfer.getTitle().toLowerCase().contains(keyword.toLowerCase())) {
-                    filteredTransfers.add(transfer);
-                }
-            }
-            transfers = filteredTransfers;
-            displayTransfers();
-        }
-    }
-
     private void applyDateFilter() {
         String keyword = JOptionPane.showInputDialog(this, "Enter Date Keyword:");
         if (keyword != null) {

@@ -35,22 +35,6 @@ public class User implements Serializable {
      * The profile image of the user.
      */
     private BufferedImage image;
-
-    /**
-     * The list of expenses associated with the user.
-     */
-    private List<Expense> expenses;
-
-    /**
-     * The list of pending transfers associated with the user.
-     */
-    private List<Transfer> pendingTransfers;
-
-    /**
-     * The list of completed transfers associated with the user.
-     */
-    private List<Transfer> completedTransfers;
-
     /**
      * Support for property change events.
      */
@@ -64,11 +48,7 @@ public class User implements Serializable {
     public User(String name) {
         this.id = ID++;
         this.name = name;
-        this.expenses = new ArrayList<>();
-        this.pendingTransfers = new ArrayList<>();
-        this.completedTransfers = new ArrayList<>();
         this.image = null;
-
         this.propertyChangeSupport = new SwingPropertyChangeSupport(this);
     }
 
@@ -98,65 +78,6 @@ public class User implements Serializable {
      */
     public int getId() {
         return id;
-    }
-
-    /**
-     * Gets the list of expenses associated with the user.
-     *
-     * @return The list of expenses.
-     */
-    public List<Expense> getExpenses() {
-        return expenses;
-    }
-
-    /**
-     * Adds a new expense to the user's list of expenses.
-     *
-     * @param expense The expense to be added.
-     */
-    public void addExpense(Expense expense) {
-        expenses.add(expense);
-        propertyChangeSupport.firePropertyChange("expenses", null, expenses);
-    }
-
-    /**
-     * Gets the list of pending transfers associated with the user.
-     *
-     * @return The list of pending transfers.
-     */
-    public List<Transfer> getPendingTransfers() {
-        return pendingTransfers;
-    }
-
-    /**
-     * Adds a new pending transfer to the user's list of pending transfers.
-     *
-     * @param transfer The pending transfer to be added.
-     */
-    public void addPendingTransfer(Transfer transfer) {
-        pendingTransfers.add(transfer);
-        propertyChangeSupport.firePropertyChange("pendingTransfers", null, pendingTransfers);
-    }
-
-    /**
-     * Gets the list of completed transfers associated with the user.
-     *
-     * @return The list of completed transfers.
-     */
-    public List<Transfer> getCompletedTransfers() {
-        return completedTransfers;
-    }
-
-    /**
-     * Adds a new completed transfer to the user's list of completed transfers.
-     *
-     * @param transfer The completed transfer to be added.
-     */
-    public void addCompletedTransfer(Transfer transfer) {
-        pendingTransfers.remove(transfer);
-        completedTransfers.add(transfer);
-        propertyChangeSupport.firePropertyChange("pendingTransfers", null, pendingTransfers);
-        propertyChangeSupport.firePropertyChange("completedTransfers", null, completedTransfers);
     }
 
     /**
