@@ -22,7 +22,7 @@ public class User implements Serializable {
     private String name;
 
     /**
-     * A unique identifier for the user.
+	 * Static field to track the next available user ID.
      */
     private static int ID = 0;
 
