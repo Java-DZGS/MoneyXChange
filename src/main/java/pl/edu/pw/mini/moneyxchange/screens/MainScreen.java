@@ -8,10 +8,10 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class MainScreen extends JPanel {
     private final JPanel actionsPanel;
@@ -25,37 +25,10 @@ public class MainScreen extends JPanel {
         JButton serializeButton = new JButton("Serializuj grupę do pliku");
         JButton deserializeButton = new JButton("Deserializuj grupę z pliku");
 
-        // TODO: wszystkie akcje, nie tylko dodawanie przelewów
         actionsPanel = new JPanel(new GridBagLayout());
+        showActions();
 
-        // Create a list to hold both Transfer and Expense objects
-        List<SortablePanel> sortedPanels = new ArrayList<>();
-
-        // Add completed transfers to the list
-        for (Transfer transfer : Group.getInstance().getCompletedTransfers()) {
-            sortedPanels.add(new SortablePanel(transfer.getDate(), transfer.getPanel()));
-        }
-
-        // Add expenses to the list
-        for (Expense expense : Group.getInstance().getExpenses()) {
-            sortedPanels.add(new SortablePanel(expense.getDate(), expense.getPanel()));
-        }
-
-        // Sort the panels based on date
-        sortedPanels.sort(Comparator.comparing(SortablePanel::getDate).reversed());
-
-        // Add sorted panels to the actionsPanel
-        for (SortablePanel sortablePanel : sortedPanels) {
-            actionsPanel.add(sortablePanel.getPanel(), Layout.getGridBagElementConstraints());
-        }
-
-        JPanel spacer = new JPanel();
-        spacer.setPreferredSize(new Dimension(0, 0));
-        actionsPanel.add(spacer, Layout.getGridBagSpacerConstraints());
-
-        JScrollPane transfersScrollPane = new JScrollPane(actionsPanel);
-
-        //importActions();
+        JScrollPane actionScrollPane = new JScrollPane(actionsPanel);
 
         JButton addPaymentButton = new JButton("Dodaj nową płatność");
 
@@ -86,7 +59,7 @@ public class MainScreen extends JPanel {
 
         JPanel historyPanel = new JPanel(new BorderLayout());
         historyPanel.add(new JLabel("Historia akcji"), BorderLayout.NORTH);
-        historyPanel.add(transfersScrollPane, BorderLayout.CENTER);
+        historyPanel.add(actionScrollPane, BorderLayout.CENTER);
         historyPanel.add(addPaymentButton, BorderLayout.SOUTH);
 
         JPanel usersPanel = new JPanel(new BorderLayout());
@@ -94,15 +67,18 @@ public class MainScreen extends JPanel {
         usersPanel.add(userListScrollPane, BorderLayout.CENTER);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, historyPanel, usersPanel);
-        splitPane.setResizeWeight(0.5);
+        splitPane.setResizeWeight(0.75);
 
         add(topPanel, BorderLayout.NORTH);
         add(splitPane, BorderLayout.CENTER);
 
         changeNameButton.addActionListener(e -> {
-            String newName = JOptionPane.showInputDialog("Wprowadź nową nazwę grupy:");
+            String newName = JOptionPane.showInputDialog("Wprowadź nową nazwę grupy:", Group.getInstance().getName());
+            if(newName == null)
+                return;
+
             Group.getInstance().setName(newName);
-            groupNameLabel.setText("Nazwa grupy: " + Group.getInstance().getName());
+            groupNameLabel.setText(Group.getInstance().getName());
         });
 
         serializeButton.addActionListener(e -> {
@@ -123,13 +99,21 @@ public class MainScreen extends JPanel {
                 JOptionPane.showMessageDialog(null, "W trakcie deserializacji wystąpił błąd!", "Błąd", JOptionPane.ERROR_MESSAGE);
             }
 
+            showActions();
             groupNameLabel.setText(Group.getInstance().getName());
-            userList.setListData(Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new));
             JOptionPane.showMessageDialog(null, "Grupa zdeserializowana z pliku.");
         });
 
         addPaymentButton.addActionListener(e -> {
             showPaymentDialog();
+        });
+
+        Group.getInstance().addListener(evt -> {
+            if(evt.getPropertyName().equals("action")) {
+                actionsPanel.add((JPanel) evt.getNewValue(), Layout.getGridBagElementConstraints(), 0);
+            } else if (evt.getPropertyName().equals("users")) {
+                userList.setListData(Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new));
+            }
         });
     }
 
@@ -151,27 +135,33 @@ public class MainScreen extends JPanel {
         }
     }
 
-    class SortablePanel implements Comparable<SortablePanel> {
-        private Date date;
-        private JPanel panel;
+    private void showActions() {
+        actionsPanel.removeAll();
 
-        public SortablePanel(Date date, JPanel panel) {
-            this.date = date;
-            this.panel = panel;
-        }
+        var transfers = Group.getInstance().getCompletedTransfers()
+                .stream().map(t -> new Action(t.getDate(), t.getPanel()));
+        var expenses = Group.getInstance().getExpenses()
+                .stream().map(e -> new Action(e.getDate(), e.getPanel()));
 
-        public Date getDate() {
-            return date;
-        }
+        var actions = Stream.concat(transfers, expenses).sorted(Comparator.comparing(Action::date).reversed()).iterator();
 
-        public JPanel getPanel() {
-            return panel;
-        }
+        actions.forEachRemaining(action -> {
+            actionsPanel.add(action.panel, Layout.getGridBagElementConstraints());
+        });
 
-        @Override
-        public int compareTo(SortablePanel other) {
-            // Compare based on the date
-            return this.date.compareTo(other.date);
-        }
+        JPanel spacer = new JPanel();
+        spacer.setPreferredSize(new Dimension(0, 0));
+        actionsPanel.add(spacer, Layout.getGridBagSpacerConstraints());
+
+        actionsPanel.revalidate();
+        actionsPanel.repaint();
     }
+
+    private record Action(Date date, JPanel panel) implements Comparable<Action> {
+        @Override
+            public int compareTo(Action other) {
+                // Compare based on the date
+                return this.date.compareTo(other.date);
+            }
+        }
 }

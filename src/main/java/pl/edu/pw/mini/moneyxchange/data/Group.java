@@ -182,6 +182,7 @@ public class Group implements Serializable {
     public void addExpense(Expense expense) {
         expenses.add(expense);
         propertyChangeSupport.firePropertyChange("expenses", null, expenses);
+        propertyChangeSupport.firePropertyChange("action", null, expense.getPanel());
     }
 
     /**
@@ -192,6 +193,7 @@ public class Group implements Serializable {
     public void addPendingTransfer(Transfer transfer) {
         pendingTransfers.add(transfer);
         propertyChangeSupport.firePropertyChange("pendingTransfers", null, pendingTransfers);
+
     }
 
     /**
@@ -202,6 +204,7 @@ public class Group implements Serializable {
     public void addCompletedTransfer(Transfer transfer) {
         completedTransfers.add(transfer);
         propertyChangeSupport.firePropertyChange("completedTransfers", null, completedTransfers);
+        propertyChangeSupport.firePropertyChange("action", null, transfer.getPanel());
     }
 
     /**
@@ -215,6 +218,7 @@ public class Group implements Serializable {
 
         propertyChangeSupport.firePropertyChange("pendingTransfers", null, pendingTransfers);
         propertyChangeSupport.firePropertyChange("completedTransfers", null, completedTransfers);
+        propertyChangeSupport.firePropertyChange("action", null, transfer.getPanel());
     }
 
     /**
