@@ -35,7 +35,7 @@ public class Group implements Serializable {
     /**
      * The name of the group.
      */
-    private String name = "Unnamed group 1";
+    private String name = "Grupa 1";
 
     /**
      * The list of users in the group.
