@@ -22,12 +22,12 @@ public class Transfer implements MoneyAction, Serializable {
     /**
      * The date of the transfer.
      */
-    private final Date date;
+    private Date date;
 
     /**
      * The amount of money being transferred.
      */
-    private final Money amount;
+    private Money amount;
 
     /**
      * The user sending the transfer.
@@ -73,6 +73,7 @@ public class Transfer implements MoneyAction, Serializable {
     public Date getDate() {
         return date;
     }
+    public void setDate(Date date) { this.date = date;}
 
     /**
      * Gets the amount of money being transferred.
@@ -82,6 +83,7 @@ public class Transfer implements MoneyAction, Serializable {
     public Money getAmount() {
         return amount;
     }
+    public void setAmount(Money amount) { this.amount = amount;}
 
     /**
      * Gets the user receiving the transfer.
