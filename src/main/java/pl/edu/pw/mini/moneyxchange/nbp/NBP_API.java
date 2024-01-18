@@ -17,12 +17,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+/**
+ * Class for async communication with Narodowy Bank Polski API.
+ */
 public class NBP_API {
+    /**
+     * Main exchange rate endpoint
+     */
     private static final String EXCHANGE_RATE_ENDPOINT = "https://api.nbp.pl/api/exchangerates/rates/";
 
+    /**
+     * Helper function for async communication with NBP API using GET requests.
+     * Default timeout - 30 seconds
+     *
+     * @param endpoint API endpoint to send GET request to
+     * @return API JSON response
+     */
     private static CompletableFuture<JsonObject> getApiResponse(String endpoint) {
         HttpClient client = HttpClient.newHttpClient();
 
@@ -33,25 +45,23 @@ public class NBP_API {
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
-//                .thenApply(inputStreamHttpResponse -> {
-//                    System.out.println(inputStreamHttpResponse.statusCode());
-//                    return inputStreamHttpResponse;
-//                })
-                //TODO: Temporary, just for testing
-                .thenApply(v -> {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    return v;
-                })
                 .thenApply(HttpResponse::body)
                 .thenApply(InputStreamReader::new)
                 .thenApply(JsonParser::parseReader)
                 .thenApply(JsonElement::getAsJsonObject);
     }
 
+    /**
+     * Function for async retrieval of last {@code count} exchange rates of {@code currency} from NBP API.
+     * <br><br>
+     * <b>Note:</b> Due to bug beyond our influence, the {@code Stream::toList()} method gets stuck on some machines.
+     * To fix that we use less efficient but working solution — we collect the stream to Iterator using {@code Stream::iterator()},
+     * and then we put all objects from said iterator into a List.
+     *
+     * @param currency currency for which to return the exchange rates
+     * @param count number of exchange rates to return
+     * @return list of exchange rates
+     */
     public static CompletableFuture<List<ExchangeRate>> getCurrencyExchangeRate(Currency currency, int count) {
         return getApiResponse("A/" + currency.getCode() + "/last/" + count + "/")
                 .thenApply(response -> response.getAsJsonArray("rates"))

@@ -3,6 +3,9 @@ package pl.edu.pw.mini.moneyxchange.nbp;
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 
+/**
+ * Currency enum for communication with NBP API.
+ */
 public enum Currency {
     USD("dolar amerykański"),
     AUD("dolar australijski"),
@@ -26,6 +29,10 @@ public enum Currency {
         return currencyUnit + " – " + name;
     }
 
+    /**
+     * Currency code (maybe ISO?) for communication with NBP API
+     * @return currency code
+     */
     public String getCode() {
         return super.name();
     }
