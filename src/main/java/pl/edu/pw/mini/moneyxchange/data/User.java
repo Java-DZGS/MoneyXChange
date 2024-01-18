@@ -159,6 +159,14 @@ public class User implements Serializable {
             image = ImageIO.read(in);
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", name=" + name +
+                '}';
+    }
+
     /**
      * Inner class representing a panel displaying user information.
      */

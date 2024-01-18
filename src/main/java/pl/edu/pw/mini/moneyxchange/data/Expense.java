@@ -151,7 +151,7 @@ public class Expense implements MoneyAction, Serializable {
     public String toString() {
         return "Expense{" +
                 "creator=" + payer +
-                ", amount=" + amount +
+                ", amount=" + Format.MONETARY_FORMAT.format(amount) +
                 ", name='" + name + '\'' +
                 ", date='" + date + '\'' +
                 '}';

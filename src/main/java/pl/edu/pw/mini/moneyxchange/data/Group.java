@@ -181,6 +181,7 @@ public class Group implements Serializable {
      */
     public void addExpense(Expense expense) {
         expenses.add(expense);
+        expenses.sort(Comparator.comparing(Expense::getDate).reversed());
         propertyChangeSupport.firePropertyChange("expenses", null, expenses);
         propertyChangeSupport.firePropertyChange("action", null, expense.getPanel());
     }
@@ -192,8 +193,9 @@ public class Group implements Serializable {
      */
     public void addPendingTransfer(Transfer transfer) {
         pendingTransfers.add(transfer);
+        //TODO: not working
+//        pendingTransfers = minTransfers(pendingTransfers);
         propertyChangeSupport.firePropertyChange("pendingTransfers", null, pendingTransfers);
-
     }
 
     /**
@@ -203,6 +205,7 @@ public class Group implements Serializable {
      */
     public void addCompletedTransfer(Transfer transfer) {
         completedTransfers.add(transfer);
+        completedTransfers.sort(Comparator.comparing(Transfer::getDate).reversed());
         propertyChangeSupport.firePropertyChange("completedTransfers", null, completedTransfers);
         propertyChangeSupport.firePropertyChange("action", null, transfer.getPanel());
     }
@@ -215,6 +218,8 @@ public class Group implements Serializable {
     public void markTransferAsCompleted(Transfer transfer) {
         pendingTransfers.remove(transfer);
         completedTransfers.add(transfer);
+
+        completedTransfers.sort(Comparator.comparing(Transfer::getDate).reversed());
 
         propertyChangeSupport.firePropertyChange("pendingTransfers", null, pendingTransfers);
         propertyChangeSupport.firePropertyChange("completedTransfers", null, completedTransfers);
@@ -279,11 +284,11 @@ public class Group implements Serializable {
      * Creates dummy data for testing and presentation purposes.
      */
     public void createDummyData() {
-        users.add(new User("Bronisław"));
-        users.add(new User("Stanisław"));
-        users.add(new User("Radosław"));
-        users.add(new User("Władysław"));
-        users.add(new User("Krasnystaw"));
+        addUser(new User("Bronisław"));
+        addUser(new User("Stanisław"));
+        addUser(new User("Radosław"));
+        addUser(new User("Władysław"));
+        addUser(new User("Krasnystaw"));
 
         try {
             File image = new File("test.png");
@@ -308,7 +313,7 @@ public class Group implements Serializable {
                     }},
                     "Pizza", dateFormat.parse("2023-01-01"), ExpenseCategory.FOOD
             );
-            expenses.add(expense1);
+            addExpense(expense1);
 
             Expense expense2 = new Expense(users.get(4), Money.of(30.0, Format.CURRENCY),
                     new HashMap<>() {{
@@ -320,7 +325,7 @@ public class Group implements Serializable {
                     }},
                     "Uber", dateFormat.parse("2023-01-02"), ExpenseCategory.TRANSPORT
             );
-            expenses.add(expense2);
+            addExpense(expense2);
 
             Expense expense3 = new Expense(users.get(3), Money.of(45.0, Format.CURRENCY),
                     new HashMap<>() {{
@@ -332,6 +337,8 @@ public class Group implements Serializable {
                     }},
                     "Movies", dateFormat.parse("2023-01-03"), ExpenseCategory.ENTERTAINMENT
             );
+            addExpense(expense3);
+
             Expense expense4 = new Expense(users.get(1), Money.of(50.0, Format.CURRENCY),
                     new HashMap<>() {{
                         put(users.get(0), Money.of(0.0, Format.CURRENCY));
@@ -342,11 +349,9 @@ public class Group implements Serializable {
                     }},
                     "Fries", dateFormat.parse("2023-01-01"), ExpenseCategory.FOOD
             );
-            expenses.add(expense4);
+            addExpense(expense4);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
-        markTransferAsCompleted(pendingTransfers.get(0));
     }
 }

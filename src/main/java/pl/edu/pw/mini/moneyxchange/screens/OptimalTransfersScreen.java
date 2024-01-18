@@ -11,12 +11,9 @@ import java.util.List;
 
 public class OptimalTransfersScreen extends JPanel {
     private List<Transfer> transfers;
-    private final Group group;
     private final JPanel transfersPanel;
     public OptimalTransfersScreen() {
-        group = Group.getInstance();
-        group.calculatePendingTransfers();
-        transfers = group.getPendingTransfers();
+        transfers = Group.getInstance().getPendingTransfers();
 
         // Create components
         transfersPanel = new JPanel(new GridBagLayout());
@@ -37,7 +34,8 @@ public class OptimalTransfersScreen extends JPanel {
             if(!evt.getPropertyName().equals("pendingTransfers")) return;
 
             //noinspection unchecked
-            transfers = group.getPendingTransfers();
+            transfers = Group.getInstance().getPendingTransfers();
+            displayTransfers();
         });
 
     }

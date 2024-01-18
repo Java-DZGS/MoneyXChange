@@ -110,7 +110,7 @@ public class MainScreen extends JPanel {
 
         Group.getInstance().addListener(evt -> {
             if(evt.getPropertyName().equals("action")) {
-                actionsPanel.add((JPanel) evt.getNewValue(), Layout.getGridBagElementConstraints(), 0);
+                showActions();
             } else if (evt.getPropertyName().equals("users")) {
                 userList.setListData(Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new));
             }
@@ -118,13 +118,10 @@ public class MainScreen extends JPanel {
     }
 
     private void showPaymentDialog() {
-        ExpenseDialog dialog = new ExpenseDialog(Group.getInstance());
-
-        if (dialog.isExpenseAdded()) {
-            Expense expense = dialog.getExpense();
-            Group.getInstance().addExpense(expense);
-            actionsPanel.add(expense.getPanel(), Layout.getGridBagElementConstraints(), 0);
-        }
+        ExpenseDialog dialog = new ExpenseDialog();
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 
     private void importActions() {

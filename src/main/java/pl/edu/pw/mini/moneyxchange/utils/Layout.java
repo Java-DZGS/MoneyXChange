@@ -17,4 +17,6 @@ public class Layout {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         return gbc;
     }
+
+//    public static void text
 }
