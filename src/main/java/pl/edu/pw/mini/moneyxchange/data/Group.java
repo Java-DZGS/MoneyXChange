@@ -14,6 +14,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static pl.edu.pw.mini.moneyxchange.cashflow.MinCashFlow.minTransfers;
+
 /**
  * Represents a group of users with shared expenses and transfers.
  */
@@ -43,17 +45,17 @@ public class Group implements Serializable {
     /**
      * The list of expenses in the group.
      */
-    private final List<Expense> expenses;
+    private List<Expense> expenses;
 
     /**
      * The list of pending transfers in the group.
      */
-    private final List<Transfer> pendingTransfers;
+    private List<Transfer> pendingTransfers;
 
     /**
      * The list of completed transfers in the group.
      */
-    private final List<Transfer> completedTransfers;
+    private List<Transfer> completedTransfers;
 
     /**
      * Support for property change events.
@@ -71,7 +73,6 @@ public class Group implements Serializable {
 
         propertyChangeSupport = new SwingPropertyChangeSupport(this);
 
-        createDummyData();
     }
 
     /**
@@ -82,6 +83,7 @@ public class Group implements Serializable {
     public static synchronized Group getInstance() {
         if (instance == null) {
             instance = new Group();
+            instance.createDummyData();
         }
         return instance;
     }
@@ -140,6 +142,14 @@ public class Group implements Serializable {
      */
     public List<Transfer> getPendingTransfers() {
         return pendingTransfers;
+    }
+
+    /**
+     * Calculates the list of optimal transfers in the group.
+     */
+    public void calculatePendingTransfers(){
+        pendingTransfers = minTransfers(pendingTransfers);
+        propertyChangeSupport.firePropertyChange("pendingTransfers", null, pendingTransfers);
     }
 
     /**
@@ -278,14 +288,6 @@ public class Group implements Serializable {
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), Money.of(50.0, Format.CURRENCY), users.get(0), users.get(2)));
-            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), Money.of(30.0, Format.CURRENCY), users.get(3), users.get(4)));
-            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), Money.of(50.0, Format.CURRENCY), users.get(1), users.get(2)));
-            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), Money.of(30.0, Format.CURRENCY), users.get(3), users.get(4)));
-            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), Money.of(50.0, Format.CURRENCY), users.get(1), users.get(2)));
-            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), Money.of(30.0, Format.CURRENCY), users.get(3), users.get(4)));
-            pendingTransfers.add(new Transfer("Dinner", dateFormat.parse("2023-01-15"), Money.of(40.0, Format.CURRENCY), users.get(1), users.get(3)));
-            pendingTransfers.add(new Transfer("Groceries", dateFormat.parse("2023-01-20"), Money.of(20.0, Format.CURRENCY), users.get(3), users.get(2)));
 
             Expense expense1 = new Expense(users.get(1), Money.of(50.0, Format.CURRENCY),
                     new HashMap<>() {{
@@ -321,7 +323,6 @@ public class Group implements Serializable {
                     }},
                     "Movies", dateFormat.parse("2023-01-03"), ExpenseCategory.ENTERTAINMENT
             );
-            users.get(3).addExpense(expense3);
             Expense expense4 = new Expense(users.get(1), Money.of(50.0, Format.CURRENCY),
                     new HashMap<>() {{
                         put(users.get(0), Money.of(0.0, Format.CURRENCY));

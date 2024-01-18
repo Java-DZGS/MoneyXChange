@@ -21,7 +21,6 @@ import java.util.Properties;
 
 
 public class CompleteTransferDialog extends JDialog {
-    private final JTextField titleField;
     private final JTextField amountField;
     private final JDatePickerImpl datePicker;
     private Money transferAmount;
@@ -44,19 +43,15 @@ public class CompleteTransferDialog extends JDialog {
         JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
         datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 
-        titleField = new JTextField(transfer.getTitle());
-        titleField.setEditable(false);
         amountField = new JTextField(Format.MONETARY_FORMAT.format(transfer.getAmount()));
         SwingUtils.addChangeListener(amountField, e -> handleTransferTextInputChange());
 
         JButton completeButton = new JButton("Wykonaj przelew");
 
-        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Adjusted the layout for the date picker
-        panel.add(new JLabel("Tytuł:"));
-        panel.add(titleField);
         panel.add(new JLabel("Data:"));
         panel.add(datePicker);
         panel.add(new JLabel("Kwota:"));
@@ -73,7 +68,7 @@ public class CompleteTransferDialog extends JDialog {
                     transfer.setDate(getSelectedDate());
                     group.markTransferAsCompleted(transfer);
                 } else {
-                    Transfer newTransfer = new Transfer(transfer.getTitle(), getSelectedDate(), enteredAmount, transfer.getFromUser(), transfer.getToUser());
+                    Transfer newTransfer = new Transfer(getSelectedDate(), enteredAmount, transfer.getFromUser(), transfer.getToUser());
                     group.addCompletedTransfer(newTransfer);
 
                     Money remainingAmount = transferAmount.subtract(enteredAmount);

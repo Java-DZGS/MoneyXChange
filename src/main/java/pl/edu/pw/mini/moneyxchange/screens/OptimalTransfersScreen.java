@@ -9,21 +9,14 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.List;
 
-import static pl.edu.pw.mini.moneyxchange.cashflow.MinCashFlow.minTransfers;
-
 public class OptimalTransfersScreen extends JPanel {
     private List<Transfer> transfers;
     private final Group group;
     private final JPanel transfersPanel;
     public OptimalTransfersScreen() {
         group = Group.getInstance();
+        group.calculatePendingTransfers();
         transfers = group.getPendingTransfers();
-        transfers = minTransfers(transfers);
-
-        group.getPendingTransfers().clear();
-        for(Transfer transfer: transfers) {
-            group.addPendingTransfer(transfer);
-        }
 
         // Create components
         transfersPanel = new JPanel(new GridBagLayout());
@@ -44,7 +37,8 @@ public class OptimalTransfersScreen extends JPanel {
             if(!evt.getPropertyName().equals("pendingTransfers")) return;
 
             //noinspection unchecked
-            transfers = minTransfers((List<Transfer>) evt.getNewValue());
+            group.calculatePendingTransfers();
+            transfers = group.getPendingTransfers();
         });
 
     }
