@@ -31,8 +31,6 @@ public class SplitDialog extends JDialog {
 
     private final List<User> users;
     private final Money expenseAmount;
-    private double leftAmount;
-
     private boolean resultOK;
 
     public SplitDialog(List<User> users, Money amount) {

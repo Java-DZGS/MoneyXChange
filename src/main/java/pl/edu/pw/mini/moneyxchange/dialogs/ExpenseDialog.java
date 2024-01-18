@@ -1,24 +1,26 @@
 package pl.edu.pw.mini.moneyxchange.dialogs;
 
 import org.javamoney.moneta.Money;
+//import org.jdatepicker.JDatePicker;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
 import pl.edu.pw.mini.moneyxchange.data.*;
-import pl.edu.pw.mini.moneyxchange.utils.splitters.*;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
+import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 import pl.edu.pw.mini.moneyxchange.utils.splitters.EqualSplitter;
 
+import javax.money.MonetaryException;
 import javax.swing.*;
 import java.awt.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
 
 public class ExpenseDialog extends JDialog {
     private final JTextField titleField;
-    private final JTextField dateField;
+    private final JDatePickerImpl datePicker;
     private final JTextField amountField;
-    //private final JComboBox<String> splitTypeComboBox;
+    private boolean amountValidationOK;
     private final JComboBox<String> payerComboBox;
 
     private final Group group;
@@ -35,8 +37,18 @@ public class ExpenseDialog extends JDialog {
         debtsMap = new HashMap<>();
 
         titleField = new JTextField();
-        dateField = new JTextField(Format.SIMPLE_DATE_FORMAT.format(new Date()));
-        amountField = new JTextField("20");
+
+        UtilDateModel model = new UtilDateModel();
+        model.setValue(new Date());
+        Properties p = new Properties();
+        p.put("text.today", "Dzisiaj");
+        p.put("text.month", "Miesiąc");
+        p.put("text.year", "Rok");
+
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+        datePicker = new JDatePickerImpl(datePanel, new Format.DateLabelFormatter());//Format.DATE_LABEL_FORMATTER);
+
+        amountField = new JTextField();
         userNames = group.getUsers().stream().map(User::getName).toArray(String[]::new);
         payerComboBox = new JComboBox<>(userNames);
 
@@ -49,7 +61,7 @@ public class ExpenseDialog extends JDialog {
         panel.add(new JLabel("Tytuł:"));
         panel.add(titleField);
         panel.add(new JLabel("Data:"));
-        panel.add(dateField);
+        panel.add(datePicker);
         panel.add(new JLabel("Kwota:"));
         panel.add(amountField);
         panel.add(new JLabel("Zapłacone przez:"));
@@ -59,11 +71,24 @@ public class ExpenseDialog extends JDialog {
 
         add(panel);
 
-        splitButton.addActionListener(e -> showUserSplitDialog(group.getUsers()));
+        SwingUtils.addChangeListener(amountField, e -> handleAmountFieldTextChange());
+
+        splitButton.addActionListener(e -> {
+            if (!amountValidationOK) {
+                JOptionPane.showMessageDialog(
+                        null, "Podaj poprawną kwotę wydatku", "Błąd", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            showUserSplitDialog(group.getUsers());
+        });
 
         addButton.addActionListener(e -> {
+            if (!isDataSet())
+                return;
+
             if (!splitTypeSet) {
-                parseAmount();
+                handleAmountFieldTextChange();
                 EqualSplitter splitter = new EqualSplitter(amount);
                 for (User user : group.getUsers()) {
                     splitter.addUser(user, "");
@@ -82,37 +107,69 @@ public class ExpenseDialog extends JDialog {
 
     }
 
-    public Expense getExpense() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            return new Expense(
-                    group.findUserByName(Objects.requireNonNull(payerComboBox.getSelectedItem()).toString()),
-                    amount,
-                    debtsMap,
-                    titleField.getText(),
-                    dateFormat.parse(dateField.getText()),
-                    ExpenseCategory.OTHER // todo
-            );
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+    public ExpenseDialog(Group group, User payer) {
+        this(group);
+
+        payerComboBox.setSelectedItem(payer.getName());
+        payerComboBox.revalidate();
+        payerComboBox.repaint();
+    }
+
+    private boolean isDataSet() {
+        if (!amountValidationOK) {
+            JOptionPane.showMessageDialog(
+                    null, "Podaj poprawną kwotę wydatku", "Błąd", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
+
+        if (amount == null || amount.isNegativeOrZero()) {
+            JOptionPane.showMessageDialog(
+                    null, "Podaj kwotę wydatku większą od 0", "Błąd", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (titleField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    null, "Podaj tytuł wydatku", "Błąd", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+
+    public Expense getExpense() {
+        return new Expense(
+                group.findUserByName(Objects.requireNonNull(payerComboBox.getSelectedItem()).toString()),
+                amount,
+                debtsMap,
+                titleField.getText(),
+                (Date) datePicker.getModel().getValue(),
+                ExpenseCategory.OTHER // todo
+        );
+
     }
 
     public boolean isExpenseAdded() {
         return paymentAdded;
     }
 
-    private void parseAmount() {
+    private void handleAmountFieldTextChange() {
         try {
+            // todo: obsługiwanie różnych walut?
             amount = Money.of(Double.parseDouble(amountField.getText()), Format.CURRENCY);
-        } catch (NumberFormatException e) {
+            amountValidationOK = true;
+        } catch (MonetaryException | NumberFormatException e) {
             amount = Money.zero(Format.CURRENCY);
+            amountValidationOK = false;
         }
+
+        if (amountValidationOK)
+            amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        else
+            amountField.setBorder(BorderFactory.createLineBorder(Color.RED));
     }
 
     private void showUserSplitDialog(List<User> users) {
-        parseAmount();
-
         SplitDialog dialog = new SplitDialog(users, amount);
         dialog.setModalityType(ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
