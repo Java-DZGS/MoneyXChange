@@ -12,6 +12,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,6 +35,24 @@ public class ChartsScreen extends JPanel {
         chart.getStyler().setToolTipsEnabled(true);
         XChartPanel<CategoryChart> chartPanel = new XChartPanel<>(chart);
 
+        if (expenses.isEmpty()) {
+            JPanel noExpensesPanel = new JPanel();
+            noExpensesPanel.setLayout(new BoxLayout(noExpensesPanel, BoxLayout.Y_AXIS));
+            noExpensesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            noExpensesPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+            JLabel noExpensesLabel = new JLabel("Nie ma żadnych wydatków w grupie.");
+            noExpensesLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            noExpensesLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            noExpensesPanel.add(Box.createVerticalGlue());
+            noExpensesPanel.add(noExpensesLabel);
+            noExpensesPanel.add(Box.createVerticalGlue());
+
+            add(noExpensesPanel, BorderLayout.CENTER);
+            return;
+        }
+
         updateChart();
 
         // Create filter button
@@ -54,23 +73,33 @@ public class ChartsScreen extends JPanel {
     }
 
     private void updateChart() {
-        List<Date> dates = new ArrayList<>();
+        //List<Date> dates = new ArrayList<>();
+        List<String> dates = new ArrayList<>();
         List<Double> amounts = new ArrayList<>();
 
-        // Accumulate expenses for each date
+//        // Accumulate expenses for each date
+//        expenses.stream()
+//                .collect(Collectors.groupingBy(Expense::getDate, Collectors.summingDouble(k -> k.getAmount().getNumber().doubleValue())))
+//                .entrySet().stream()
+//                .sorted(Map.Entry.comparingByKey())
+//                .forEach(entry -> {
+//                    dates.add(entry.getKey());
+//                    amounts.add(entry.getValue());
+//                });
+//
         expenses.stream()
-                .collect(Collectors.groupingBy(Expense::getDate, Collectors.summingDouble(k -> k.getAmount().getNumber().doubleValue())))
+                .collect(Collectors.groupingBy(Expense::getYearMonth, Collectors.summingDouble(k -> k.getAmount().getNumber().doubleValue())))
                 .entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(entry -> {
-                    dates.add(entry.getKey());
+                    dates.add(entry.getKey().toString());
                     amounts.add(entry.getValue());
                 });
 
-        // todo: doesnt work if expenses is empty
+
         try {
             chart.updateCategorySeries("Expenses", dates, amounts, null);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             chart.addSeries("Expenses", dates, amounts).setMarker(SeriesMarkers.CIRCLE);
         }
     }
