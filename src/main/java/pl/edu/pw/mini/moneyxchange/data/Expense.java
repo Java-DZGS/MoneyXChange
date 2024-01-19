@@ -9,6 +9,7 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
+import java.time.Year;
 import java.time.YearMonth;
 import java.util.Calendar;
 import java.util.Date;
@@ -148,6 +149,12 @@ public class Expense implements MoneyAction, Serializable {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return YearMonth.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
+    }
+
+    public Year getYear() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return Year.of(calendar.get(Calendar.YEAR));
     }
 
     /**

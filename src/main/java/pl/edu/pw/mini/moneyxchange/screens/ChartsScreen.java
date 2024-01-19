@@ -6,34 +6,38 @@ import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.Group;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.YearMonth;
+import java.text.ParseException;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class ChartsScreen extends JPanel {
 
+    private enum XAxisGroupTypes {DAY, MONTH, YEAR};
+    private XAxisGroupTypes type = XAxisGroupTypes.MONTH;
     private List<Expense> expenses;
     private final CategoryChart chart;
+    private final XChartPanel<CategoryChart> chartPanel;
 
     public ChartsScreen() {
         expenses = Group.getInstance().getExpenses();
 
-        setLayout(new BorderLayout());
-        setBorder(new EmptyBorder(10, 10, 10, 10));
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
         // Create XChart
         chart = new CategoryChartBuilder().width(800).height(600).title("Wydatki").xAxisTitle("Data").yAxisTitle("Kwota").build();
         chart.getStyler().setLegendVisible(false);
         chart.getStyler().setDatePattern("yyyy-MM-dd");
         chart.getStyler().setToolTipsEnabled(true);
-        XChartPanel<CategoryChart> chartPanel = new XChartPanel<>(chart);
+        chartPanel = new XChartPanel<>(chart);
 
         if (expenses.isEmpty()) {
             JPanel noExpensesPanel = new JPanel();
@@ -58,10 +62,33 @@ public class ChartsScreen extends JPanel {
         // Create filter button
         JButton filterButton = new JButton("Filtruj...");
         filterButton.addActionListener(e -> showFilterDialog());
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(filterButton, gbc);
 
-        // Add components to the main panel
-        add(filterButton, BorderLayout.NORTH);
-        add(chartPanel, BorderLayout.CENTER);
+        // czy chcemy żeby tu były polskie nazwy tych metod grupowania?
+        // bo jeżeli tak to proszę o pomysły jak to sensownie zrobić, jakąś mapę?
+        // enum -> nazwa polska?
+        JComboBox<XAxisGroupTypes> groupComboBox = new JComboBox<>(XAxisGroupTypes.values());
+        groupComboBox.setSelectedItem(type);
+        groupComboBox.addActionListener(e -> {
+                    type = (XAxisGroupTypes) groupComboBox.getSelectedItem();
+                    updateChart();
+                }
+        );
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        add(groupComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        add(chartPanel, gbc);
 
         Group.getInstance().addListener(evt -> {
             if (!evt.getPropertyName().equals("expenses")) return;
@@ -73,35 +100,50 @@ public class ChartsScreen extends JPanel {
     }
 
     private void updateChart() {
-        //List<Date> dates = new ArrayList<>();
         List<String> dates = new ArrayList<>();
         List<Double> amounts = new ArrayList<>();
 
-//        // Accumulate expenses for each date
-//        expenses.stream()
-//                .collect(Collectors.groupingBy(Expense::getDate, Collectors.summingDouble(k -> k.getAmount().getNumber().doubleValue())))
-//                .entrySet().stream()
-//                .sorted(Map.Entry.comparingByKey())
-//                .forEach(entry -> {
-//                    dates.add(entry.getKey());
-//                    amounts.add(entry.getValue());
-//                });
-//
-        expenses.stream()
-                .collect(Collectors.groupingBy(Expense::getYearMonth, Collectors.summingDouble(k -> k.getAmount().getNumber().doubleValue())))
-                .entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .forEach(entry -> {
-                    dates.add(entry.getKey().toString());
-                    amounts.add(entry.getValue());
-                });
-
+        // Accumulate expenses for each day, month-year or year
+        switch (type) {
+            case DAY -> expenses.stream()
+                    .collect(Collectors.groupingBy(Expense::getDate, Collectors.summingDouble(k -> k.getAmount().getNumber().doubleValue())))
+                    .entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .forEach(entry -> {
+                        try {
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(entry.getKey());
+                            dates.add(Format.DATE_LABEL_FORMATTER.valueToString(calendar));
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                        amounts.add(entry.getValue());
+                    });
+            case MONTH -> expenses.stream()
+                    .collect(Collectors.groupingBy(Expense::getYearMonth, Collectors.summingDouble(k -> k.getAmount().getNumber().doubleValue())))
+                    .entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .forEach(entry -> {
+                        dates.add(entry.getKey().toString());
+                        amounts.add(entry.getValue());
+                    });
+            case YEAR -> expenses.stream()
+                    .collect(Collectors.groupingBy(Expense::getYear, Collectors.summingDouble(k -> k.getAmount().getNumber().doubleValue())))
+                    .entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .forEach(entry -> {
+                        dates.add(entry.getKey().toString());
+                        amounts.add(entry.getValue());
+                    });
+        }
 
         try {
             chart.updateCategorySeries("Expenses", dates, amounts, null);
         } catch (IllegalArgumentException e) {
             chart.addSeries("Expenses", dates, amounts).setMarker(SeriesMarkers.CIRCLE);
         }
+
+        chartPanel.repaint();
     }
 
 
