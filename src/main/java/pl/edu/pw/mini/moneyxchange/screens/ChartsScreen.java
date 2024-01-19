@@ -35,7 +35,6 @@ public class ChartsScreen extends JPanel {
         // Create XChart
         chart = new CategoryChartBuilder().width(800).height(600).title("Wydatki").xAxisTitle("Data").yAxisTitle("Kwota").build();
         chart.getStyler().setLegendVisible(false);
-        chart.getStyler().setDatePattern("yyyy-MM-dd");
         chart.getStyler().setToolTipsEnabled(true);
         chartPanel = new XChartPanel<>(chart);
 
@@ -59,28 +58,30 @@ public class ChartsScreen extends JPanel {
 
         updateChart();
 
-        // Create filter button
         JButton filterButton = new JButton("Filtruj...");
         filterButton.addActionListener(e -> showFilterDialog());
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.CENTER;
-        add(filterButton, gbc);
 
         // czy chcemy żeby tu były polskie nazwy tych metod grupowania?
         // bo jeżeli tak to proszę o pomysły jak to sensownie zrobić, jakąś mapę?
         // enum -> nazwa polska?
-        JComboBox<XAxisGroupTypes> groupComboBox = new JComboBox<>(XAxisGroupTypes.values());
-        groupComboBox.setSelectedItem(type);
-        groupComboBox.addActionListener(e -> {
-                    type = (XAxisGroupTypes) groupComboBox.getSelectedItem();
+        JComboBox<XAxisGroupTypes> groupingTypeComboBox = new JComboBox<>(XAxisGroupTypes.values());
+        groupingTypeComboBox.setSelectedItem(type);
+        groupingTypeComboBox.addActionListener(e -> {
+                    type = (XAxisGroupTypes) groupingTypeComboBox.getSelectedItem();
                     updateChart();
                 }
         );
-        gbc.gridx = 1;
+
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(filterButton);
+        buttonPanel.add(groupingTypeComboBox);
+
+        gbc.gridx = 0;
         gbc.gridy = 0;
-        add(groupComboBox, gbc);
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        add(buttonPanel, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
