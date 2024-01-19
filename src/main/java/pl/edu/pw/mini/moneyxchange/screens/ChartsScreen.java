@@ -6,6 +6,7 @@ import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.Group;
+import pl.edu.pw.mini.moneyxchange.dialogs.FilterDialog;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -70,7 +71,7 @@ public class ChartsScreen extends JPanel {
         // todo: doesnt work if expenses is empty
         try {
             chart.updateCategorySeries("Expenses", dates, amounts, null);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             chart.addSeries("Expenses", dates, amounts).setMarker(SeriesMarkers.CIRCLE);
         }
     }
@@ -111,98 +112,4 @@ public class ChartsScreen extends JPanel {
             updateChart();
         }
     }
-
-    static class FilterDialog extends JDialog {
-
-        private boolean filterApplied;
-        private FilterCriteria filterCriteria;
-
-        public FilterDialog(Frame owner) {
-            super(owner, "Opcje filtrowania", true);
-
-            filterApplied = false;
-            filterCriteria = new FilterCriteria();
-
-            setLayout(new GridLayout(4, 2));
-
-            JLabel dateLabel = new JLabel("Daty (oddzielone przecinkiem): ");
-            JTextField dateField = new JTextField();
-            add(dateLabel);
-            add(dateField);
-
-            JLabel participantLabel = new JLabel("Uczestnicy (oddzielone przecinkiem): ");
-            JTextField participantField = new JTextField();
-            add(participantLabel);
-            add(participantField);
-
-            JLabel payerLabel = new JLabel("Płacący: ");
-            JTextField payerField = new JTextField();
-            add(payerLabel);
-            add(payerField);
-
-            JButton applyButton = new JButton("Apply Filter");
-            applyButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // Set filter criteria based on user input
-                    filterCriteria.setDates(parseCSV(dateField.getText()));
-                    filterCriteria.setParticipants(parseCSV(participantField.getText()));
-                    filterCriteria.setPayer(payerField.getText());
-                    filterApplied = true;
-                    setVisible(false);
-                }
-
-                private String[] parseCSV(String input) {
-                    if (input.isEmpty()) return new String[]{};
-                    return input.split("\\s*,\\s*");
-                }
-            });
-
-            add(applyButton);
-
-            pack();
-        }
-
-        public boolean isFilterApplied() {
-            return filterApplied;
-        }
-
-        public FilterCriteria getFilterCriteria() {
-            return filterCriteria;
-        }
-
-        public static class FilterCriteria {
-
-            private String[] dates;
-            private String[] participants;
-            private String payer;
-
-            public String[] getDates() {
-                return dates;
-            }
-
-            public void setDates(String[] dates) {
-                this.dates = dates;
-            }
-
-            public String[] getParticipants() {
-                return participants;
-            }
-
-            public void setParticipants(String[] participants) {
-                this.participants = participants;
-            }
-
-            public String getPayer() {
-                return payer;
-            }
-
-            public void setPayer(String payer) {
-                this.payer = payer;
-            }
-        }
-    }
 }
-
-
-

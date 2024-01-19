@@ -2,6 +2,7 @@ package pl.edu.pw.mini.moneyxchange.screens;
 
 import pl.edu.pw.mini.moneyxchange.data.*;
 import pl.edu.pw.mini.moneyxchange.dialogs.ExpenseDialog;
+import pl.edu.pw.mini.moneyxchange.dialogs.FilterDialog;
 import pl.edu.pw.mini.moneyxchange.utils.Layout;
 
 import javax.swing.*;
@@ -56,6 +57,13 @@ public class MainScreen extends JPanel {
         topPanel.add(changeNameButton);
         topPanel.add(serializeButton);
         topPanel.add(deserializeButton);
+
+        /*
+        todo: this button is placed here temporarily
+         */
+        JButton filterButton = new JButton("Filtruj");
+        filterButton.addActionListener(e -> showFilterDialog());
+        topPanel.add(filterButton);
 
         JPanel historyPanel = new JPanel(new BorderLayout());
         historyPanel.add(new JLabel("Historia akcji"), BorderLayout.NORTH);
@@ -115,6 +123,12 @@ public class MainScreen extends JPanel {
                 userList.setListData(Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new));
             }
         });
+    }
+
+    private void showFilterDialog() {
+        FilterDialog filterDialog = new FilterDialog((Frame) SwingUtilities.getWindowAncestor(this));
+        filterDialog.setLocationRelativeTo(this);
+        filterDialog.setVisible(true);
     }
 
     private void showPaymentDialog() {
