@@ -35,6 +35,7 @@ public class CompleteTransferDialog extends JDialog {
         this.transferAmount = transfer.getAmount();
 
         UtilDateModel model = new UtilDateModel();
+        model.setValue(new Date());
 
         Properties p = new Properties();
         p.put("text.today", "Today");
@@ -43,7 +44,9 @@ public class CompleteTransferDialog extends JDialog {
         JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
         datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 
-        amountField = new JTextField(Format.MONETARY_FORMAT.format(transfer.getAmount()));
+        //TODO: Proper formatting and parsing
+        amountField = new JTextField(transfer.getAmount().getNumber().doubleValue() + " PLN");
+        handleTransferTextInputChange();
         SwingUtils.addChangeListener(amountField, e -> handleTransferTextInputChange());
 
         JButton completeButton = new JButton("Wykonaj przelew");

@@ -2,12 +2,13 @@ package pl.edu.pw.mini.moneyxchange.data;
 
 import pl.edu.pw.mini.moneyxchange.dialogs.UserDetailsDialog;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.SwingPropertyChangeSupport;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class User implements Serializable {
     /**
      * The profile image of the user.
      */
-    private BufferedImage image;
+    transient private BufferedImage image;
     /**
      * Support for property change events.
      */
@@ -118,6 +119,55 @@ public class User implements Serializable {
     }
 
     /**
+     * Displays detailed information about the user in a dialog.
+     */
+    public void showUserDetails() {
+        JDialog userDetails = new UserDetailsDialog(User.this);
+
+        userDetails.setSize(500, 400);
+        userDetails.setLocationRelativeTo(null);
+        userDetails.setVisible(true);
+    }
+
+    /**
+     * Method required for {@code BufferedImage} serialization
+     *
+     * @param out output stream
+     * @throws IOException exception from {@code ObjectOutputStream.defaultWriteObject()}
+     */
+    @Serial
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        out.writeBoolean(image != null);
+        if(image != null)
+            ImageIO.write(image, "png", out); // png is lossless
+    }
+
+
+    /**
+     * Method required for {@code BufferedImage} deserialization
+     *
+     * @param in input stream
+     * @throws IOException exception from {@code ObjectOutputStream.defaultReadObject()}
+     * @throws ClassNotFoundException exception from {@code ObjectOutputStream.defaultReadObject()}
+     */
+    @Serial
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        final boolean hasImage = in.readBoolean();
+        if(hasImage)
+            image = ImageIO.read(in);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", name=" + name +
+                '}';
+    }
+
+    /**
      * Inner class representing a panel displaying user information.
      */
     public class UserPanel extends JPanel {
@@ -166,16 +216,5 @@ public class User implements Serializable {
                 }
             });
         }
-    }
-
-    /**
-     * Displays detailed information about the user in a dialog.
-     */
-    public void showUserDetails() {
-        JDialog userDetails = new UserDetailsDialog(User.this);
-
-        userDetails.setSize(500, 400);
-        userDetails.setLocationRelativeTo(null);
-        userDetails.setVisible(true);
     }
 }
