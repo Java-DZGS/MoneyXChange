@@ -95,26 +95,20 @@ public class UserDetailsDialog extends JDialog {
 
         JButton addExpenseButton = new JButton("Dodaj wydatek");
         addExpenseButton.addActionListener(e -> {
-            ExpenseDialog expenseDialog = new ExpenseDialog(Group.getInstance());
+            ExpenseDialog expenseDialog = new ExpenseDialog(user);
             expenseDialog.setSize(400, 300);
+            expenseDialog.setLocationRelativeTo(this);
             expenseDialog.setVisible(true);
-            expenseDialog.setLocationRelativeTo(null);
-
-            if (expenseDialog.isExpenseAdded()) {
-                Expense expense = expenseDialog.getExpense();
-                Group.getInstance().addExpense(expense);
-            }
         });
         panel.add(addExpenseButton, BorderLayout.SOUTH);
 
-        List<Expense> expenses = Group.getInstance().getExpenses().stream().filter(expense->expense.getPayer().getId()==user.getId()).toList();
-        displayExpenses(expenses);
+        displayExpenses();
 
-        user.addListener(evt -> {
+        Group.getInstance().addListener(evt -> {
             if (!evt.getPropertyName().equals("expenses")) return;
 
             //noinspection unchecked
-            displayExpenses((List<Expense>) evt.getNewValue());
+            displayExpenses();
         });
 
         return panel;
@@ -129,21 +123,13 @@ public class UserDetailsDialog extends JDialog {
 
         panel.add(pendingTransfersScrollPane, BorderLayout.CENTER);
 
-        for(Transfer t: Group.getInstance().getPendingTransfers()){
-            System.out.println(t.getFromUser().getName() + t.getFromUser().getId() + " " + t .getAmount() + " " + t.getToUser().getName() + t.getToUser().getId());
-        }
-        List<Transfer> pendingTransfers = Group.getInstance().getPendingTransfers().stream().filter(transfer->transfer.getFromUser().getId()==user.getId()).toList();
-        for(Transfer t: pendingTransfers){
-            System.out.println(t.getFromUser().getName() + t.getFromUser().getId() + " " + t .getAmount() + " " + t.getToUser().getName() + t.getToUser().getId());
-        }
-        displayPendingTransfers(pendingTransfers);
+        displayPendingTransfers();
 
         Group.getInstance().addListener(evt -> {
             if (!evt.getPropertyName().equals("pendingTransfers")) return;
-            List<Transfer> pendingTrransfers = Group.getInstance().getPendingTransfers().stream().filter(transfer->transfer.getFromUser().getId()==user.getId()).toList();
 
             //noinspection unchecked
-            displayPendingTransfers((List<Transfer>) pendingTrransfers);
+            displayPendingTransfers();
         });
 
         return panel;
@@ -158,21 +144,22 @@ public class UserDetailsDialog extends JDialog {
 
         panel.add(completedTransfersScrollPane, BorderLayout.CENTER);
 
-        List<Transfer> completedTransfers = Group.getInstance().getCompletedTransfers().stream().filter(transfer->transfer.getFromUser().getId()==user.getId()).toList();
-        displayCompletedTransfers(completedTransfers);
+        displayCompletedTransfers();
 
         Group.getInstance().addListener(evt -> {
             if (!evt.getPropertyName().equals("completedTransfers")) return;
 
             //noinspection unchecked
-            displayCompletedTransfers((List<Transfer>) evt.getNewValue());
+            displayCompletedTransfers();
         });
 
         return panel;
     }
 
-    private void displayExpenses(List<Expense> expenses) {
+    private void displayExpenses() {
         expensesPanel.removeAll(); // Usunięcie wszystkich komponentów przed dodaniem nowych
+
+        List<Expense> expenses = Group.getInstance().getExpenses().stream().filter(expense->expense.getPayer() == user).toList();
 
         for (Expense expense : expenses) {
             JPanel expensePanel = expense.getPanel();
@@ -187,8 +174,11 @@ public class UserDetailsDialog extends JDialog {
         expensesPanel.repaint();
     }
 
-    private void displayPendingTransfers(List<Transfer> transfers) {
+    private void displayPendingTransfers() {
         pendingTransfersPanel.removeAll();
+
+        List<Transfer> transfers = Group.getInstance().getPendingTransfers().stream().filter(transfer->transfer.getFromUser().getId()==user.getId()).toList();
+
         for (Transfer transfer : transfers) {
             JPanel transferPanel = transfer.getOptimalPanel();
             pendingTransfersPanel.add(transferPanel, Layout.getGridBagElementConstraints());
@@ -202,8 +192,10 @@ public class UserDetailsDialog extends JDialog {
         pendingTransfersPanel.repaint();
     }
 
-    private void displayCompletedTransfers(List<Transfer> transfers) {
+    private void displayCompletedTransfers() {
         completedTransfersPanel.removeAll();
+
+        List<Transfer> transfers = Group.getInstance().getCompletedTransfers().stream().filter(transfer->transfer.getFromUser().getId()==user.getId()).toList();
 
         for (Transfer transfer : transfers) {
             JPanel transferPanel = transfer.getPanel();

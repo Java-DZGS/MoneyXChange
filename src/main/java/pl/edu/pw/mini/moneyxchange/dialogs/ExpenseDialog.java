@@ -24,17 +24,15 @@ public class ExpenseDialog extends JDialog {
     private boolean amountValidationOK;
     private final JComboBox<String> payerComboBox;
 
-    private final Group group;
     private Money amount;
     private Map<User, Money> debtsMap;
     private final String[] userNames;
     private boolean paymentAdded;
     private boolean splitTypeSet;
 
-    public ExpenseDialog(Group group) {
-        super((JFrame) null, "Dodaj nowy wydatek", true);
+    public ExpenseDialog() {
+        super((Frame) null, "Dodaj nowy wydatek", true);
 
-        this.group = group;
         debtsMap = new HashMap<>();
 
         titleField = new JTextField();
@@ -50,7 +48,7 @@ public class ExpenseDialog extends JDialog {
         datePicker = new JDatePickerImpl(datePanel, new Format.DateLabelFormatter());//Format.DATE_LABEL_FORMATTER);
 
         amountField = new JFormattedTextField(new Format.MonetaryFormatter());
-        userNames = group.getUsers().stream().map(User::getName).toArray(String[]::new);
+        userNames = Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new);
         payerComboBox = new JComboBox<>(userNames);
 
         JButton splitButton = new JButton("Podziel wydatek");
@@ -81,7 +79,7 @@ public class ExpenseDialog extends JDialog {
                 return;
             }
 
-            showUserSplitDialog(group.getUsers());
+            showUserSplitDialog(Group.getInstance().getUsers());
         });
 
         addButton.addActionListener(e -> {
@@ -91,25 +89,24 @@ public class ExpenseDialog extends JDialog {
             if (!splitTypeSet) {
                 handleAmountFieldTextChange();
                 EqualSplitter splitter = new EqualSplitter(amount);
-                for (User user : group.getUsers()) {
+                for (User user : Group.getInstance().getUsers()) {
                     splitter.addUser(user, "");
                 }
                 debtsMap = splitter.split();
             }
-            paymentAdded = true;
+
+            Expense newExpense = new Expense(Group.getInstance().findUserByName(Objects.requireNonNull(payerComboBox.getSelectedItem()).toString()),
+                amount, debtsMap, titleField.getText(), (Date) datePicker.getModel().getValue(),
+                ExpenseCategory.OTHER); // todo
+
+            Group.getInstance().addExpense(newExpense);
+
             dispose();
         });
-
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        setSize(400, 300);
-        setLocationRelativeTo(null);
-        setVisible(true);
-
     }
 
-    public ExpenseDialog(Group group, User payer) {
-        this(group);
+    public ExpenseDialog(User payer) {
+        this();
 
         payerComboBox.setSelectedItem(payer.getName());
         payerComboBox.revalidate();
@@ -136,22 +133,6 @@ public class ExpenseDialog extends JDialog {
         }
 
         return true;
-    }
-
-    public Expense getExpense() {
-        return new Expense(
-                group.findUserByName(Objects.requireNonNull(payerComboBox.getSelectedItem()).toString()),
-                amount,
-                debtsMap,
-                titleField.getText(),
-                (Date) datePicker.getModel().getValue(),
-                ExpenseCategory.OTHER // todo
-        );
-
-    }
-
-    public boolean isExpenseAdded() {
-        return paymentAdded;
     }
 
     private void handleAmountFieldTextChange() {

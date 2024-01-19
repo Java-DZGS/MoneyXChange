@@ -104,6 +104,16 @@ public class Transfer implements MoneyAction, Serializable {
     }
 
 
+    @Override
+    public String toString() {
+        return "Transfer{" +
+                "date=" + date +
+                ", amount=" + Format.MONETARY_FORMAT.format(amount) +
+                ", fromUser=" + fromUser +
+                ", toUser=" + toUser +
+                '}';
+    }
+
     /**
      * A panel representing the transfer.
      */
