@@ -20,6 +20,52 @@ public enum ExpenseCategory {
     TRANSPORT,
 
     /**
+     * Health expense category.
+     */
+    HEALTH,
+
+    /**
+     * Education expense category.
+     */
+    EDUCATION,
+
+    /**
+     * Housing expense category.
+     */
+    HOUSING,
+
+    /**
+     * Clothing expense category.
+     */
+    CLOTHING,
+
+    /**
+     * Technology expense category.
+     */
+    TECHNOLOGY,
+
+    /**
+     * Travel expense category.
+     */
+    TRAVEL,
+
+    /**
+     * Utilities expense category.
+     */
+    UTILITIES,
+
+    /**
+     * Gifts expense category.
+     */
+    GIFTS,
+
+
+    /**
+     * Subscriptions expense category.
+     */
+    SUBSCRIPTIONS,
+
+    /**
      * Other expense category.
      */
     OTHER
