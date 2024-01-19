@@ -4,6 +4,8 @@ import org.javamoney.moneta.Money;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
+import pl.edu.pw.mini.moneyxchange.data.Expense;
+import pl.edu.pw.mini.moneyxchange.data.MoneyAction;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import javax.swing.*;
@@ -149,6 +151,27 @@ public class FilterDialog extends JDialog {
             return (fromDate == null || toDate == null || !fromDate.after(toDate)) &&
                     (fromAmount == null || toAmount == null || fromAmount.isLessThanOrEqualTo(toAmount));
         }
+
+        private boolean checkDate(Date date) {
+            return (fromDate == null || !fromDate.after(date)) &&
+                    (toDate == null || !toDate.before(date));
+        }
+
+        private boolean checkAmount(Money money) {
+            return (fromAmount == null || fromAmount.isLessThanOrEqualTo(money)) &&
+                    (toAmount == null || toAmount.isGreaterThanOrEqualTo(money));
+        }
+
+        private boolean checkTitle(String text) {
+            return text.contains(keyword);
+        }
+
+        public boolean applyFilter(MoneyAction action) {
+            return checkDate(action.getDate())
+                    && checkAmount(action.getAmount())
+                    && (!(action instanceof Expense) || checkTitle(((Expense) action).getName()));
+        }
+
     }
 
 }

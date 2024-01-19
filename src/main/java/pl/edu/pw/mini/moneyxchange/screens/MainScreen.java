@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 public class MainScreen extends JPanel {
     private final JPanel actionsPanel;
+    private FilterDialog.FilterCriteria filterCriteria;
     private final JList<String> userList;
 
     public MainScreen() {
@@ -58,9 +59,6 @@ public class MainScreen extends JPanel {
         topPanel.add(serializeButton);
         topPanel.add(deserializeButton);
 
-        /*
-        todo: this button is placed here temporarily
-         */
         JButton filterButton = new JButton("Filtruj");
         filterButton.addActionListener(e -> showFilterDialog());
         topPanel.add(filterButton);
@@ -82,7 +80,7 @@ public class MainScreen extends JPanel {
 
         changeNameButton.addActionListener(e -> {
             String newName = JOptionPane.showInputDialog("Wprowadź nową nazwę grupy:", Group.getInstance().getName());
-            if(newName == null)
+            if (newName == null)
                 return;
 
             Group.getInstance().setName(newName);
@@ -117,7 +115,7 @@ public class MainScreen extends JPanel {
         });
 
         Group.getInstance().addListener(evt -> {
-            if(evt.getPropertyName().equals("action")) {
+            if (evt.getPropertyName().equals("action")) {
                 showActions();
             } else if (evt.getPropertyName().equals("users")) {
                 userList.setListData(Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new));
@@ -129,6 +127,11 @@ public class MainScreen extends JPanel {
         FilterDialog filterDialog = new FilterDialog((Frame) SwingUtilities.getWindowAncestor(this));
         filterDialog.setLocationRelativeTo(this);
         filterDialog.setVisible(true);
+
+        if (filterDialog.isFilterApplied())
+            filterCriteria = filterDialog.getFilterCriteria();
+
+        showActions();
     }
 
     private void showPaymentDialog() {
@@ -150,9 +153,13 @@ public class MainScreen extends JPanel {
         actionsPanel.removeAll();
 
         var transfers = Group.getInstance().getCompletedTransfers()
-                .stream().map(t -> new Action(t.getDate(), t.getPanel()));
+                .stream()
+                .filter(transfer -> filterCriteria == null || filterCriteria.applyFilter(transfer))
+                .map(t -> new Action(t.getDate(), t.getPanel()));
         var expenses = Group.getInstance().getExpenses()
-                .stream().map(e -> new Action(e.getDate(), e.getPanel()));
+                .stream()
+                .filter(transfer -> filterCriteria == null || filterCriteria.applyFilter(transfer))
+                .map(e -> new Action(e.getDate(), e.getPanel()));
 
         var actions = Stream.concat(transfers, expenses).sorted(Comparator.comparing(Action::date).reversed()).iterator();
 
@@ -170,9 +177,9 @@ public class MainScreen extends JPanel {
 
     private record Action(Date date, JPanel panel) implements Comparable<Action> {
         @Override
-            public int compareTo(Action other) {
-                // Compare based on the date
-                return this.date.compareTo(other.date);
-            }
+        public int compareTo(Action other) {
+            // Compare based on the date
+            return this.date.compareTo(other.date);
         }
+    }
 }
