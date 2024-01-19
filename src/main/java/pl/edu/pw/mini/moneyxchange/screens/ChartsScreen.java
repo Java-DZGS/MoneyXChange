@@ -94,14 +94,14 @@ public class ChartsScreen extends JPanel {
         List<Expense> allExpenses = Group.getInstance().getExpenses();
         List<Expense> filteredExpenses = new ArrayList<>();
 
-        for (Expense expense : allExpenses) {
-            boolean dateMatch = filterCriteria.getDates() == null || filterCriteria.getDates().length == 0 || Arrays.asList(filterCriteria.getDates()).contains(expense.getDate());
-            boolean participantMatch = filterCriteria.getParticipants() == null || filterCriteria.getParticipants().length == 0 || Arrays.asList(filterCriteria.getParticipants()).contains(expense.getParticipants());
-            boolean payerMatch = filterCriteria.getPayer() == null || filterCriteria.getPayer().isEmpty() || filterCriteria.getPayer().equals(expense.getPayer().getName());
-            if (dateMatch && participantMatch && payerMatch) {
-                filteredExpenses.add(expense);
-            }
-        }
+//        for (Expense expense : allExpenses) {
+//            boolean dateMatch = filterCriteria.getDates() == null || filterCriteria.getDates().length == 0 || Arrays.asList(filterCriteria.getDates()).contains(expense.getDate());
+//            boolean participantMatch = filterCriteria.getParticipants() == null || filterCriteria.getParticipants().length == 0 || Arrays.asList(filterCriteria.getParticipants()).contains(expense.getParticipants());
+//            boolean payerMatch = filterCriteria.getPayer() == null || filterCriteria.getPayer().isEmpty() || filterCriteria.getPayer().equals(expense.getPayer().getName());
+//            if (dateMatch && participantMatch && payerMatch) {
+//                filteredExpenses.add(expense);
+//            }
+//        }
 
         if (filteredExpenses.isEmpty()) {
             // Show a warning dialog if the filtered list is empty
