@@ -7,11 +7,11 @@ import javax.imageio.ImageIO;
 import javax.swing.event.SwingPropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.io.*;
-import java.text.DateFormat;
-import java.text.Normalizer;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -170,8 +170,8 @@ public class Group implements Serializable {
     public List<MoneyAction> getActionsList() {
         return Stream.concat(
                         expenses.stream().map(expense -> (MoneyAction) expense),
-                        pendingTransfers.stream().map(transfer -> (MoneyAction) transfer))
-                .sorted(Comparator.comparing(MoneyAction::getDate))
+                        completedTransfers.stream().map(transfer -> (MoneyAction) transfer))
+                .sorted(Comparator.comparing(MoneyAction::getDate).reversed())
                 .collect(Collectors.toList());
     }
 
@@ -255,21 +255,6 @@ public class Group implements Serializable {
             instance.propertyChangeSupport.firePropertyChange("pendingTransfers", null, instance.pendingTransfers);
             instance.propertyChangeSupport.firePropertyChange("completedTransfers", null, instance.completedTransfers);
         }
-    }
-
-    /**
-     * Finds a user in the group by name.
-     *
-     * @param name The name of the user to find.
-     * @return The user with the given name, or null if not found.
-     */
-    public User findUserByName(String name) {
-        for (User user : users) {
-            if (user.getName().equals(name)) {
-                return user; // Found the user with the given name
-            }
-        }
-        return null; // User not found
     }
 
     /**

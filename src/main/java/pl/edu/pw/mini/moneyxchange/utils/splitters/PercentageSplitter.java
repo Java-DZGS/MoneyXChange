@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PercentageSplitter implements ISplitter {
-    private Map<User, Double> percentages;
+    private final Map<User, Double> percentages;
     private final Money expenseAmount;
     private double parsedAmount;
 
@@ -72,10 +72,7 @@ public class PercentageSplitter implements ISplitter {
             return false;
         }
 
-        if (parsedAmount < 0 || parsedAmount > 100)
-            return false;
-
-        return true;
+        return !(parsedAmount < 0) && !(parsedAmount > 100);
     }
 
     private double getRemainder() {

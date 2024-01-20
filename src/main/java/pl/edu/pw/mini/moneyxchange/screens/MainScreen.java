@@ -9,10 +9,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Stream;
 
 public class MainScreen extends JPanel {
     private final JPanel actionsPanel;
@@ -110,9 +106,7 @@ public class MainScreen extends JPanel {
             JOptionPane.showMessageDialog(null, "Grupa zdeserializowana z pliku.");
         });
 
-        addExpenseButton.addActionListener(e -> {
-            showExpenseDialog();
-        });
+        addExpenseButton.addActionListener(e -> showExpenseDialog());
 
         Group.getInstance().addListener(evt -> {
             if (evt.getPropertyName().equals("action")) {
@@ -141,31 +135,13 @@ public class MainScreen extends JPanel {
         dialog.setVisible(true);
     }
 
-    private void importActions() {
-        List<MoneyAction> actionsList = Group.getInstance().getActionsList();
-
-        for (MoneyAction action : actionsList) {
-            actionsPanel.add(action.getPanel(), Layout.getGridBagElementConstraints());
-        }
-    }
-
     private void showActions() {
         actionsPanel.removeAll();
 
-        var transfers = Group.getInstance().getCompletedTransfers()
+        Group.getInstance().getActionsList()
                 .stream()
-                .filter(transfer -> filterCriteria == null || filterCriteria.applyFilter(transfer))
-                .map(t -> new Action(t.getDate(), t.getPanel()));
-        var expenses = Group.getInstance().getExpenses()
-                .stream()
-                .filter(transfer -> filterCriteria == null || filterCriteria.applyFilter(transfer))
-                .map(e -> new Action(e.getDate(), e.getPanel()));
-
-        var actions = Stream.concat(transfers, expenses).sorted(Comparator.comparing(Action::date).reversed()).iterator();
-
-        actions.forEachRemaining(action -> {
-            actionsPanel.add(action.panel, Layout.getGridBagElementConstraints());
-        });
+                .filter(action -> filterCriteria == null || filterCriteria.applyFilter(action))
+                .forEach(action -> actionsPanel.add(action.getPanel(), Layout.getGridBagElementConstraints()));
 
         JPanel spacer = new JPanel();
         spacer.setPreferredSize(new Dimension(0, 0));
@@ -174,12 +150,4 @@ public class MainScreen extends JPanel {
         actionsPanel.revalidate();
         actionsPanel.repaint();
     }
-
-    private record Action(Date date, JPanel panel) implements Comparable<Action> {
-        @Override
-            public int compareTo(Action other) {
-                // Compare based on the date
-                return this.date.compareTo(other.date);
-            }
-        }
 }

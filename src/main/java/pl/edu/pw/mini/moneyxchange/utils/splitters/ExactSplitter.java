@@ -83,10 +83,7 @@ public class ExactSplitter implements ISplitter {
         if (parsedAmount.signum() < 0)
             return false;
 
-        if (parsedAmount.isGreaterThan(expenseAmount))
-            return false;
-
-        return true;
+        return !parsedAmount.isGreaterThan(expenseAmount);
     }
 
     private Money getRemainder() {

@@ -1,20 +1,14 @@
 package pl.edu.pw.mini.moneyxchange.screens;
 
-import org.javamoney.moneta.Money;
-import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
-import pl.edu.pw.mini.moneyxchange.data.User;
 import pl.edu.pw.mini.moneyxchange.dialogs.FilterDialog;
-import pl.edu.pw.mini.moneyxchange.utils.Format;
 import pl.edu.pw.mini.moneyxchange.utils.Layout;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 public class TransfersScreen extends JPanel {

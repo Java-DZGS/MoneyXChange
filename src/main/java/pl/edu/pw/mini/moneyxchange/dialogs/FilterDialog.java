@@ -17,10 +17,7 @@ import java.util.Date;
 public class FilterDialog extends JDialog {
 
     private boolean filterApplied;
-    private FilterCriteria filterCriteria;
-
-    private Money fromAmount;
-    private Money toAmount;
+    private final FilterCriteria filterCriteria;
 
     public FilterDialog(Frame owner) {
         super(owner, "Opcje filtrowania", true);

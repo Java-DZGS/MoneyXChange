@@ -7,11 +7,6 @@ import pl.edu.pw.mini.moneyxchange.utils.splitters.ExactSplitter;
 import pl.edu.pw.mini.moneyxchange.utils.splitters.PercentageSplitter;
 import pl.edu.pw.mini.moneyxchange.utils.splitters.SharesSplitter;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -19,10 +14,10 @@ public class DivisionTest {
 
 	@Test
 	public void testSplitEqually() {
-		var A = new User("A", 1);
-		var B = new User("B", 1);
-		var C = new User("C", 1);
-		var D = new User("D", 1);
+		var A = new User("A");
+		var B = new User("B");
+		var C = new User("C");
+		var D = new User("D");
 
 		Money amount = Money.of(100, "PLN");
 
@@ -44,10 +39,10 @@ public class DivisionTest {
 	public void testSplitExactly() {
 		Money amount = Money.of(61, "PLN");
 
-		var A = new User("A", 1);
-		var B = new User("B", 1);
-		var C = new User("C", 1);
-		var D = new User("D", 1);
+		var A = new User("A");
+		var B = new User("B");
+		var C = new User("C");
+		var D = new User("D");
 
 		ExactSplitter exactSplitter = new ExactSplitter(amount);
 		exactSplitter.addUser(A, "0");
@@ -68,10 +63,10 @@ public class DivisionTest {
 		Money amount = Money.of(100, "PLN");
 		PercentageSplitter percentageSplitter = new PercentageSplitter(amount);
 
-		var A = new User("A", 1);
-		var B = new User("B", 1);
-		var C = new User("C", 1);
-		var D = new User("D", 1);
+		var A = new User("A");
+		var B = new User("B");
+		var C = new User("C");
+		var D = new User("D");
 
 		percentageSplitter.addUser(A, "0");
 		percentageSplitter.addUser(B, "10");
@@ -91,10 +86,10 @@ public class DivisionTest {
 		Money amount = Money.of(60, "PLN");
 		SharesSplitter sharesSplitter = new SharesSplitter(amount);
 
-		var A = new User("A", 1);
-		var B = new User("B", 1);
-		var C = new User("C", 1);
-		var D = new User("D", 1);
+		var A = new User("A");
+		var B = new User("B");
+		var C = new User("C");
+		var D = new User("D");
 		sharesSplitter.addUser(A, "0");
 		sharesSplitter.addUser(B, "4");
 		sharesSplitter.addUser(C, "5");

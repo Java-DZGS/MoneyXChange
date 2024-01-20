@@ -3,14 +3,15 @@ package pl.edu.pw.mini.moneyxchange.dialogs;
 import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.User;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
-import pl.edu.pw.mini.moneyxchange.utils.splitters.*;
 import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
+import pl.edu.pw.mini.moneyxchange.utils.splitters.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
+import java.util.Objects;
 
 // todo: moze w przyszłosci zrobić z tego część okienka, zamiast nowego
 public class SplitDialog extends JDialog {
@@ -20,26 +21,10 @@ public class SplitDialog extends JDialog {
         PERCENTAGE("Procentowo"),
         SHARES("Udziałami");
 
-        private static final Map<String, DivisionType> BY_LABEL = new HashMap<>();
-
-        static {
-            for (DivisionType type : values()) {
-                BY_LABEL.put(type.label, type);
-            }
-        }
-
         public final String label;
 
         DivisionType(String label) {
             this.label = label;
-        }
-
-        public static DivisionType valueOfLabel(String label) {
-            return BY_LABEL.get(label);
-        }
-
-        public static String[] labels() {
-            return BY_LABEL.keySet().toArray(new String[0]);
         }
 
         @Override
@@ -50,10 +35,9 @@ public class SplitDialog extends JDialog {
 
     private ISplitter splitter;
     private DivisionType divisionType;
-    private final JPanel dialogPanel;
     private final JPanel inputPanel;
     private final JPanel feedbackPanel;
-    private final JComboBox<String> divisionTypeComboBox;
+    private final JComboBox<DivisionType> divisionTypeComboBox;
     private Map<User, Money> outputMap;
 
     public Map<User, Money> getOutputMap() {
@@ -74,13 +58,13 @@ public class SplitDialog extends JDialog {
         setSplitter();
 
         {
-            dialogPanel = new JPanel(new GridBagLayout());
+            JPanel dialogPanel = new JPanel(new GridBagLayout());
             add(dialogPanel);
 
-            divisionTypeComboBox = new JComboBox<>(DivisionType.labels());
+            divisionTypeComboBox = new JComboBox<>(DivisionType.values());
             divisionTypeComboBox.setSelectedItem(divisionType.label);
             divisionTypeComboBox.addActionListener(e -> {
-                divisionType = DivisionType.valueOfLabel((String)divisionTypeComboBox.getSelectedItem());
+                divisionType = (DivisionType) divisionTypeComboBox.getSelectedItem();
                 setSplitter();
                 drawInputPanel();
                 drawFeedbackPanel();

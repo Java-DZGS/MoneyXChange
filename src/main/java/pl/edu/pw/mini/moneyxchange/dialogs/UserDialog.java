@@ -14,7 +14,6 @@ public class UserDialog extends JDialog{
     private final User user;
 
     private JTextField nameField;
-    private JTextField idField; // TODO: remove
     private JLabel imageLabel;
     private JButton addButton;
 
@@ -48,7 +47,6 @@ public class UserDialog extends JDialog{
         build();
 
         nameField.setText(user.getName());
-        idField.setText(String.valueOf(user.getId()));
 
         addButton.addActionListener(e -> {
             String newName = nameField.getText();

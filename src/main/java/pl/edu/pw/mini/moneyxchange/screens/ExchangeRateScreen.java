@@ -18,11 +18,10 @@ import java.util.Objects;
 public class ExchangeRateScreen extends JPanel {
 
     private List<ExchangeRate> exchangeData;
-    private JPanel chartPanel;
-    private JComboBox<Currency> currencySelector;
-    private JProgressBar progressBar;
+    private final JComboBox<Currency> currencySelector;
+    private final JProgressBar progressBar;
 
-    private XYChart chart;
+    private final XYChart chart;
 
     public ExchangeRateScreen() {
         setLayout(new BorderLayout());
@@ -39,7 +38,7 @@ public class ExchangeRateScreen extends JPanel {
         chart.getStyler().setToolTipsEnabled(true);
         chart.getStyler().setDatePattern("yyyy-MM-dd");
 
-        chartPanel = new XChartPanel<>(chart);
+        JPanel chartPanel = new XChartPanel<>(chart);
         add(chartPanel, BorderLayout.CENTER);
 
         currencySelector = new JComboBox<>(Currency.values());

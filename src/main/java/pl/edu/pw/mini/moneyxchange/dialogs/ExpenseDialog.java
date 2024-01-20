@@ -16,19 +16,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class ExpenseDialog extends JDialog {
     private final JTextField titleField;
     private final JDatePickerImpl datePicker;
     private final JFormattedTextField amountField;
     private boolean amountValidationOK;
-    private final JComboBox<String> payerComboBox;
-    private final JComboBox<String> categoryComboBox;
+    private final JComboBox<User> payerComboBox;
+    private final JComboBox<ExpenseCategory> categoryComboBox;
     private Money amount;
     private Map<User, Money> debtsMap;
-    private final String[] userNames;
-    private boolean paymentAdded;
     private boolean splitTypeSet;
 
     public ExpenseDialog() {
@@ -44,10 +41,8 @@ public class ExpenseDialog extends JDialog {
         datePicker = new JDatePickerImpl(datePanel, Format.DATE_LABEL_FORMATTER);
 
         amountField = new JFormattedTextField(new Format.MonetaryFormatter());
-        userNames = Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new);
-        payerComboBox = new JComboBox<>(userNames);
-        String[] categories = ExpenseCategory.labels();
-        categoryComboBox = new JComboBox<>(categories);
+        payerComboBox = new JComboBox<>(Group.getInstance().getUsers().toArray(User[]::new));
+        categoryComboBox = new JComboBox<>(ExpenseCategory.values());
 
         JButton splitButton = new JButton("Podziel wydatek");
         JButton addButton = new JButton("Dodaj wydatek");
@@ -95,9 +90,9 @@ public class ExpenseDialog extends JDialog {
                 debtsMap = splitter.split();
             }
 
-            Expense newExpense = new Expense(Group.getInstance().findUserByName(Objects.requireNonNull(payerComboBox.getSelectedItem()).toString()),
+            Expense newExpense = new Expense((User) Objects.requireNonNull(payerComboBox.getSelectedItem()),
                     amount, debtsMap, titleField.getText(), (Date) datePicker.getModel().getValue(),
-                    ExpenseCategory.valueOfLabel((String) categoryComboBox.getSelectedItem())
+                    (ExpenseCategory) categoryComboBox.getSelectedItem()
             );
 
             Group.getInstance().addExpense(newExpense);
@@ -109,7 +104,7 @@ public class ExpenseDialog extends JDialog {
     public ExpenseDialog(User payer) {
         this();
 
-        payerComboBox.setSelectedItem(payer.getName());
+        payerComboBox.setSelectedItem(payer);
         payerComboBox.revalidate();
         payerComboBox.repaint();
     }

@@ -13,15 +13,15 @@ import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Date;
-import java.util.Properties;
 
 
 public class CompleteTransferDialog extends JDialog {
     private final JFormattedTextField amountField;
     private final JDatePickerImpl datePicker;
-    private Money transferAmount;
+    private final Money transferAmount;
     private Money parsedAmount;
     private boolean resultOK = true;
+
     public CompleteTransferDialog(Group group, Transfer transfer) {
         super((JFrame) null, "Wykonaj przelew", true);
 
@@ -71,10 +71,6 @@ public class CompleteTransferDialog extends JDialog {
                         null, "Błędne dane", "Błąd", JOptionPane.ERROR_MESSAGE);
             }
         });
-
-        this.setSize(300, 200);
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
     }
 
     private void handleTransferTextInputChange() {
@@ -106,10 +102,7 @@ public class CompleteTransferDialog extends JDialog {
         if (parsedAmount.signum() < 0)
             return false;
 
-        if (parsedAmount.isGreaterThan(transferAmount))
-            return false;
-
-        return true;
+        return !parsedAmount.isGreaterThan(transferAmount);
     }
 
     private Date getSelectedDate() {
