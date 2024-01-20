@@ -16,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Properties;
 
 public class Format {
     public static final Locale PL = new Locale("pl");
@@ -70,4 +71,9 @@ public class Format {
 
 
     }
+    public static final Properties DATE_PICKER_PROPERTIES = new Properties() {{
+        put("text.today", "Dzisiaj");
+        put("text.month", "Miesiąc");
+        put("text.year", "Rok");
+    }};
 }

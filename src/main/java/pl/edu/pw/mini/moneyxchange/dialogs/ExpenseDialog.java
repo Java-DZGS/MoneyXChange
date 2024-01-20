@@ -40,11 +40,7 @@ public class ExpenseDialog extends JDialog {
 
         UtilDateModel model = new UtilDateModel();
         model.setValue(new Date());
-        Properties p = new Properties();
-        p.put("text.today", "Dzisiaj");
-        p.put("text.month", "Miesiąc");
-        p.put("text.year", "Rok");
-        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, Format.DATE_PICKER_PROPERTIES);
         datePicker = new JDatePickerImpl(datePanel, Format.DATE_LABEL_FORMATTER);
 
         amountField = new JFormattedTextField(new Format.MonetaryFormatter());
@@ -141,18 +137,16 @@ public class ExpenseDialog extends JDialog {
     }
 
     private void handleAmountFieldTextChange() {
-        amount = (Money) amountField.getValue();
-
         try {
             amountField.commitEdit();
-            // If the format is correct, set the default border
             amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
             amountValidationOK = true;
         } catch (Exception ex) {
-            // If the format is incorrect, set a red border
             amountField.setBorder(BorderFactory.createLineBorder(Color.RED));
             amountValidationOK = false;
         }
+
+        amount = (Money) amountField.getValue();
     }
 
     private void showUserSplitDialog(List<User> users) {
