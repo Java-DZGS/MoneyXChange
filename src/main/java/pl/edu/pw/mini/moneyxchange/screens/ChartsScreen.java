@@ -151,10 +151,8 @@ public class ChartsScreen extends JPanel {
         filterDialog.setLocationRelativeTo(this);
         filterDialog.setVisible(true);
 
-        // Process the selected filter criteria from the dialog
         if (filterDialog.isFilterApplied()) {
             FilterDialog.FilterCriteria filterCriteria = filterDialog.getFilterCriteria();
-            // Implement filtering logic based on the selected criteria
             filterExpenses(filterCriteria);
         }
     }
@@ -164,112 +162,17 @@ public class ChartsScreen extends JPanel {
         List<Expense> filteredExpenses = new ArrayList<>();
 
         for (Expense expense : allExpenses) {
-            boolean dateMatch = filterCriteria.getDates() == null || filterCriteria.getDates().length == 0 || Arrays.asList(filterCriteria.getDates()).contains(expense.getDate());
-            boolean participantMatch = filterCriteria.getParticipants() == null || filterCriteria.getParticipants().length == 0 || Arrays.asList(filterCriteria.getParticipants()).contains(expense.getParticipants());
-            boolean payerMatch = filterCriteria.getPayer() == null || filterCriteria.getPayer().isEmpty() || filterCriteria.getPayer().equals(expense.getPayer().getName());
-            if (dateMatch && participantMatch && payerMatch) {
+            if (filterCriteria.applyFilter(expense)) {
                 filteredExpenses.add(expense);
             }
         }
 
         if (filteredExpenses.isEmpty()) {
-            // Show a warning dialog if the filtered list is empty
             JOptionPane.showMessageDialog(this, "Żadne wydatki nie pasują do nałożonych filtrów.", "Warning", JOptionPane.WARNING_MESSAGE);
         } else {
             expenses = filteredExpenses;
 
             updateChart();
-        }
-    }
-
-    static class FilterDialog extends JDialog {
-
-        private boolean filterApplied;
-        private FilterCriteria filterCriteria;
-
-        public FilterDialog(Frame owner) {
-            super(owner, "Opcje filtrowania", true);
-
-            filterApplied = false;
-            filterCriteria = new FilterCriteria();
-
-            setLayout(new GridLayout(4, 2));
-
-            JLabel dateLabel = new JLabel("Daty (oddzielone przecinkiem): ");
-            JTextField dateField = new JTextField();
-            add(dateLabel);
-            add(dateField);
-
-            JLabel participantLabel = new JLabel("Uczestnicy (oddzielone przecinkiem): ");
-            JTextField participantField = new JTextField();
-            add(participantLabel);
-            add(participantField);
-
-            JLabel payerLabel = new JLabel("Płacący: ");
-            JTextField payerField = new JTextField();
-            add(payerLabel);
-            add(payerField);
-
-            JButton applyButton = new JButton("Apply Filter");
-            applyButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // Set filter criteria based on user input
-                    filterCriteria.setDates(parseCSV(dateField.getText()));
-                    filterCriteria.setParticipants(parseCSV(participantField.getText()));
-                    filterCriteria.setPayer(payerField.getText());
-                    filterApplied = true;
-                    setVisible(false);
-                }
-
-                private String[] parseCSV(String input) {
-                    if (input.isEmpty()) return new String[]{};
-                    return input.split("\\s*,\\s*");
-                }
-            });
-
-            add(applyButton);
-
-            pack();
-        }
-
-        public boolean isFilterApplied() {
-            return filterApplied;
-        }
-
-        public FilterCriteria getFilterCriteria() {
-            return filterCriteria;
-        }
-
-        public static class FilterCriteria {
-
-            private String[] dates;
-            private String[] participants;
-            private String payer;
-
-            public String[] getDates() {
-                return dates;
-            }
-
-            public void setDates(String[] dates) {
-                this.dates = dates;
-            }
-
-            public String[] getParticipants() {
-                return participants;
-            }
-
-            public void setParticipants(String[] participants) {
-                this.participants = participants;
-            }
-
-            public String getPayer() {
-                return payer;
-            }
-
-            public void setPayer(String payer) {
-                this.payer = payer;
-            }
         }
     }
 }
