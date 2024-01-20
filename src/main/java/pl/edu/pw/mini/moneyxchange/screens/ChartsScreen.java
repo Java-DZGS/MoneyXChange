@@ -12,7 +12,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
 import java.text.ParseException;
 import java.util.List;
 import java.util.*;
@@ -52,7 +51,7 @@ public class ChartsScreen extends JPanel {
             noExpensesPanel.add(noExpensesLabel);
             noExpensesPanel.add(Box.createVerticalGlue());
 
-            add(noExpensesPanel, BorderLayout.CENTER);
+            add(noExpensesPanel);
             return;
         }
 
@@ -61,13 +60,12 @@ public class ChartsScreen extends JPanel {
         JButton filterButton = new JButton("Filtruj...");
         filterButton.addActionListener(e -> showFilterDialog());
 
-        JComboBox<String> groupingTypeComboBox = new JComboBox<>(DateGroupingType.labels());
-        groupingTypeComboBox.setSelectedItem(type.label);
+        JComboBox<DateGroupingType> groupingTypeComboBox = new JComboBox<>(DateGroupingType.values());
+        groupingTypeComboBox.setSelectedItem(type);
         groupingTypeComboBox.addActionListener(e -> {
-                    type = DateGroupingType.valueOfLabel((String) groupingTypeComboBox.getSelectedItem());
-                    updateChart();
-                }
-        );
+            type = (DateGroupingType) groupingTypeComboBox.getSelectedItem();
+            updateChart();
+        });
 
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -278,25 +276,11 @@ enum DateGroupingType {
     MONTH("Miesiąc"),
     YEAR("Rok");
 
-    private static final Map<String, DateGroupingType> BY_LABEL = new HashMap<>();
-
-    static {
-        for (DateGroupingType type: values()) {
-            BY_LABEL.put(type.label, type);
-        }
-    }
 
     public final String label;
+
     DateGroupingType(String label) {
         this.label = label;
-    }
-
-    public static DateGroupingType valueOfLabel(String label) {
-        return BY_LABEL.get(label);
-    }
-
-    public static String[] labels() {
-        return BY_LABEL.keySet().toArray(new String[0]);
     }
 
     @Override

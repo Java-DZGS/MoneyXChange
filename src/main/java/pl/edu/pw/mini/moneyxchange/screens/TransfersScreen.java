@@ -1,17 +1,13 @@
 package pl.edu.pw.mini.moneyxchange.screens;
 
-import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.data.Transfer;
-import pl.edu.pw.mini.moneyxchange.data.User;
-import pl.edu.pw.mini.moneyxchange.utils.Format;
 import pl.edu.pw.mini.moneyxchange.utils.Layout;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class TransfersScreen extends JPanel {
@@ -66,59 +62,6 @@ public class TransfersScreen extends JPanel {
         transfersPanel.revalidate();
         transfersPanel.repaint();
     }
-
-    private void showAddTransferDialog() {
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Dodaj przelew", true);
-        dialog.setLayout(new BorderLayout());
-
-        JTextField titleField = new JTextField();
-        JTextField dateField = new JTextField();
-        JTextField amountField = new JTextField();
-        JTextField fromField = new JTextField();
-        JTextField toField = new JTextField();
-
-        JButton addButton = new JButton("Dodaj przelew");
-
-        JPanel inputPanel = new JPanel(new GridLayout(5, 2));
-        inputPanel.add(new JLabel("Tytuł:"));
-        inputPanel.add(titleField);
-        inputPanel.add(new JLabel("Data:"));
-        inputPanel.add(dateField);
-        inputPanel.add(new JLabel("Kwota:"));
-        inputPanel.add(amountField);
-        inputPanel.add(new JLabel("Od:"));
-        inputPanel.add(fromField);
-        inputPanel.add(new JLabel("Do:"));
-        inputPanel.add(toField);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(addButton);
-
-        dialog.add(inputPanel, BorderLayout.CENTER);
-        dialog.add(buttonPanel, BorderLayout.SOUTH);
-
-        addButton.addActionListener(e -> {
-            String title = titleField.getText();
-            // todo: temporary, change to datepicker
-            Date date = new Date();
-            Money amount = Money.of(Double.parseDouble(amountField.getText()), Format.CURRENCY);
-
-            User fromUser = Group.getInstance().findUserByName(fromField.getText());
-            User toUser = Group.getInstance().findUserByName(toField.getText());
-
-            Transfer newTransfer = new Transfer(date, amount, fromUser, toUser);
-            transfers.add(newTransfer);
-
-            displayTransfers();
-
-            dialog.dispose();
-        });
-
-        dialog.setSize(300, 200);
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
-    }
-
 
     private void showFilterDialog() {
         JDialog filterDialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Filter Transfers", true);

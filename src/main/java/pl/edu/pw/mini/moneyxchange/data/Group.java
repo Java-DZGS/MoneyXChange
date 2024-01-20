@@ -258,21 +258,6 @@ public class Group implements Serializable {
     }
 
     /**
-     * Finds a user in the group by name.
-     *
-     * @param name The name of the user to find.
-     * @return The user with the given name, or null if not found.
-     */
-    public User findUserByName(String name) {
-        for (User user : users) {
-            if (user.getName().equals(name)) {
-                return user; // Found the user with the given name
-            }
-        }
-        return null; // User not found
-    }
-
-    /**
      * Adds a property change listener to the group.
      *
      * @param listener The listener to be added.
