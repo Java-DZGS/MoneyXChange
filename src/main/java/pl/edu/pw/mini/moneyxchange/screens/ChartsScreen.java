@@ -9,10 +9,10 @@ import pl.edu.pw.mini.moneyxchange.data.Group;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 import java.text.ParseException;
 import java.util.List;
 import java.util.*;
@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 
 public class ChartsScreen extends JPanel {
 
-    private enum XAxisGroupTypes {DAY, MONTH, YEAR};
-    private XAxisGroupTypes type = XAxisGroupTypes.MONTH;
+
+    private DateGroupingType type = DateGroupingType.DAY;
     private List<Expense> expenses;
     private final CategoryChart chart;
     private final XChartPanel<CategoryChart> chartPanel;
@@ -61,13 +61,10 @@ public class ChartsScreen extends JPanel {
         JButton filterButton = new JButton("Filtruj...");
         filterButton.addActionListener(e -> showFilterDialog());
 
-        // czy chcemy żeby tu były polskie nazwy tych metod grupowania?
-        // bo jeżeli tak to proszę o pomysły jak to sensownie zrobić, jakąś mapę?
-        // enum -> nazwa polska?
-        JComboBox<XAxisGroupTypes> groupingTypeComboBox = new JComboBox<>(XAxisGroupTypes.values());
-        groupingTypeComboBox.setSelectedItem(type);
+        JComboBox<String> groupingTypeComboBox = new JComboBox<>(DateGroupingType.labels());
+        groupingTypeComboBox.setSelectedItem(type.label);
         groupingTypeComboBox.addActionListener(e -> {
-                    type = (XAxisGroupTypes) groupingTypeComboBox.getSelectedItem();
+                    type = DateGroupingType.valueOfLabel((String) groupingTypeComboBox.getSelectedItem());
                     updateChart();
                 }
         );
@@ -276,5 +273,35 @@ public class ChartsScreen extends JPanel {
     }
 }
 
+enum DateGroupingType {
+    DAY("Dzień"),
+    MONTH("Miesiąc"),
+    YEAR("Rok");
 
+    private static final Map<String, DateGroupingType> BY_LABEL = new HashMap<>();
+
+    static {
+        for (DateGroupingType type: values()) {
+            BY_LABEL.put(type.label, type);
+        }
+    }
+
+    public final String label;
+    DateGroupingType(String label) {
+        this.label = label;
+    }
+
+    public static DateGroupingType valueOfLabel(String label) {
+        return BY_LABEL.get(label);
+    }
+
+    public static String[] labels() {
+        return BY_LABEL.keySet().toArray(new String[0]);
+    }
+
+    @Override
+    public String toString() {
+        return label;
+    }
+};
 
