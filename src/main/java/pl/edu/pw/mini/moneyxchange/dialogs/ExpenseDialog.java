@@ -142,9 +142,11 @@ public class ExpenseDialog extends JDialog {
             amountField.commitEdit();
             // If the format is correct, set the default border
             amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            amountValidationOK = true;
         } catch (Exception ex) {
             // If the format is incorrect, set a red border
             amountField.setBorder(BorderFactory.createLineBorder(Color.RED));
+            amountValidationOK = false;
         }
     }
 

@@ -2,6 +2,7 @@ package pl.edu.pw.mini.moneyxchange.dialogs;
 
 import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
 import pl.edu.pw.mini.moneyxchange.utils.splitters.*;
 import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 
@@ -149,12 +150,18 @@ public class SplitDialog extends JDialog {
 
     private JComponent getSplitInputComponent(User user) {
         if (Objects.requireNonNull(divisionType) == DivisionType.EQUAL) {
-            // todo: make textboxes not require currency unit written out
             JCheckBox checkBox = new JCheckBox();
             checkBox.setSelected(true);
             splitter.addUser(user, "");
             checkBox.addActionListener(e -> handleCheckBoxChange(checkBox, user));
             return checkBox;
+        }
+
+        if (Objects.requireNonNull(divisionType) == DivisionType.EXACT) {
+            JFormattedTextField textField = new JFormattedTextField(new Format.MonetaryFormatter());
+            handleSplitTextInputChange(textField, user);
+            SwingUtils.addChangeListener(textField, e -> handleSplitTextInputChange(textField, user));
+            return textField;
         }
 
         JTextField textField = new JTextField();
@@ -173,10 +180,19 @@ public class SplitDialog extends JDialog {
     }
 
     private void handleSplitTextInputChange(JTextField textField, User user) {
+        if (textField instanceof JFormattedTextField) {
+            try {
+                ((JFormattedTextField)textField).commitEdit();
+                textField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            } catch (Exception ex) {
+                textField.setBorder(BorderFactory.createLineBorder(Color.RED));
+                return;
+            }
+        }
         boolean validationResultOK = splitter.addUser(user, textField.getText());
 
         if (validationResultOK)
-            textField.setBorder(BorderFactory.createEmptyBorder());
+            textField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         else
             textField.setBorder(BorderFactory.createLineBorder(Color.RED));
 
