@@ -9,9 +9,7 @@ import pl.edu.pw.mini.moneyxchange.utils.Layout;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class UserDetailsDialog extends JDialog {
     private final User user;
@@ -108,7 +106,6 @@ public class UserDetailsDialog extends JDialog {
         Group.getInstance().addListener(evt -> {
             if (!evt.getPropertyName().equals("expenses")) return;
 
-            //noinspection unchecked
             displayExpenses();
         });
 
@@ -129,7 +126,6 @@ public class UserDetailsDialog extends JDialog {
         Group.getInstance().addListener(evt -> {
             if (!evt.getPropertyName().equals("pendingTransfers")) return;
 
-            //noinspection unchecked
             displayPendingTransfers();
         });
 
@@ -150,7 +146,6 @@ public class UserDetailsDialog extends JDialog {
         Group.getInstance().addListener(evt -> {
             if (!evt.getPropertyName().equals("completedTransfers")) return;
 
-            //noinspection unchecked
             displayCompletedTransfers();
         });
 
@@ -178,7 +173,7 @@ public class UserDetailsDialog extends JDialog {
     private void displayPendingTransfers() {
         pendingTransfersPanel.removeAll();
 
-        List<Transfer> transfers = Group.getInstance().getPendingTransfers().stream().filter(transfer->transfer.getFromUser().getId()==user.getId()).toList();
+        List<Transfer> transfers = Group.getInstance().getPendingTransfers().stream().filter(transfer->transfer.getFromUser() == user).toList();
 
         for (Transfer transfer : transfers) {
             JPanel transferPanel = transfer.getOptimalPanel();
@@ -196,7 +191,7 @@ public class UserDetailsDialog extends JDialog {
     private void displayCompletedTransfers() {
         completedTransfersPanel.removeAll();
 
-        List<Transfer> transfers = Group.getInstance().getCompletedTransfers().stream().filter(transfer->transfer.getFromUser().getId()==user.getId()).toList();
+        List<Transfer> transfers = Group.getInstance().getCompletedTransfers().stream().filter(transfer->transfer.getFromUser() == user).toList();
 
         for (Transfer transfer : transfers) {
             JPanel transferPanel = transfer.getPanel();

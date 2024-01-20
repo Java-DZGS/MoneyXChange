@@ -7,11 +7,6 @@ import pl.edu.pw.mini.moneyxchange.utils.splitters.ExactSplitter;
 import pl.edu.pw.mini.moneyxchange.utils.splitters.PercentageSplitter;
 import pl.edu.pw.mini.moneyxchange.utils.splitters.SharesSplitter;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 

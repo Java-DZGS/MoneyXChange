@@ -8,7 +8,6 @@ import pl.edu.pw.mini.moneyxchange.utils.Layout;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.List;
 
 

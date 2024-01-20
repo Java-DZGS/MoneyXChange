@@ -9,8 +9,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a user with basic information and functionality.
@@ -178,7 +176,6 @@ public class User implements Serializable {
             super();
             setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-            int padding = 10;
             setLayout(new BorderLayout());
 
             imageLabel = new JLabel((ImageIcon) null);

@@ -197,11 +197,6 @@ public class Expense implements MoneyAction, Serializable {
     public class ExpensePanel extends JPanel implements PropertyChangeListener {
 
         private final JLabel titleLabel;
-        private final JLabel dateLabel;
-        private final JLabel amountLabel;
-        private final JLabel categoryLabel;
-        private final JLabel payerLabel;
-        private final JLabel debtsLabel;
 
         /**
          * Creates an expense panel with basic information.
@@ -213,11 +208,11 @@ public class Expense implements MoneyAction, Serializable {
             setLayout(new GridLayout(0, 1));
 
             titleLabel = new JLabel("Tytuł: " + name);
-            dateLabel = new JLabel("Data: " + Format.SIMPLE_DATE_FORMAT.format(date));
-            amountLabel = new JLabel("Kwota: " + Format.MONETARY_FORMAT.format(amount));
-            payerLabel = new JLabel("Zapłacone przez: " + payer.getName());
-            categoryLabel = new JLabel("Kategoria: " + category.label);
-            debtsLabel = new JLabel("Długi: ");
+            JLabel dateLabel = new JLabel("Data: " + Format.SIMPLE_DATE_FORMAT.format(date));
+            JLabel amountLabel = new JLabel("Kwota: " + Format.MONETARY_FORMAT.format(amount));
+            JLabel payerLabel = new JLabel("Zapłacone przez: " + payer.getName());
+            JLabel categoryLabel = new JLabel("Kategoria: " + category.label);
+            JLabel debtsLabel = new JLabel("Długi: ");
 
             add(titleLabel);
             add(dateLabel);

@@ -13,7 +13,7 @@ public class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
         return dateFormatter.parseObject(text);
     }
     @Override
-    public String valueToString(Object value) throws ParseException {
+    public String valueToString(Object value) {
         if (value != null) {
             Calendar cal = (Calendar) value;
             return dateFormatter.format(cal.getTime());

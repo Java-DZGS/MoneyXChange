@@ -64,7 +64,7 @@ public class Format {
         }
 
         @Override
-        public String valueToString(Object value) throws ParseException {
+        public String valueToString(Object value) {
             return MONETARY_FORMAT.format(value == null ? Money.of(0, CURRENCY) : (Money) value);
         }
 

@@ -16,7 +16,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class ExpenseDialog extends JDialog {
     private final JTextField titleField;
@@ -27,7 +26,6 @@ public class ExpenseDialog extends JDialog {
     private final JComboBox<ExpenseCategory> categoryComboBox;
     private Money amount;
     private Map<User, Money> debtsMap;
-    private boolean paymentAdded;
     private boolean splitTypeSet;
 
     public ExpenseDialog() {

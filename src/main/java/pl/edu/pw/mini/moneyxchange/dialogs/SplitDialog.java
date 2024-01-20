@@ -3,14 +3,15 @@ package pl.edu.pw.mini.moneyxchange.dialogs;
 import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.User;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
-import pl.edu.pw.mini.moneyxchange.utils.splitters.*;
 import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
+import pl.edu.pw.mini.moneyxchange.utils.splitters.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
+import java.util.Objects;
 
 // todo: moze w przyszłosci zrobić z tego część okienka, zamiast nowego
 public class SplitDialog extends JDialog {
@@ -34,7 +35,6 @@ public class SplitDialog extends JDialog {
 
     private ISplitter splitter;
     private DivisionType divisionType;
-    private final JPanel dialogPanel;
     private final JPanel inputPanel;
     private final JPanel feedbackPanel;
     private final JComboBox<DivisionType> divisionTypeComboBox;
@@ -58,7 +58,7 @@ public class SplitDialog extends JDialog {
         setSplitter();
 
         {
-            dialogPanel = new JPanel(new GridBagLayout());
+            JPanel dialogPanel = new JPanel(new GridBagLayout());
             add(dialogPanel);
 
             divisionTypeComboBox = new JComboBox<>(DivisionType.values());
