@@ -22,26 +22,15 @@ public class CompleteTransferDialog extends JDialog {
     private Money transferAmount;
     private Money parsedAmount;
     private boolean resultOK = true;
-    private Group group;
-    private Money amount;
-
     public CompleteTransferDialog(Group group, Transfer transfer) {
         super((JFrame) null, "Wykonaj przelew", true);
 
-        this.group = group;
         this.transferAmount = transfer.getAmount();
         parsedAmount = transferAmount;
 
         UtilDateModel model = new UtilDateModel();
         model.setValue(new Date());
-
-        // todo: zrobiłem na te properties zmienną w klasie Format ale jest na innym branchu,
-        // jak juz będzie zmerge'owany to trzeba dodać 😭
-        Properties p = new Properties();
-        p.put("text.today", "Today");
-        p.put("text.month", "Month");
-        p.put("text.year", "Year");
-        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, Format.DATE_PICKER_PROPERTIES);
         datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 
         amountField = new JFormattedTextField(new Format.MonetaryFormatter());

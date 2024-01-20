@@ -7,6 +7,7 @@ import org.jdatepicker.impl.UtilDateModel;
 import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.MoneyAction;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
+import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +19,9 @@ public class FilterDialog extends JDialog {
     private boolean filterApplied;
     private FilterCriteria filterCriteria;
 
+    private Money fromAmount;
+    private Money toAmount;
+
     public FilterDialog(Frame owner) {
         super(owner, "Opcje filtrowania", true);
 
@@ -28,7 +32,6 @@ public class FilterDialog extends JDialog {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        // First Row
         JLabel dateLabel = new JLabel("Data:");
         JLabel fromLabel = new JLabel("od");
         UtilDateModel fromDateModel = new UtilDateModel();
@@ -52,14 +55,13 @@ public class FilterDialog extends JDialog {
         gbc.gridx = 4;
         add(toDatePicker, gbc);
 
-        // Second Row
         JLabel amountLabel = new JLabel("Kwota:");
-        // todo: textFieldy mają być formatted textfieldami,
-        //  na razie zostawiam bo tamten branch jest niezmergowany
         JLabel fromAmountLabel = new JLabel("od");
-        JTextField fromAmountField = new JTextField(6);
+        JFormattedTextField fromAmountField = new JFormattedTextField(new Format.MonetaryFormatter());
+        SwingUtils.addChangeListener(fromAmountField, e -> handleAmountFieldTextChange(fromAmountField));
         JLabel toAmountLabel = new JLabel("do");
-        JTextField toAmountField = new JTextField(6);
+        JFormattedTextField toAmountField = new JFormattedTextField(new Format.MonetaryFormatter());
+        SwingUtils.addChangeListener(toAmountField, e -> handleAmountFieldTextChange(toAmountField));
         gbc.gridx = 0;
         gbc.gridy = 1;
         add(amountLabel, gbc);
@@ -72,14 +74,13 @@ public class FilterDialog extends JDialog {
         gbc.gridx = 4;
         add(toAmountField, gbc);
 
-        // Third Row
         JLabel titleLabel = new JLabel("Tytuł:");
         JTextField titleField = new JTextField();
         gbc.gridx = 0;
         gbc.gridy = 2;
         add(titleLabel, gbc);
         gbc.gridx = 1;
-        gbc.gridwidth = 4; // Span across four columns
+        gbc.gridwidth = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         add(titleField, gbc);
 
@@ -87,8 +88,8 @@ public class FilterDialog extends JDialog {
         applyButton.addActionListener(e -> {
             filterCriteria.setFromDate((Date) fromDatePicker.getModel().getValue());
             filterCriteria.setToDate((Date) toDatePicker.getModel().getValue());
-            filterCriteria.setFromAmount(fromAmountField.getText());
-            filterCriteria.setToAmount(toAmountField.getText());
+            filterCriteria.setFromAmount((Money) fromAmountField.getValue());
+            filterCriteria.setToAmount((Money) toAmountField.getValue());
             filterCriteria.setTitleKeyword(titleField.getText());
 
             if (!filterCriteria.isFilterValid()) {
@@ -107,6 +108,15 @@ public class FilterDialog extends JDialog {
         add(applyButton, gbc);
 
         pack();
+    }
+
+    private void handleAmountFieldTextChange(JFormattedTextField textField) {
+        try {
+            textField.commitEdit();
+            textField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        } catch (Exception ex) {
+            textField.setBorder(BorderFactory.createLineBorder(Color.RED));
+        }
     }
 
 
@@ -130,7 +140,7 @@ public class FilterDialog extends JDialog {
             if (date == null)
                 return;
 
-            // samo `fromDate = date` ustawi dobry dzień, ale godzinę aktualną,
+            // samo `fromDate = date` ustawi wybrany w kalendarzu dzień, ale aktualną godzinę,
             // to niepoprawne w filtrowaniu
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
@@ -156,14 +166,12 @@ public class FilterDialog extends JDialog {
             toDate = calendar.getTime();
         }
 
-        public void setFromAmount(String text) {
-            //todo
-            fromAmount = Money.of(1, Format.CURRENCY);
+        public void setFromAmount(Money money) {
+            fromAmount = money;
         }
 
-        public void setToAmount(String text) {
-            // todo
-            toAmount = Money.of(100, Format.CURRENCY);
+        public void setToAmount(Money money) {
+            toAmount = money;
         }
 
         public void setTitleKeyword(String text) {
@@ -182,7 +190,7 @@ public class FilterDialog extends JDialog {
 
         private boolean checkAmount(Money money) {
             return (fromAmount == null || fromAmount.isLessThanOrEqualTo(money)) &&
-                    (toAmount == null || toAmount.isGreaterThanOrEqualTo(money));
+                    (toAmount == null || toAmount.isZero() || toAmount.isGreaterThanOrEqualTo(money));
         }
 
         private boolean checkTitle(String text) {

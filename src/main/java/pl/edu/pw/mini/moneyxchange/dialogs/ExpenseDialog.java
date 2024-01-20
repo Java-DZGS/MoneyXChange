@@ -137,8 +137,6 @@ public class ExpenseDialog extends JDialog {
     }
 
     private void handleAmountFieldTextChange() {
-        amount = (Money) amountField.getValue();
-
         try {
             amountField.commitEdit();
             amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -147,6 +145,8 @@ public class ExpenseDialog extends JDialog {
             amountField.setBorder(BorderFactory.createLineBorder(Color.RED));
             amountValidationOK = false;
         }
+
+        amount = (Money) amountField.getValue();
     }
 
     private void showUserSplitDialog(List<User> users) {
