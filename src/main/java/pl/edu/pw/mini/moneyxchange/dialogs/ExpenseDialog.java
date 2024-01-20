@@ -50,10 +50,7 @@ public class ExpenseDialog extends JDialog {
         amountField = new JTextField();
         userNames = Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new);
         payerComboBox = new JComboBox<>(userNames);
-        String[] categories = Stream.of(ExpenseCategory.values())
-                .map(ExpenseCategory::name)
-                .map(s -> s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase()) // capitalize only first letter
-                .toArray(String[]::new);
+        String[] categories = ExpenseCategory.labels();
         categoryComboBox = new JComboBox<>(categories);
 
         JButton splitButton = new JButton("Podziel wydatek");
@@ -104,9 +101,7 @@ public class ExpenseDialog extends JDialog {
 
             Expense newExpense = new Expense(Group.getInstance().findUserByName(Objects.requireNonNull(payerComboBox.getSelectedItem()).toString()),
                     amount, debtsMap, titleField.getText(), (Date) datePicker.getModel().getValue(),
-                    ExpenseCategory.valueOf(
-                            ((String) Objects.requireNonNull(categoryComboBox.getSelectedItem())).toUpperCase()
-                    )
+                    ExpenseCategory.valueOfLabel((String) categoryComboBox.getSelectedItem())
             );
 
             Group.getInstance().addExpense(newExpense);

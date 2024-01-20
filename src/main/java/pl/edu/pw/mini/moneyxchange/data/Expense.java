@@ -201,9 +201,7 @@ public class Expense implements MoneyAction, Serializable {
             dateLabel = new JLabel("Data: " + Format.SIMPLE_DATE_FORMAT.format(date));
             amountLabel = new JLabel("Kwota: " + Format.MONETARY_FORMAT.format(amount));
             payerLabel = new JLabel("Zapłacone przez: " + payer.getName());
-            categoryLabel = new JLabel("Kategoria: " +
-                    category.name().substring(0, 1).toUpperCase() +
-                    category.name().substring(1).toLowerCase());
+            categoryLabel = new JLabel("Kategoria: " + category.label);
             debtsLabel = new JLabel("Długi: ");
 
             add(titleLabel);
