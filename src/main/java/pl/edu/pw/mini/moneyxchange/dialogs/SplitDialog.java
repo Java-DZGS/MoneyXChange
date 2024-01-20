@@ -15,7 +15,37 @@ import java.util.stream.Stream;
 // todo: moze w przyszłosci zrobić z tego część okienka, zamiast nowego
 public class SplitDialog extends JDialog {
     enum DivisionType {
-        EQUAL, EXACT, PERCENTAGE, SHARES
+        EQUAL("Równo"),
+        EXACT("Dokładnie"),
+        PERCENTAGE("Procentowo"),
+        SHARES("Udziałami");
+
+        private static final Map<String, DivisionType> BY_LABEL = new HashMap<>();
+
+        static {
+            for (DivisionType type : values()) {
+                BY_LABEL.put(type.label, type);
+            }
+        }
+
+        public final String label;
+
+        DivisionType(String label) {
+            this.label = label;
+        }
+
+        public static DivisionType valueOfLabel(String label) {
+            return BY_LABEL.get(label);
+        }
+
+        public static String[] labels() {
+            return BY_LABEL.keySet().toArray(new String[0]);
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
     }
 
     private ISplitter splitter;
@@ -47,19 +77,10 @@ public class SplitDialog extends JDialog {
             dialogPanel = new JPanel(new GridBagLayout());
             add(dialogPanel);
 
-            divisionTypeComboBox = new JComboBox<>(
-                    // convert enum values to array of strings
-                    Stream.of(DivisionType.values())
-                            .map(DivisionType::name)
-                            .map(s -> s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase()) // capitalize only first letter
-                            .toArray(String[]::new));
-
+            divisionTypeComboBox = new JComboBox<>(DivisionType.labels());
+            divisionTypeComboBox.setSelectedItem(divisionType.label);
             divisionTypeComboBox.addActionListener(e -> {
-                divisionType = DivisionType.valueOf(
-                        Objects.requireNonNull(divisionTypeComboBox
-                                        .getSelectedItem())
-                                .toString()
-                                .toUpperCase());
+                divisionType = DivisionType.valueOfLabel((String)divisionTypeComboBox.getSelectedItem());
                 setSplitter();
                 drawInputPanel();
                 drawFeedbackPanel();
