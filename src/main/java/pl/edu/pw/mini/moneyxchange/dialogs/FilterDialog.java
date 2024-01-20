@@ -10,6 +10,7 @@ import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Calendar;
 import java.util.Date;
 
 public class FilterDialog extends JDialog {
@@ -126,11 +127,33 @@ public class FilterDialog extends JDialog {
         private String keyword;
 
         public void setFromDate(Date date) {
-            fromDate = date;
+            if (date == null)
+                return;
+
+            // samo `fromDate = date` ustawi dobry dzień, ale godzinę aktualną,
+            // to niepoprawne w filtrowaniu
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
+            fromDate = calendar.getTime();
         }
 
         public void setToDate(Date date) {
-            toDate = date;
+            if (date == null)
+                return;
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+            calendar.set(Calendar.MILLISECOND, 999);
+
+            toDate = calendar.getTime();
         }
 
         public void setFromAmount(String text) {
