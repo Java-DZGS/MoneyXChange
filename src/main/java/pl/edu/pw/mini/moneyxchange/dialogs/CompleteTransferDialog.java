@@ -31,14 +31,7 @@ public class CompleteTransferDialog extends JDialog {
 
         UtilDateModel model = new UtilDateModel();
         model.setValue(new Date());
-
-        // todo: zrobiłem na te properties zmienną w klasie Format ale jest na innym branchu,
-        // jak juz będzie zmerge'owany to trzeba dodać 😭
-        Properties p = new Properties();
-        p.put("text.today", "Today");
-        p.put("text.month", "Month");
-        p.put("text.year", "Year");
-        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, Format.DATE_PICKER_PROPERTIES);
         datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 
         amountField = new JFormattedTextField(new Format.MonetaryFormatter());
