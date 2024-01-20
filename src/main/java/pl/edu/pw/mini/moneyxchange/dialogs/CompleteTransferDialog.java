@@ -30,6 +30,7 @@ public class CompleteTransferDialog extends JDialog {
 
         this.group = group;
         this.transferAmount = transfer.getAmount();
+        parsedAmount = transferAmount;
 
         UtilDateModel model = new UtilDateModel();
         model.setValue(new Date());
@@ -44,6 +45,7 @@ public class CompleteTransferDialog extends JDialog {
         datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 
         amountField = new JFormattedTextField(new Format.MonetaryFormatter());
+        amountField.setValue(parsedAmount);
         handleTransferTextInputChange();
         SwingUtils.addChangeListener(amountField, e -> handleTransferTextInputChange());
 
@@ -52,7 +54,6 @@ public class CompleteTransferDialog extends JDialog {
         JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Adjusted the layout for the date picker
         panel.add(new JLabel("Data:"));
         panel.add(datePicker);
         panel.add(new JLabel("Kwota:"));
@@ -88,8 +89,6 @@ public class CompleteTransferDialog extends JDialog {
     }
 
     private void handleTransferTextInputChange() {
-        parsedAmount = (Money) amountField.getValue();
-
         try {
             amountField.commitEdit();
             amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -98,6 +97,7 @@ public class CompleteTransferDialog extends JDialog {
             resultOK = false;
             return;
         }
+        parsedAmount = (Money) amountField.getValue();
 
         if (validateAmount()) {
             amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -106,6 +106,8 @@ public class CompleteTransferDialog extends JDialog {
             amountField.setBorder(BorderFactory.createLineBorder(Color.RED));
             resultOK = false;
         }
+
+        amountField.repaint();
     }
 
     private boolean validateAmount() {
@@ -122,8 +124,7 @@ public class CompleteTransferDialog extends JDialog {
     }
 
     private Date getSelectedDate() {
-        Date selectedDate = (Date) datePicker.getModel().getValue();
-        return selectedDate;
+        return (Date) datePicker.getModel().getValue();
     }
 
 }
