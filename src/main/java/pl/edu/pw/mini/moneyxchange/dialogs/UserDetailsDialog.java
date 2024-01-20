@@ -44,7 +44,8 @@ public class UserDetailsDialog extends JDialog {
 
         user.addListener(evt -> {
             if (evt.getPropertyName().equals("name")) {
-                userInfoLabel.setText((String) evt.getNewValue());
+                userInfoLabel.setText("Imię: " + evt.getNewValue());
+                setTitle("Szczegóły użytkownika " + evt.getNewValue());
             } else if (evt.getPropertyName().equals("image")) {
                 if (evt.getNewValue() != null) {
                     ImageIcon imageIcon = new ImageIcon(((BufferedImage) evt.getNewValue()).getScaledInstance(100, 100, Image.SCALE_SMOOTH));

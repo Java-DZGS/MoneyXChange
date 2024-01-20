@@ -110,7 +110,7 @@ public class ExpenseDialog extends JDialog {
     public ExpenseDialog(User payer) {
         this();
 
-        payerComboBox.setSelectedItem(payer.getName());
+        payerComboBox.setSelectedItem(payer);
         payerComboBox.revalidate();
         payerComboBox.repaint();
     }

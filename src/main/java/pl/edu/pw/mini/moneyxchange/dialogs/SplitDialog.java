@@ -20,26 +20,10 @@ public class SplitDialog extends JDialog {
         PERCENTAGE("Procentowo"),
         SHARES("Udziałami");
 
-        private static final Map<String, DivisionType> BY_LABEL = new HashMap<>();
-
-        static {
-            for (DivisionType type : values()) {
-                BY_LABEL.put(type.label, type);
-            }
-        }
-
         public final String label;
 
         DivisionType(String label) {
             this.label = label;
-        }
-
-        public static DivisionType valueOfLabel(String label) {
-            return BY_LABEL.get(label);
-        }
-
-        public static String[] labels() {
-            return BY_LABEL.keySet().toArray(new String[0]);
         }
 
         @Override
@@ -53,7 +37,7 @@ public class SplitDialog extends JDialog {
     private final JPanel dialogPanel;
     private final JPanel inputPanel;
     private final JPanel feedbackPanel;
-    private final JComboBox<String> divisionTypeComboBox;
+    private final JComboBox<DivisionType> divisionTypeComboBox;
     private Map<User, Money> outputMap;
 
     public Map<User, Money> getOutputMap() {
@@ -77,10 +61,10 @@ public class SplitDialog extends JDialog {
             dialogPanel = new JPanel(new GridBagLayout());
             add(dialogPanel);
 
-            divisionTypeComboBox = new JComboBox<>(DivisionType.labels());
+            divisionTypeComboBox = new JComboBox<>(DivisionType.values());
             divisionTypeComboBox.setSelectedItem(divisionType.label);
             divisionTypeComboBox.addActionListener(e -> {
-                divisionType = DivisionType.valueOfLabel((String)divisionTypeComboBox.getSelectedItem());
+                divisionType = (DivisionType) divisionTypeComboBox.getSelectedItem();
                 setSplitter();
                 drawInputPanel();
                 drawFeedbackPanel();
