@@ -46,7 +46,7 @@ public class SharesSplitter implements ISplitter {
     @Override
     public Map<User, Money> split() {
         // how many total shares
-        int n = (int) shares.values().stream().reduce(Integer::sum).orElse(1);
+        int n = shares.values().stream().reduce(Integer::sum).orElse(1);
         Map<User, Money> map = new HashMap<>();
 
         for (var entry : shares.entrySet()) {
@@ -65,7 +65,7 @@ public class SharesSplitter implements ISplitter {
         if (shares.isEmpty())
             return "Wpisz udziały użykowników";
 
-        int n = (int) shares.values().stream().reduce(Integer::sum).orElse(1);
+        int n = shares.values().stream().reduce(Integer::sum).orElse(1);
         // todo: wyrzuca wyjątek gdy wynik dzielenia jest ułamkiem z nieskończonym rozwinięciem dziesiętnym XD
         return "Jeden udział wynosi " + Format.MONETARY_FORMAT.format(expenseAmount.divide(n));
     }
@@ -84,9 +84,6 @@ public class SharesSplitter implements ISplitter {
             return false;
         }
 
-        if (parsedAmount < 0)
-            return false;
-
-        return true;
+        return parsedAmount >= 0;
     }
 }

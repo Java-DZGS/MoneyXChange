@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class EqualSplitter implements ISplitter {
-    private Set<User> includedUsers;
+    private final Set<User> includedUsers;
     private final Money expenseAmount;
 
     public EqualSplitter(Money expenseAmount) {

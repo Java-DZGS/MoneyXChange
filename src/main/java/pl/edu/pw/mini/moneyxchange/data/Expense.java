@@ -55,7 +55,7 @@ public class Expense implements MoneyAction, Serializable {
     /**
      * Support for property change events.
      */
-    private SwingPropertyChangeSupport propertyChangeSupport;
+    private final SwingPropertyChangeSupport propertyChangeSupport;
 
     /**
      * Creates a new expense with the specified details.
@@ -196,12 +196,12 @@ public class Expense implements MoneyAction, Serializable {
      */
     public class ExpensePanel extends JPanel implements PropertyChangeListener {
 
-        private JLabel titleLabel;
-        private JLabel dateLabel;
-        private JLabel amountLabel;
-        private JLabel categoryLabel;
-        private JLabel payerLabel;
-        private JLabel debtsLabel;
+        private final JLabel titleLabel;
+        private final JLabel dateLabel;
+        private final JLabel amountLabel;
+        private final JLabel categoryLabel;
+        private final JLabel payerLabel;
+        private final JLabel debtsLabel;
 
         /**
          * Creates an expense panel with basic information.

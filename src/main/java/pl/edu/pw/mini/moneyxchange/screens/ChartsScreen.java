@@ -182,7 +182,7 @@ public class ChartsScreen extends JPanel {
     static class FilterDialog extends JDialog {
 
         private boolean filterApplied;
-        private FilterCriteria filterCriteria;
+        private final FilterCriteria filterCriteria;
 
         public FilterDialog(Frame owner) {
             super(owner, "Opcje filtrowania", true);
@@ -287,5 +287,5 @@ enum DateGroupingType {
     public String toString() {
         return label;
     }
-};
+}
 

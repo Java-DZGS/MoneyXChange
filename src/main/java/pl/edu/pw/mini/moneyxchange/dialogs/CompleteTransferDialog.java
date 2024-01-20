@@ -19,16 +19,13 @@ import java.util.Properties;
 public class CompleteTransferDialog extends JDialog {
     private final JFormattedTextField amountField;
     private final JDatePickerImpl datePicker;
-    private Money transferAmount;
+    private final Money transferAmount;
     private Money parsedAmount;
     private boolean resultOK = true;
-    private Group group;
-    private Money amount;
 
     public CompleteTransferDialog(Group group, Transfer transfer) {
         super((JFrame) null, "Wykonaj przelew", true);
 
-        this.group = group;
         this.transferAmount = transfer.getAmount();
         parsedAmount = transferAmount;
 
@@ -117,10 +114,7 @@ public class CompleteTransferDialog extends JDialog {
         if (parsedAmount.signum() < 0)
             return false;
 
-        if (parsedAmount.isGreaterThan(transferAmount))
-            return false;
-
-        return true;
+        return !parsedAmount.isGreaterThan(transferAmount);
     }
 
     private Date getSelectedDate() {

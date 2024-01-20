@@ -39,7 +39,7 @@ public class User implements Serializable {
     /**
      * Support for property change events.
      */
-    private SwingPropertyChangeSupport propertyChangeSupport;
+    private final SwingPropertyChangeSupport propertyChangeSupport;
 
     /**
      * Constructs a new user with the specified name.

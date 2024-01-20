@@ -15,7 +15,6 @@ import java.util.List;
 public class UsersScreen extends JPanel {
     private List<User> users;
     private final JPanel usersPanel;
-    private BufferedImage[] userImage = new BufferedImage[1];
 
     public UsersScreen() {
         users = Group.getInstance().getUsers();
