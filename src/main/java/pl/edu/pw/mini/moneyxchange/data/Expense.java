@@ -9,6 +9,9 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
+import java.time.Year;
+import java.time.YearMonth;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +40,7 @@ public class Expense implements MoneyAction, Serializable {
      * The name/title of the expense.
      */
     private String name; //TODO: proof-of-concept aktualizowania zmiennych
+    // to todo jest już chyba resolved?
 
     /**
      * The date when the expense occurred.
@@ -142,6 +146,18 @@ public class Expense implements MoneyAction, Serializable {
         return date;
     }
 
+    public YearMonth getYearMonth() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return YearMonth.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
+    }
+
+    public Year getYear() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return Year.of(calendar.get(Calendar.YEAR));
+    }
+
     /**
      * Gets a string representation of the expense.
      *
@@ -183,6 +199,7 @@ public class Expense implements MoneyAction, Serializable {
         private JLabel titleLabel;
         private JLabel dateLabel;
         private JLabel amountLabel;
+        private JLabel categoryLabel;
         private JLabel payerLabel;
         private JLabel debtsLabel;
 
@@ -199,12 +216,14 @@ public class Expense implements MoneyAction, Serializable {
             dateLabel = new JLabel("Data: " + Format.SIMPLE_DATE_FORMAT.format(date));
             amountLabel = new JLabel("Kwota: " + Format.MONETARY_FORMAT.format(amount));
             payerLabel = new JLabel("Zapłacone przez: " + payer.getName());
+            categoryLabel = new JLabel("Kategoria: " + category.label);
             debtsLabel = new JLabel("Długi: ");
 
             add(titleLabel);
             add(dateLabel);
             add(amountLabel);
             add(payerLabel);
+            add(categoryLabel);
             add(debtsLabel);
 
             Expense.this.addListener(this);
