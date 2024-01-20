@@ -8,6 +8,7 @@ import javax.swing.event.SwingPropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.text.DateFormat;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -300,9 +301,7 @@ public class Group implements Serializable {
             throw new RuntimeException(e);
         }
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
-
             Expense expense1 = new Expense(users.get(1), Money.of(50.0, Format.CURRENCY),
                     new HashMap<>() {{
                         put(users.get(0), Money.of(0.0, Format.CURRENCY));
@@ -311,7 +310,7 @@ public class Group implements Serializable {
                         put(users.get(3), Money.of(0.0, Format.CURRENCY));
                         put(users.get(4), Money.of(0.0, Format.CURRENCY));
                     }},
-                    "Pizza", dateFormat.parse("2023-01-01"), ExpenseCategory.FOOD
+                    "Pizza", Format.SIMPLE_DATE_FORMAT.parse("2023-01-01"), ExpenseCategory.FOOD
             );
             addExpense(expense1);
 
@@ -323,7 +322,7 @@ public class Group implements Serializable {
                         put(users.get(3), Money.of(0.0, Format.CURRENCY));
                         put(users.get(4), Money.of(0.0, Format.CURRENCY));
                     }},
-                    "Uber", dateFormat.parse("2023-01-02"), ExpenseCategory.TRANSPORT
+                    "Uber", Format.SIMPLE_DATE_FORMAT.parse("2023-01-02"), ExpenseCategory.TRANSPORT
             );
             addExpense(expense2);
 
@@ -335,7 +334,7 @@ public class Group implements Serializable {
                         put(users.get(3), Money.of(10.0, Format.CURRENCY));
                         put(users.get(4), Money.of(0.0, Format.CURRENCY));
                     }},
-                    "Movies", dateFormat.parse("2023-01-03"), ExpenseCategory.ENTERTAINMENT
+                    "Kino", Format.SIMPLE_DATE_FORMAT.parse("2023-01-03"), ExpenseCategory.ENTERTAINMENT
             );
             addExpense(expense3);
 
@@ -347,9 +346,145 @@ public class Group implements Serializable {
                         put(users.get(3), Money.of(0.0, Format.CURRENCY));
                         put(users.get(4), Money.of(0.0, Format.CURRENCY));
                     }},
-                    "Fries", dateFormat.parse("2023-01-01"), ExpenseCategory.FOOD
+                    "Frytki", Format.SIMPLE_DATE_FORMAT.parse("2023-01-01"), ExpenseCategory.FOOD
             );
             addExpense(expense4);
+
+            Expense expense5 = new Expense(users.get(2), Money.of(20.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(8.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(6.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(4.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(2.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
+                    }},
+                    "Kawa ", Format.SIMPLE_DATE_FORMAT.parse("2023-01-06"), ExpenseCategory.FOOD
+            );
+            addExpense(expense5);
+
+            Expense expense6 = new Expense(users.get(3), Money.of(25.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(12.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(8.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(5.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(0.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
+                    }},
+                    "Koncert", Format.SIMPLE_DATE_FORMAT.parse("2023-01-07"), ExpenseCategory.ENTERTAINMENT
+            );
+            addExpense(expense6);
+
+            Expense expense7 = new Expense(users.get(4), Money.of(40.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(15.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(15.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(0.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
+                    }},
+                    "Pociąg", Format.SIMPLE_DATE_FORMAT.parse("2023-01-08"), ExpenseCategory.TRANSPORT
+            );
+            addExpense(expense7);
+
+            Expense expense8 = new Expense(users.get(0), Money.of(15.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(1), Money.of(5.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(5.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(5.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
+                    }},
+                    "Książki", Format.SIMPLE_DATE_FORMAT.parse("2022-08-15"), ExpenseCategory.OTHER//ExpenseCategory.EDUCATION
+            );
+            addExpense(expense8);
+
+            Expense expense9 = new Expense(users.get(1), Money.of(60.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(20.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(20.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(20.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
+                    }},
+                    "Spa Weekend", Format.SIMPLE_DATE_FORMAT.parse("2023-05-20"), ExpenseCategory.OTHER// ExpenseCategory.HEALTH
+            );
+            addExpense(expense9);
+
+            Expense expense10 = new Expense(users.get(2), Money.of(35.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(15.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
+                    }},
+                    "Muzeum Sztuki", Format.SIMPLE_DATE_FORMAT.parse("2024-02-10"), ExpenseCategory.ENTERTAINMENT
+            );
+            addExpense(expense10);
+
+            Expense expense11 = new Expense(users.get(3), Money.of(40.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(15.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(15.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
+                    }},
+                    "Teatr", Format.SIMPLE_DATE_FORMAT.parse("2022-11-12"), ExpenseCategory.ENTERTAINMENT
+            );
+            addExpense(expense11);
+
+            Expense expense12 = new Expense(users.get(4), Money.of(25.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(5.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(0.0, Format.CURRENCY));
+                    }},
+                    "Sklep Sportowy", Format.SIMPLE_DATE_FORMAT.parse("2023-08-22"), ExpenseCategory.OTHER//CLOTHING
+            );
+            addExpense(expense12);
+
+            Expense expense13 = new Expense(users.get(1), Money.of(30.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
+                    }},
+                    "Park Rozrywki", Format.SIMPLE_DATE_FORMAT.parse("2024-04-05"), ExpenseCategory.ENTERTAINMENT
+            );
+            addExpense(expense13);
+
+            Expense expense14 = new Expense(users.get(2), Money.of(18.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(8.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(5.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(5.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
+                    }},
+                    "Muzyka Online", Format.SIMPLE_DATE_FORMAT.parse("2023-09-15"), ExpenseCategory.ENTERTAINMENT
+            );
+            addExpense(expense14);
+
+            Expense expense15 = new Expense(users.get(3), Money.of(22.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(8.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(4.0, Format.CURRENCY));
+                        put(users.get(4), Money.of(0.0, Format.CURRENCY));
+                    }},
+                    "Łyżwy", Format.SIMPLE_DATE_FORMAT.parse("2024-01-28"), ExpenseCategory.OTHER//SPORTS
+            );
+            addExpense(expense15);
+
+            Expense expense16 = new Expense(users.get(4), Money.of(28.0, Format.CURRENCY),
+                    new HashMap<>() {{
+                        put(users.get(0), Money.of(12.0, Format.CURRENCY));
+                        put(users.get(1), Money.of(10.0, Format.CURRENCY));
+                        put(users.get(2), Money.of(6.0, Format.CURRENCY));
+                        put(users.get(3), Money.of(0.0, Format.CURRENCY));
+                    }},
+                    "Konferencja IT", Format.SIMPLE_DATE_FORMAT.parse("2022-06-17"), ExpenseCategory.OTHER//TECHNOLOGY
+            );
+            addExpense(expense16);
+
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
