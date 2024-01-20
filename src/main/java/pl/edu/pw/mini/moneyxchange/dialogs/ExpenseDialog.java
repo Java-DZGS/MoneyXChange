@@ -43,9 +43,8 @@ public class ExpenseDialog extends JDialog {
         p.put("text.today", "Dzisiaj");
         p.put("text.month", "Miesiąc");
         p.put("text.year", "Rok");
-
         JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
-        datePicker = new JDatePickerImpl(datePanel, new Format.DateLabelFormatter());//Format.DATE_LABEL_FORMATTER);
+        datePicker = new JDatePickerImpl(datePanel, Format.DATE_LABEL_FORMATTER);
 
         amountField = new JFormattedTextField(new Format.MonetaryFormatter());
         userNames = Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new);
