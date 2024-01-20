@@ -170,8 +170,8 @@ public class Group implements Serializable {
     public List<MoneyAction> getActionsList() {
         return Stream.concat(
                         expenses.stream().map(expense -> (MoneyAction) expense),
-                        pendingTransfers.stream().map(transfer -> (MoneyAction) transfer))
-                .sorted(Comparator.comparing(MoneyAction::getDate))
+                        completedTransfers.stream().map(transfer -> (MoneyAction) transfer))
+                .sorted(Comparator.comparing(MoneyAction::getDate).reversed())
                 .collect(Collectors.toList());
     }
 

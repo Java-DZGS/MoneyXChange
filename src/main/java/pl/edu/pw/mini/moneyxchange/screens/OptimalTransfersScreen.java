@@ -34,7 +34,6 @@ public class OptimalTransfersScreen extends JPanel {
         Group.getInstance().addListener(evt -> {
             if(!evt.getPropertyName().equals("pendingTransfers")) return;
 
-            //noinspection unchecked
             transfers = Group.getInstance().getPendingTransfers();
             displayTransfers();
         });

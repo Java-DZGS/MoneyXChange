@@ -13,7 +13,6 @@ import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Date;
-import java.util.Properties;
 
 
 public class CompleteTransferDialog extends JDialog {
@@ -72,10 +71,6 @@ public class CompleteTransferDialog extends JDialog {
                         null, "Błędne dane", "Błąd", JOptionPane.ERROR_MESSAGE);
             }
         });
-
-        this.setSize(300, 200);
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
     }
 
     private void handleTransferTextInputChange() {

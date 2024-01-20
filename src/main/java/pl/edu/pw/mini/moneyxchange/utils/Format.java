@@ -37,7 +37,7 @@ public class Format {
         }
 
         @Override
-        public String valueToString(Object value) throws ParseException {
+        public String valueToString(Object value) {
             if (value != null) {
                 Calendar cal = (Calendar) value;
                 return SIMPLE_DATE_FORMAT.format(cal.getTime());

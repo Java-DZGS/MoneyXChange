@@ -11,9 +11,6 @@ import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.ParseException;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -107,13 +104,9 @@ public class ChartsScreen extends JPanel {
                     .entrySet().stream()
                     .sorted(Map.Entry.comparingByKey())
                     .forEach(entry -> {
-                        try {
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(entry.getKey());
-                            dates.add(Format.DATE_LABEL_FORMATTER.valueToString(calendar));
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(entry.getKey());
+                        dates.add(Format.DATE_LABEL_FORMATTER.valueToString(calendar));
                         amounts.add(entry.getValue());
                     });
             case MONTH -> expenses.stream()

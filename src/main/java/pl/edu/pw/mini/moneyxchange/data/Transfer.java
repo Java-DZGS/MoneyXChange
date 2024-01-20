@@ -176,7 +176,9 @@ public class Transfer implements MoneyAction, Serializable {
 
             completeButton.addActionListener(e -> {
                 CompleteTransferDialog completeTransferDialog = new CompleteTransferDialog(Group.getInstance(), Transfer.this);
-                // TODO
+                completeTransferDialog.setSize(300, 200);
+                completeTransferDialog.setLocationRelativeTo(null);
+                completeTransferDialog.setVisible(true);
             });
         }
     }

@@ -166,8 +166,8 @@ public class User implements Serializable {
      * Inner class representing a panel displaying user information.
      */
     public class UserPanel extends JPanel {
-        JLabel nameLabel;
-        JLabel imageLabel;
+        final JLabel nameLabel;
+        final JLabel imageLabel;
 
         /**
          * Constructs a new UserPanel for displaying user information.

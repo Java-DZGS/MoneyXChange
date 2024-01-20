@@ -21,38 +21,38 @@ public class MinCashFlow {
      * @param transfers List of Transfer objects representing monetary transactions to be completed between users.
      * @return List of Transfer objects representing optimal transfers to minimize cash flow.
      * @implSpec The algorithm proceeds through the following steps:
-     * </br>
-     * Step 1: Calculating Net Balances
-     * - Prepares a list to store the net balance of each person.
-     * - Iterates through the list of financial transactions, updating net balances accordingly.
-     * A positive balance implies giving money, while a negative balance implies receiving money.
-     * </br>
-     * Step 2: Filtering Zero Net Balances
-     * - Filters out individuals with a net balance of zero, as they do not need to be involved in further transactions.
-     * </br>
-     * Step 3: Initializing Dynamic Programming Array
-     * - Initializes a dynamic programming array 'f' to track the minimum number of transactions for each subset of persons.
-     * </br>
-     * Step 4: Finding Minimum Number of Transactions
-     * - Iterates through all possible non-zero net balance subsets, using a bitmask 'i'.
-     * - Computes the sum of balances in the subset; if the sum is zero, it indicates a subset that can balance itself.
-     * </br>
-     * Step 5: Setting Base Condition for Correct Subsets
-     * - If the sum for the 'i'-th subset is zero, calculates the number of required transactions as one less than the number of set bits in 'i'.
-     * Transactions can be executed by selecting any two individuals with non-zero balances and transferring funds
-     * to zero out the balance of one of them. Repeats this step until all debts in the group are settled.
-     * </br>
-     * Step 6: Optimizing Transactions
-     * - Searches for pairs of disjoint subsets 'j' and 'i^j' (XOR operation) that combine into the subset 'i'.
-     * - Uses bitwise manipulation to iterate through potential pairs, aiming to minimize the sum 'f[j] + f[i^j]'.
-     * - Stores the optimal previous subset 'prevSubset[i] = j'.
-     * </br>
-     * Step 7: Reconstructing Optimal Transfers
-     * - Iterates through all persons, reading the previous optimal subset 'prev', and its complement 'diff'.
-     * - In a for loop checking for differences between the current and previous subsets, finds a partner for settlement.
-     * - Creates a Transfer object representing the transaction and updates balances.
-     * </br>
-     * Step 8: Returning the List of Optimal Transfers
+     * <br>
+     * Step 1: Calculating Net Balances<br>
+     * - Prepares a list to store the net balance of each person.<br>
+     * - Iterates through the list of financial transactions, updating net balances accordingly.<br>
+     * A positive balance implies giving money, while a negative balance implies receiving money.<br>
+     * <br>
+     * Step 2: Filtering Zero Net Balances<br>
+     * - Filters out individuals with a net balance of zero, as they do not need to be involved in further transactions.<br>
+     * <br>
+     * Step 3: Initializing Dynamic Programming Array<br>
+     * - Initializes a dynamic programming array 'f' to track the minimum number of transactions for each subset of persons.<br>
+     * <br>
+     * Step 4: Finding Minimum Number of Transactions<br>
+     * - Iterates through all possible non-zero net balance subsets, using a bitmask 'i'.<br>
+     * - Computes the sum of balances in the subset; if the sum is zero, it indicates a subset that can balance itself.<br>
+     * <br>
+     * Step 5: Setting Base Condition for Correct Subsets<br>
+     * - If the sum for the 'i'-th subset is zero, calculates the number of required transactions as one less than the number of set bits in 'i'.<br>
+     * Transactions can be executed by selecting any two individuals with non-zero balances and transferring funds<br>
+     * to zero out the balance of one of them. Repeats this step until all debts in the group are settled.<br>
+     * <br>
+     * Step 6: Optimizing Transactions<br>
+     * - Searches for pairs of disjoint subsets 'j' and 'i^j' (XOR operation) that combine into the subset 'i'.<br>
+     * - Uses bitwise manipulation to iterate through potential pairs, aiming to minimize the sum 'f[j] + f[i^j]'.<br>
+     * - Stores the optimal previous subset 'prevSubset[i] = j'.<br>
+     * <br>
+     * Step 7: Reconstructing Optimal Transfers<br>
+     * - Iterates through all persons, reading the previous optimal subset 'prev', and its complement 'diff'.<br>
+     * - In a for loop checking for differences between the current and previous subsets, finds a partner for settlement.<br>
+     * - Creates a Transfer object representing the transaction and updates balances.<br>
+     * <br>
+     * Step 8: Returning the List of Optimal Transfers<br>
      * - Returns a list of Transfer objects representing optimal transactions to balance debts within the obtained optimal subset.
      */
     public static List<Transfer> minTransfers(List<Transfer> transfers) {
@@ -112,8 +112,7 @@ public class MinCashFlow {
             }
         }
         int optimalSubset = (1 << numAccounts) - 1;
-        List<Transfer> optimalTransfers = reconstructTransfers(optimalSubset, nonZeroBalances, users, prevSubset);
-        return optimalTransfers;
+        return reconstructTransfers(optimalSubset, nonZeroBalances, users, prevSubset);
 
     }
 
