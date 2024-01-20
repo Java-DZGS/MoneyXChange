@@ -66,6 +66,7 @@ public class SharesSplitter implements ISplitter {
             return "Wpisz udziały użykowników";
 
         int n = (int) shares.values().stream().reduce(Integer::sum).orElse(1);
+        // todo: wyrzuca wyjątek gdy wynik dzielenia jest ułamkiem z nieskończonym rozwinięciem dziesiętnym XD
         return "Jeden udział wynosi " + Format.MONETARY_FORMAT.format(expenseAmount.divide(n));
     }
 

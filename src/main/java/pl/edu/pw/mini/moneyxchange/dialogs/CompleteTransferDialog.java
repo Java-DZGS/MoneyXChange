@@ -10,24 +10,21 @@ import pl.edu.pw.mini.moneyxchange.utils.DateLabelFormatter;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 
-import javax.money.MonetaryException;
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
 
 
 public class CompleteTransferDialog extends JDialog {
-    private final JTextField amountField;
+    private final JFormattedTextField amountField;
     private final JDatePickerImpl datePicker;
     private Money transferAmount;
     private Money parsedAmount;
     private boolean resultOK = true;
     private Group group;
     private Money amount;
+
     public CompleteTransferDialog(Group group, Transfer transfer) {
         super((JFrame) null, "Wykonaj przelew", true);
 
@@ -37,6 +34,8 @@ public class CompleteTransferDialog extends JDialog {
         UtilDateModel model = new UtilDateModel();
         model.setValue(new Date());
 
+        // todo: zrobiłem na te properties zmienną w klasie Format ale jest na innym branchu,
+        // jak juz będzie zmerge'owany to trzeba dodać 😭
         Properties p = new Properties();
         p.put("text.today", "Today");
         p.put("text.month", "Month");
@@ -44,8 +43,7 @@ public class CompleteTransferDialog extends JDialog {
         JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
         datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 
-        //TODO: Proper formatting and parsing
-        amountField = new JTextField(transfer.getAmount().getNumber().doubleValue() + " PLN");
+        amountField = new JFormattedTextField(new Format.MonetaryFormatter());
         handleTransferTextInputChange();
         SwingUtils.addChangeListener(amountField, e -> handleTransferTextInputChange());
 
@@ -88,31 +86,31 @@ public class CompleteTransferDialog extends JDialog {
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
-    private void handleTransferTextInputChange() {
-        boolean validationResultOK = parse(amountField.getText());
 
-        if (validationResultOK) {
-            amountField.setBorder(BorderFactory.createEmptyBorder());
-            resultOK = true;
+    private void handleTransferTextInputChange() {
+        parsedAmount = (Money) amountField.getValue();
+
+        try {
+            amountField.commitEdit();
+            amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        } catch (Exception ex) {
+            amountField.setBorder(BorderFactory.createLineBorder(Color.RED));
+            resultOK = false;
+            return;
         }
-        else {
+
+        if (validateAmount()) {
+            amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            resultOK = true;
+        } else {
             amountField.setBorder(BorderFactory.createLineBorder(Color.RED));
             resultOK = false;
         }
     }
-    private boolean parse(String text)
-    {
-        if (text.isEmpty()) {
-            parsedAmount = Money.zero(transferAmount.getCurrency());
-            return true;
-        }
 
-        try {
-            parsedAmount = Money.parse(text, Format.MONETARY_FORMAT);
-        } catch (MonetaryException | IllegalArgumentException ex) {
-            parsedAmount = Money.zero(transferAmount.getCurrency());
+    private boolean validateAmount() {
+        if (parsedAmount == null)
             return false;
-        }
 
         if (parsedAmount.signum() < 0)
             return false;
@@ -122,6 +120,7 @@ public class CompleteTransferDialog extends JDialog {
 
         return true;
     }
+
     private Date getSelectedDate() {
         Date selectedDate = (Date) datePicker.getModel().getValue();
         return selectedDate;
