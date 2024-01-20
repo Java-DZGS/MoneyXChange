@@ -206,28 +206,3 @@ public class FilterDialog extends JDialog {
     }
 
 }
-
-/*
-    private void applyAmountFilter() {
-        String keyword = JOptionPane.showInputDialog(this, "Enter Amount Keyword:");
-        if (keyword != null) {
-            try {
-                double amount = Double.parseDouble(keyword);
-                List<Transfer> filteredTransfers = new ArrayList<>();
-                for (Transfer transfer : transfers) {
-                    if (transfer.getAmount().getNumber().doubleValue() == amount) {
-                        filteredTransfers.add(transfer);
-                    }
-                }
-                transfers = filteredTransfers;
-                displayTransfers();
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid amount. Please enter a valid number.");
-            }
-        }
-    }
-}
- */
-
-
-
