@@ -13,6 +13,7 @@ public class OptimalTransfersScreen extends JPanel {
     private List<Transfer> transfers;
     private final JPanel transfersPanel;
     public OptimalTransfersScreen() {
+
         transfers = Group.getInstance().getPendingTransfers();
 
         // Create components

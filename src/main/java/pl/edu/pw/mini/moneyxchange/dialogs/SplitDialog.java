@@ -2,6 +2,7 @@ package pl.edu.pw.mini.moneyxchange.dialogs;
 
 import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.User;
+import pl.edu.pw.mini.moneyxchange.utils.Format;
 import pl.edu.pw.mini.moneyxchange.utils.splitters.*;
 import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 
@@ -14,7 +15,37 @@ import java.util.stream.Stream;
 // todo: moze w przyszłosci zrobić z tego część okienka, zamiast nowego
 public class SplitDialog extends JDialog {
     enum DivisionType {
-        EQUAL, EXACT, PERCENTAGE, SHARES
+        EQUAL("Równo"),
+        EXACT("Dokładnie"),
+        PERCENTAGE("Procentowo"),
+        SHARES("Udziałami");
+
+        private static final Map<String, DivisionType> BY_LABEL = new HashMap<>();
+
+        static {
+            for (DivisionType type : values()) {
+                BY_LABEL.put(type.label, type);
+            }
+        }
+
+        public final String label;
+
+        DivisionType(String label) {
+            this.label = label;
+        }
+
+        public static DivisionType valueOfLabel(String label) {
+            return BY_LABEL.get(label);
+        }
+
+        public static String[] labels() {
+            return BY_LABEL.keySet().toArray(new String[0]);
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
     }
 
     private ISplitter splitter;
@@ -46,19 +77,10 @@ public class SplitDialog extends JDialog {
             dialogPanel = new JPanel(new GridBagLayout());
             add(dialogPanel);
 
-            divisionTypeComboBox = new JComboBox<>(
-                    // convert enum values to array of strings
-                    Stream.of(DivisionType.values())
-                            .map(DivisionType::name)
-                            .map(s -> s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase()) // capitalize only first letter
-                            .toArray(String[]::new));
-
+            divisionTypeComboBox = new JComboBox<>(DivisionType.labels());
+            divisionTypeComboBox.setSelectedItem(divisionType.label);
             divisionTypeComboBox.addActionListener(e -> {
-                divisionType = DivisionType.valueOf(
-                        Objects.requireNonNull(divisionTypeComboBox
-                                        .getSelectedItem())
-                                .toString()
-                                .toUpperCase());
+                divisionType = DivisionType.valueOfLabel((String)divisionTypeComboBox.getSelectedItem());
                 setSplitter();
                 drawInputPanel();
                 drawFeedbackPanel();
@@ -149,12 +171,18 @@ public class SplitDialog extends JDialog {
 
     private JComponent getSplitInputComponent(User user) {
         if (Objects.requireNonNull(divisionType) == DivisionType.EQUAL) {
-            // todo: make textboxes not require currency unit written out
             JCheckBox checkBox = new JCheckBox();
             checkBox.setSelected(true);
             splitter.addUser(user, "");
             checkBox.addActionListener(e -> handleCheckBoxChange(checkBox, user));
             return checkBox;
+        }
+
+        if (Objects.requireNonNull(divisionType) == DivisionType.EXACT) {
+            JFormattedTextField textField = new JFormattedTextField(new Format.MonetaryFormatter());
+            handleSplitTextInputChange(textField, user);
+            SwingUtils.addChangeListener(textField, e -> handleSplitTextInputChange(textField, user));
+            return textField;
         }
 
         JTextField textField = new JTextField();
@@ -173,10 +201,19 @@ public class SplitDialog extends JDialog {
     }
 
     private void handleSplitTextInputChange(JTextField textField, User user) {
+        if (textField instanceof JFormattedTextField) {
+            try {
+                ((JFormattedTextField)textField).commitEdit();
+                textField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            } catch (Exception ex) {
+                textField.setBorder(BorderFactory.createLineBorder(Color.RED));
+                return;
+            }
+        }
         boolean validationResultOK = splitter.addUser(user, textField.getText());
 
         if (validationResultOK)
-            textField.setBorder(BorderFactory.createEmptyBorder());
+            textField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         else
             textField.setBorder(BorderFactory.createLineBorder(Color.RED));
 
