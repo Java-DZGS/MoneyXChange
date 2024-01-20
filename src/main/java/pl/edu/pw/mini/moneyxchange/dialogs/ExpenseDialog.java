@@ -1,16 +1,17 @@
 package pl.edu.pw.mini.moneyxchange.dialogs;
 
 import org.javamoney.moneta.Money;
-//import org.jdatepicker.JDatePicker;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
-import pl.edu.pw.mini.moneyxchange.data.*;
+import pl.edu.pw.mini.moneyxchange.data.Expense;
+import pl.edu.pw.mini.moneyxchange.data.ExpenseCategory;
+import pl.edu.pw.mini.moneyxchange.data.Group;
+import pl.edu.pw.mini.moneyxchange.data.User;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 import pl.edu.pw.mini.moneyxchange.utils.splitters.EqualSplitter;
 
-import javax.money.MonetaryException;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
 public class ExpenseDialog extends JDialog {
     private final JTextField titleField;
     private final JDatePickerImpl datePicker;
-    private final JTextField amountField;
+    private final JFormattedTextField amountField;
     private boolean amountValidationOK;
     private final JComboBox<User> payerComboBox;
     private final JComboBox<ExpenseCategory> categoryComboBox;
@@ -42,11 +43,10 @@ public class ExpenseDialog extends JDialog {
         p.put("text.today", "Dzisiaj");
         p.put("text.month", "Miesiąc");
         p.put("text.year", "Rok");
-
         JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
-        datePicker = new JDatePickerImpl(datePanel, new Format.DateLabelFormatter());//Format.DATE_LABEL_FORMATTER);
+        datePicker = new JDatePickerImpl(datePanel, Format.DATE_LABEL_FORMATTER);
 
-        amountField = new JTextField();
+        amountField = new JFormattedTextField(new Format.MonetaryFormatter());
         payerComboBox = new JComboBox<>(Group.getInstance().getUsers().toArray(User[]::new));
         categoryComboBox = new JComboBox<>(ExpenseCategory.values());
 
@@ -138,18 +138,18 @@ public class ExpenseDialog extends JDialog {
     }
 
     private void handleAmountFieldTextChange() {
+        amount = (Money) amountField.getValue();
+
         try {
-            amount = Money.of(Double.parseDouble(amountField.getText()), Format.CURRENCY);
+            amountField.commitEdit();
+            // If the format is correct, set the default border
+            amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
             amountValidationOK = true;
-        } catch (MonetaryException | NumberFormatException e) {
-            amount = Money.zero(Format.CURRENCY);
+        } catch (Exception ex) {
+            // If the format is incorrect, set a red border
+            amountField.setBorder(BorderFactory.createLineBorder(Color.RED));
             amountValidationOK = false;
         }
-
-        if (amountValidationOK)
-            amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        else
-            amountField.setBorder(BorderFactory.createLineBorder(Color.RED));
     }
 
     private void showUserSplitDialog(List<User> users) {
