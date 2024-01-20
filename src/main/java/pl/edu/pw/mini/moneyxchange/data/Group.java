@@ -194,8 +194,7 @@ public class Group implements Serializable {
      */
     public void addPendingTransfer(Transfer transfer) {
         pendingTransfers.add(transfer);
-        //TODO: not working
-//        pendingTransfers = minTransfers(pendingTransfers);
+        pendingTransfers = minTransfers(pendingTransfers);
         propertyChangeSupport.firePropertyChange("pendingTransfers", null, pendingTransfers);
     }
 
@@ -209,6 +208,7 @@ public class Group implements Serializable {
         completedTransfers.sort(Comparator.comparing(Transfer::getDate).reversed());
         propertyChangeSupport.firePropertyChange("completedTransfers", null, completedTransfers);
         propertyChangeSupport.firePropertyChange("action", null, transfer.getPanel());
+        propertyChangeSupport.firePropertyChange("pendingTransfers", null, pendingTransfers);
     }
 
     /**

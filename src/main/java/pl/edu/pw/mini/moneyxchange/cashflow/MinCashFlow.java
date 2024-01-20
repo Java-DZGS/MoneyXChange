@@ -11,10 +11,51 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
+/**
+ * Utility class for minimizing cash flow in a group by determining optimal transfers between users.
+ */
 public class MinCashFlow {
+    /**
+     * Calculates the minimal transfers required to equalize balances within a group.
+     *
+     * @param transfers List of Transfer objects representing monetary transactions to be completed between users.
+     * @return List of Transfer objects representing optimal transfers to minimize cash flow.
+     * @implSpec The algorithm proceeds through the following steps:
+     * </br>
+     * Step 1: Calculating Net Balances
+     * - Prepares a list to store the net balance of each person.
+     * - Iterates through the list of financial transactions, updating net balances accordingly.
+     * A positive balance implies giving money, while a negative balance implies receiving money.
+     * </br>
+     * Step 2: Filtering Zero Net Balances
+     * - Filters out individuals with a net balance of zero, as they do not need to be involved in further transactions.
+     * </br>
+     * Step 3: Initializing Dynamic Programming Array
+     * - Initializes a dynamic programming array 'f' to track the minimum number of transactions for each subset of persons.
+     * </br>
+     * Step 4: Finding Minimum Number of Transactions
+     * - Iterates through all possible non-zero net balance subsets, using a bitmask 'i'.
+     * - Computes the sum of balances in the subset; if the sum is zero, it indicates a subset that can balance itself.
+     * </br>
+     * Step 5: Setting Base Condition for Correct Subsets
+     * - If the sum for the 'i'-th subset is zero, calculates the number of required transactions as one less than the number of set bits in 'i'.
+     * Transactions can be executed by selecting any two individuals with non-zero balances and transferring funds
+     * to zero out the balance of one of them. Repeats this step until all debts in the group are settled.
+     * </br>
+     * Step 6: Optimizing Transactions
+     * - Searches for pairs of disjoint subsets 'j' and 'i^j' (XOR operation) that combine into the subset 'i'.
+     * - Uses bitwise manipulation to iterate through potential pairs, aiming to minimize the sum 'f[j] + f[i^j]'.
+     * - Stores the optimal previous subset 'prevSubset[i] = j'.
+     * </br>
+     * Step 7: Reconstructing Optimal Transfers
+     * - Iterates through all persons, reading the previous optimal subset 'prev', and its complement 'diff'.
+     * - In a for loop checking for differences between the current and previous subsets, finds a partner for settlement.
+     * - Creates a Transfer object representing the transaction and updates balances.
+     * </br>
+     * Step 8: Returning the List of Optimal Transfers
+     * - Returns a list of Transfer objects representing optimal transactions to balance debts within the obtained optimal subset.
+     */
     public static List<Transfer> minTransfers(List<Transfer> transfers) {
-        // The array 'balance' will hold the net amount for up to 12 individuals
-        // Negative values mean the person needs to pay that amount, positive values mean the person should receive that amount
         int max = transfers.stream()
                 .flatMapToInt(transfer -> IntStream.of(transfer.getFromUser().getId(), transfer.getToUser().getId()))
                 .max()
@@ -23,7 +64,6 @@ public class MinCashFlow {
         User[] userIds = new User[max + 1];
         int userCount = 0;
 
-        // Calculate the balance for each person involved in the transactions
         for (var transfer : transfers) {
             balance[transfer.getFromUser().getId()] += transfer.getAmount().getNumber().doubleValue();
             balance[transfer.getToUser().getId()] -= transfer.getAmount().getNumber().doubleValue();
@@ -31,7 +71,6 @@ public class MinCashFlow {
             userIds[transfer.getToUser().getId()] = transfer.getToUser();
         }
 
-        // Create a list to store non-zero balances (amounts that need to be settled)
         int index = 0;
         List<Double> nonZeroBalances = new ArrayList<>();
         List<User> users = new ArrayList<>();
@@ -44,12 +83,10 @@ public class MinCashFlow {
             index++;
         }
 
-
-        // Prepare to find the minimum number of transactions to settle all debts
         int numAccounts = nonZeroBalances.size();
-        int[] minTransfers = new int[1 << numAccounts]; // 1<<numAccounts is 2^numAccounts
-        Arrays.fill(minTransfers, Integer.MAX_VALUE / 2); // Initialize with a large value
-        minTransfers[0] = 0; // No transfers needed when there is no debt
+        int[] minTransfers = new int[1 << numAccounts];
+        Arrays.fill(minTransfers, Integer.MAX_VALUE / 2);
+        minTransfers[0] = 0;
 
         int[] prevSubset = new int[1 << numAccounts];
 
@@ -57,19 +94,15 @@ public class MinCashFlow {
         for (int i = 1; i < (1 << numAccounts); ++i) {
             int sum = 0;
 
-            // Calculate the sum of balances in the current subset
             for (int j = 0; j < numAccounts; ++j) {
-                if ((i >> j & 1) == 1) { // If the j-th person is in the current subset (i)
+                if ((i >> j & 1) == 1) {
                     sum += nonZeroBalances.get(j);
                 }
             }
 
-            // If the sum is zero, then the current subset can be settled among themselves
             if (sum == 0) {
-                // Set initial transfers for this subset as the number of involved accounts minus 1 transfer
                 minTransfers[i] = Integer.bitCount(i) - 1;
 
-                // Try to split the subset into two parts and minimize their transfers
                 for (int j = (i - 1) & i; j > 0; j = (j - 1) & i) {
                     if (minTransfers[i] > minTransfers[j] + minTransfers[i ^ j]) {
                         minTransfers[i] = minTransfers[j] + minTransfers[i ^ j];
@@ -84,6 +117,15 @@ public class MinCashFlow {
 
     }
 
+    /**
+     * Reconstructs the optimal transfers based on the subset of users involved in the cash flow minimization.
+     *
+     * @param subset          Subset of users involved in the cash flow minimization.
+     * @param nonZeroBalances List of non-zero balances for users in the group.
+     * @param users           List of User objects representing users in the group.
+     * @param prevSubset      Array containing information about the previous subset in the optimization process.
+     * @return List of Transfer objects representing optimal transfers to minimize cash flow within the subset.
+     */
     private static List<Transfer> reconstructTransfers(int subset, List<Double> nonZeroBalances, List<User> users, int[] prevSubset) {
         List<Transfer> optimalTransfers = new ArrayList<>();
         Date today = new Date();
@@ -105,9 +147,9 @@ public class MinCashFlow {
                     if (amount == 0) continue;
 
                     if (amount > 0)
-                        transfer = new Transfer( today, Money.of(nonZeroBalances.get(j), Format.CURRENCY), users.get(k), users.get(j));
+                        transfer = new Transfer(today, Money.of(nonZeroBalances.get(j), Format.CURRENCY), users.get(j), users.get(k));
                     else
-                        transfer = new Transfer(today, Money.of(-nonZeroBalances.get(j), Format.CURRENCY), users.get(j), users.get(k));
+                        transfer = new Transfer(today, Money.of(-nonZeroBalances.get(j), Format.CURRENCY), users.get(k), users.get(j));
 
                     nonZeroBalances.set(k, nonZeroBalances.get(k) + amount);
                     nonZeroBalances.set(j, 0.0);
@@ -119,6 +161,15 @@ public class MinCashFlow {
         return optimalTransfers;
     }
 
+    /**
+     * Finds the index of the next user in the subset with a non-zero balance after the given index.
+     *
+     * @param users           List of User objects representing users in the group.
+     * @param nonZeroBalances List of non-zero balances for users in the group.
+     * @param subset          Current subset of users
+     * @param j               Current index in the subset.
+     * @return Index of the next user in the subset with a non-zero balance, or -1 if none found.
+     */
     private static int findIndex(List<User> users, List<Double> nonZeroBalances, int subset, int j) {
         double balance = nonZeroBalances.get(j);
 
@@ -127,8 +178,6 @@ public class MinCashFlow {
                 return i;
             }
         }
-
-        return -1; // Handle error case
+        return -1;
     }
-
 }
