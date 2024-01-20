@@ -41,7 +41,7 @@ public class ExpenseDialog extends JDialog {
         UtilDateModel model = new UtilDateModel();
         model.setValue(new Date());
         JDatePanelImpl datePanel = new JDatePanelImpl(model, Format.DATE_PICKER_PROPERTIES);
-        datePicker = new JDatePickerImpl(datePanel, new Format.DateLabelFormatter());//Format.DATE_LABEL_FORMATTER);
+        datePicker = new JDatePickerImpl(datePanel, Format.DATE_LABEL_FORMATTER);
 
         amountField = new JFormattedTextField(new Format.MonetaryFormatter());
         userNames = Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new);
