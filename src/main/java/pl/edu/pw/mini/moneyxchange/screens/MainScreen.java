@@ -32,7 +32,7 @@ public class MainScreen extends JPanel {
 
         JScrollPane actionScrollPane = new JScrollPane(actionsPanel);
 
-        JButton addPaymentButton = new JButton("Dodaj nową płatność");
+        JButton addExpenseButton = new JButton("Dodaj nową płatność");
 
         userList = new JList<>(Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new));
         userList.addListSelectionListener(e -> {
@@ -66,7 +66,7 @@ public class MainScreen extends JPanel {
         JPanel historyPanel = new JPanel(new BorderLayout());
         historyPanel.add(new JLabel("Historia akcji"), BorderLayout.NORTH);
         historyPanel.add(actionScrollPane, BorderLayout.CENTER);
-        historyPanel.add(addPaymentButton, BorderLayout.SOUTH);
+        historyPanel.add(addExpenseButton, BorderLayout.SOUTH);
 
         JPanel usersPanel = new JPanel(new BorderLayout());
         usersPanel.add(new JLabel("Lista członków grupy"), BorderLayout.NORTH);
@@ -110,8 +110,8 @@ public class MainScreen extends JPanel {
             JOptionPane.showMessageDialog(null, "Grupa zdeserializowana z pliku.");
         });
 
-        addPaymentButton.addActionListener(e -> {
-            showPaymentDialog();
+        addExpenseButton.addActionListener(e -> {
+            showExpenseDialog();
         });
 
         Group.getInstance().addListener(evt -> {
@@ -134,7 +134,7 @@ public class MainScreen extends JPanel {
         showActions();
     }
 
-    private void showPaymentDialog() {
+    private void showExpenseDialog() {
         ExpenseDialog dialog = new ExpenseDialog();
         dialog.setSize(400, 300);
         dialog.setLocationRelativeTo(this);
@@ -177,9 +177,9 @@ public class MainScreen extends JPanel {
 
     private record Action(Date date, JPanel panel) implements Comparable<Action> {
         @Override
-        public int compareTo(Action other) {
-            // Compare based on the date
-            return this.date.compareTo(other.date);
+            public int compareTo(Action other) {
+                // Compare based on the date
+                return this.date.compareTo(other.date);
+            }
         }
-    }
 }

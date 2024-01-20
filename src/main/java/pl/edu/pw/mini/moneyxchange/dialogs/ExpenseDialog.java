@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class ExpenseDialog extends JDialog {
     private final JTextField titleField;
@@ -22,7 +23,7 @@ public class ExpenseDialog extends JDialog {
     private final JTextField amountField;
     private boolean amountValidationOK;
     private final JComboBox<String> payerComboBox;
-
+    private final JComboBox<String> categoryComboBox;
     private Money amount;
     private Map<User, Money> debtsMap;
     private final String[] userNames;
@@ -44,11 +45,13 @@ public class ExpenseDialog extends JDialog {
         amountField = new JTextField();
         userNames = Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new);
         payerComboBox = new JComboBox<>(userNames);
+        String[] categories = ExpenseCategory.labels();
+        categoryComboBox = new JComboBox<>(categories);
 
         JButton splitButton = new JButton("Podziel wydatek");
         JButton addButton = new JButton("Dodaj wydatek");
 
-        JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(6, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
 
         panel.add(new JLabel("Tytuł:"));
@@ -59,6 +62,8 @@ public class ExpenseDialog extends JDialog {
         panel.add(amountField);
         panel.add(new JLabel("Zapłacone przez:"));
         panel.add(payerComboBox);
+        panel.add(new JLabel("Kategoria:"));
+        panel.add(categoryComboBox);
         panel.add(splitButton);
         panel.add(addButton);
 
@@ -90,8 +95,9 @@ public class ExpenseDialog extends JDialog {
             }
 
             Expense newExpense = new Expense(Group.getInstance().findUserByName(Objects.requireNonNull(payerComboBox.getSelectedItem()).toString()),
-                amount, debtsMap, titleField.getText(), (Date) datePicker.getModel().getValue(),
-                ExpenseCategory.OTHER); // todo
+                    amount, debtsMap, titleField.getText(), (Date) datePicker.getModel().getValue(),
+                    ExpenseCategory.valueOfLabel((String) categoryComboBox.getSelectedItem())
+            );
 
             Group.getInstance().addExpense(newExpense);
 
