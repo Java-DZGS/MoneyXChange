@@ -59,11 +59,11 @@ public class CompleteTransferDialog extends JDialog {
                     transfer.setDate(getSelectedDate());
                     group.markTransferAsCompleted(transfer);
                 } else {
-                    Transfer newTransfer = new Transfer(getSelectedDate(), enteredAmount, transfer.getFromUser(), transfer.getToUser());
-                    group.addCompletedTransfer(newTransfer);
-
                     Money remainingAmount = transferAmount.subtract(enteredAmount);
                     transfer.setAmount(remainingAmount);
+
+                    Transfer newTransfer = new Transfer(getSelectedDate(), enteredAmount, transfer.getFromUser(), transfer.getToUser());
+                    group.addCompletedTransfer(newTransfer);
                 }
                 dispose();
             } else {
