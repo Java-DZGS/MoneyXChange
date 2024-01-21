@@ -4,11 +4,6 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import pl.edu.pw.mini.moneyxchange.screens.*;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class Main extends JFrame {
     public Main() {

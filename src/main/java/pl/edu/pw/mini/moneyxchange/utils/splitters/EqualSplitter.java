@@ -4,14 +4,13 @@ import org.javamoney.moneta.Money;
 import pl.edu.pw.mini.moneyxchange.data.User;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 
-import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class EqualSplitter implements ISplitter {
-    private Set<User> includedUsers;
+    private final Set<User> includedUsers;
     private final Money expenseAmount;
 
     public EqualSplitter(Money expenseAmount) {

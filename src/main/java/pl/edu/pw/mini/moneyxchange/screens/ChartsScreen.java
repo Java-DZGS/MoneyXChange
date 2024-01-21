@@ -6,14 +6,11 @@ import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.Group;
+import pl.edu.pw.mini.moneyxchange.dialogs.FilterDialog;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.Date;
-import java.text.ParseException;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,7 +49,7 @@ public class ChartsScreen extends JPanel {
             noExpensesPanel.add(noExpensesLabel);
             noExpensesPanel.add(Box.createVerticalGlue());
 
-            add(noExpensesPanel, BorderLayout.CENTER);
+            add(noExpensesPanel);
             return;
         }
 
@@ -61,13 +58,12 @@ public class ChartsScreen extends JPanel {
         JButton filterButton = new JButton("Filtruj...");
         filterButton.addActionListener(e -> showFilterDialog());
 
-        JComboBox<String> groupingTypeComboBox = new JComboBox<>(DateGroupingType.labels());
-        groupingTypeComboBox.setSelectedItem(type.label);
+        JComboBox<DateGroupingType> groupingTypeComboBox = new JComboBox<>(DateGroupingType.values());
+        groupingTypeComboBox.setSelectedItem(type);
         groupingTypeComboBox.addActionListener(e -> {
-                    type = DateGroupingType.valueOfLabel((String) groupingTypeComboBox.getSelectedItem());
-                    updateChart();
-                }
-        );
+            type = (DateGroupingType) groupingTypeComboBox.getSelectedItem();
+            updateChart();
+        });
 
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -108,13 +104,9 @@ public class ChartsScreen extends JPanel {
                     .entrySet().stream()
                     .sorted(Map.Entry.comparingByKey())
                     .forEach(entry -> {
-                        try {
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(entry.getKey());
-                            dates.add(Format.DATE_LABEL_FORMATTER.valueToString(calendar));
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(entry.getKey());
+                        dates.add(Format.DATE_LABEL_FORMATTER.valueToString(calendar));
                         amounts.add(entry.getValue());
                     });
             case MONTH -> expenses.stream()
@@ -150,10 +142,8 @@ public class ChartsScreen extends JPanel {
         filterDialog.setLocationRelativeTo(this);
         filterDialog.setVisible(true);
 
-        // Process the selected filter criteria from the dialog
         if (filterDialog.isFilterApplied()) {
             FilterDialog.FilterCriteria filterCriteria = filterDialog.getFilterCriteria();
-            // Implement filtering logic based on the selected criteria
             filterExpenses(filterCriteria);
         }
     }
@@ -163,112 +153,17 @@ public class ChartsScreen extends JPanel {
         List<Expense> filteredExpenses = new ArrayList<>();
 
         for (Expense expense : allExpenses) {
-            boolean dateMatch = filterCriteria.getDates() == null || filterCriteria.getDates().length == 0 || Arrays.asList(filterCriteria.getDates()).contains(expense.getDate());
-            boolean participantMatch = filterCriteria.getParticipants() == null || filterCriteria.getParticipants().length == 0 || Arrays.asList(filterCriteria.getParticipants()).contains(expense.getParticipants());
-            boolean payerMatch = filterCriteria.getPayer() == null || filterCriteria.getPayer().isEmpty() || filterCriteria.getPayer().equals(expense.getPayer().getName());
-            if (dateMatch && participantMatch && payerMatch) {
+            if (filterCriteria.applyFilter(expense)) {
                 filteredExpenses.add(expense);
             }
         }
 
         if (filteredExpenses.isEmpty()) {
-            // Show a warning dialog if the filtered list is empty
             JOptionPane.showMessageDialog(this, "Żadne wydatki nie pasują do nałożonych filtrów.", "Warning", JOptionPane.WARNING_MESSAGE);
         } else {
             expenses = filteredExpenses;
 
             updateChart();
-        }
-    }
-
-    static class FilterDialog extends JDialog {
-
-        private boolean filterApplied;
-        private FilterCriteria filterCriteria;
-
-        public FilterDialog(Frame owner) {
-            super(owner, "Opcje filtrowania", true);
-
-            filterApplied = false;
-            filterCriteria = new FilterCriteria();
-
-            setLayout(new GridLayout(4, 2));
-
-            JLabel dateLabel = new JLabel("Daty (oddzielone przecinkiem): ");
-            JTextField dateField = new JTextField();
-            add(dateLabel);
-            add(dateField);
-
-            JLabel participantLabel = new JLabel("Uczestnicy (oddzielone przecinkiem): ");
-            JTextField participantField = new JTextField();
-            add(participantLabel);
-            add(participantField);
-
-            JLabel payerLabel = new JLabel("Płacący: ");
-            JTextField payerField = new JTextField();
-            add(payerLabel);
-            add(payerField);
-
-            JButton applyButton = new JButton("Apply Filter");
-            applyButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // Set filter criteria based on user input
-                    filterCriteria.setDates(parseCSV(dateField.getText()));
-                    filterCriteria.setParticipants(parseCSV(participantField.getText()));
-                    filterCriteria.setPayer(payerField.getText());
-                    filterApplied = true;
-                    setVisible(false);
-                }
-
-                private String[] parseCSV(String input) {
-                    if (input.isEmpty()) return new String[]{};
-                    return input.split("\\s*,\\s*");
-                }
-            });
-
-            add(applyButton);
-
-            pack();
-        }
-
-        public boolean isFilterApplied() {
-            return filterApplied;
-        }
-
-        public FilterCriteria getFilterCriteria() {
-            return filterCriteria;
-        }
-
-        public static class FilterCriteria {
-
-            private String[] dates;
-            private String[] participants;
-            private String payer;
-
-            public String[] getDates() {
-                return dates;
-            }
-
-            public void setDates(String[] dates) {
-                this.dates = dates;
-            }
-
-            public String[] getParticipants() {
-                return participants;
-            }
-
-            public void setParticipants(String[] participants) {
-                this.participants = participants;
-            }
-
-            public String getPayer() {
-                return payer;
-            }
-
-            public void setPayer(String payer) {
-                this.payer = payer;
-            }
         }
     }
 }
@@ -278,30 +173,16 @@ enum DateGroupingType {
     MONTH("Miesiąc"),
     YEAR("Rok");
 
-    private static final Map<String, DateGroupingType> BY_LABEL = new HashMap<>();
-
-    static {
-        for (DateGroupingType type: values()) {
-            BY_LABEL.put(type.label, type);
-        }
-    }
 
     public final String label;
+
     DateGroupingType(String label) {
         this.label = label;
-    }
-
-    public static DateGroupingType valueOfLabel(String label) {
-        return BY_LABEL.get(label);
-    }
-
-    public static String[] labels() {
-        return BY_LABEL.keySet().toArray(new String[0]);
     }
 
     @Override
     public String toString() {
         return label;
     }
-};
+}
 

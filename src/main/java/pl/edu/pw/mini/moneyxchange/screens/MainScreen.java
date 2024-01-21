@@ -2,19 +2,17 @@ package pl.edu.pw.mini.moneyxchange.screens;
 
 import pl.edu.pw.mini.moneyxchange.data.*;
 import pl.edu.pw.mini.moneyxchange.dialogs.ExpenseDialog;
+import pl.edu.pw.mini.moneyxchange.dialogs.FilterDialog;
 import pl.edu.pw.mini.moneyxchange.utils.Layout;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Stream;
 
 public class MainScreen extends JPanel {
     private final JPanel actionsPanel;
+    private FilterDialog.FilterCriteria filterCriteria;
     private final JList<String> userList;
 
     public MainScreen() {
@@ -57,6 +55,10 @@ public class MainScreen extends JPanel {
         topPanel.add(serializeButton);
         topPanel.add(deserializeButton);
 
+        JButton filterButton = new JButton("Filtruj");
+        filterButton.addActionListener(e -> showFilterDialog());
+        topPanel.add(filterButton);
+
         JPanel historyPanel = new JPanel(new BorderLayout());
         historyPanel.add(new JLabel("Historia akcji"), BorderLayout.NORTH);
         historyPanel.add(actionScrollPane, BorderLayout.CENTER);
@@ -74,7 +76,7 @@ public class MainScreen extends JPanel {
 
         changeNameButton.addActionListener(e -> {
             String newName = JOptionPane.showInputDialog("Wprowadź nową nazwę grupy:", Group.getInstance().getName());
-            if(newName == null)
+            if (newName == null)
                 return;
 
             Group.getInstance().setName(newName);
@@ -104,17 +106,26 @@ public class MainScreen extends JPanel {
             JOptionPane.showMessageDialog(null, "Grupa zdeserializowana z pliku.");
         });
 
-        addExpenseButton.addActionListener(e -> {
-            showExpenseDialog();
-        });
+        addExpenseButton.addActionListener(e -> showExpenseDialog());
 
         Group.getInstance().addListener(evt -> {
-            if(evt.getPropertyName().equals("action")) {
+            if (evt.getPropertyName().equals("action")) {
                 showActions();
             } else if (evt.getPropertyName().equals("users")) {
                 userList.setListData(Group.getInstance().getUsers().stream().map(User::getName).toArray(String[]::new));
             }
         });
+    }
+
+    private void showFilterDialog() {
+        FilterDialog filterDialog = new FilterDialog((Frame) SwingUtilities.getWindowAncestor(this));
+        filterDialog.setLocationRelativeTo(this);
+        filterDialog.setVisible(true);
+
+        if (filterDialog.isFilterApplied())
+            filterCriteria = filterDialog.getFilterCriteria();
+
+        showActions();
     }
 
     private void showExpenseDialog() {
@@ -124,27 +135,13 @@ public class MainScreen extends JPanel {
         dialog.setVisible(true);
     }
 
-    private void importActions() {
-        List<MoneyAction> actionsList = Group.getInstance().getActionsList();
-
-        for (MoneyAction action : actionsList) {
-            actionsPanel.add(action.getPanel(), Layout.getGridBagElementConstraints());
-        }
-    }
-
     private void showActions() {
         actionsPanel.removeAll();
 
-        var transfers = Group.getInstance().getCompletedTransfers()
-                .stream().map(t -> new Action(t.getDate(), t.getPanel()));
-        var expenses = Group.getInstance().getExpenses()
-                .stream().map(e -> new Action(e.getDate(), e.getPanel()));
-
-        var actions = Stream.concat(transfers, expenses).sorted(Comparator.comparing(Action::date).reversed()).iterator();
-
-        actions.forEachRemaining(action -> {
-            actionsPanel.add(action.panel, Layout.getGridBagElementConstraints());
-        });
+        Group.getInstance().getActionsList()
+                .stream()
+                .filter(action -> filterCriteria == null || filterCriteria.applyFilter(action))
+                .forEach(action -> actionsPanel.add(action.getPanel(), Layout.getGridBagElementConstraints()));
 
         JPanel spacer = new JPanel();
         spacer.setPreferredSize(new Dimension(0, 0));
@@ -153,12 +150,4 @@ public class MainScreen extends JPanel {
         actionsPanel.revalidate();
         actionsPanel.repaint();
     }
-
-    private record Action(Date date, JPanel panel) implements Comparable<Action> {
-        @Override
-            public int compareTo(Action other) {
-                // Compare based on the date
-                return this.date.compareTo(other.date);
-            }
-        }
 }

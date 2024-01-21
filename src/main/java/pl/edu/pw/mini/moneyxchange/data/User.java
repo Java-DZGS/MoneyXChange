@@ -9,8 +9,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a user with basic information and functionality.
@@ -39,7 +37,7 @@ public class User implements Serializable {
     /**
      * Support for property change events.
      */
-    private SwingPropertyChangeSupport propertyChangeSupport;
+    private final SwingPropertyChangeSupport propertyChangeSupport;
 
     /**
      * Constructs a new user with the specified name.
@@ -161,18 +159,15 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", name=" + name +
-                '}';
+        return name;
     }
 
     /**
      * Inner class representing a panel displaying user information.
      */
     public class UserPanel extends JPanel {
-        JLabel nameLabel;
-        JLabel imageLabel;
+        final JLabel nameLabel;
+        final JLabel imageLabel;
 
         /**
          * Constructs a new UserPanel for displaying user information.
@@ -181,7 +176,6 @@ public class User implements Serializable {
             super();
             setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-            int padding = 10;
             setLayout(new BorderLayout());
 
             imageLabel = new JLabel((ImageIcon) null);

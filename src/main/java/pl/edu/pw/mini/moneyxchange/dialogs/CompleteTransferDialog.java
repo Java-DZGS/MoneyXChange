@@ -13,37 +13,28 @@ import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Date;
-import java.util.Properties;
 
 
 public class CompleteTransferDialog extends JDialog {
     private final JFormattedTextField amountField;
     private final JDatePickerImpl datePicker;
-    private Money transferAmount;
+    private final Money transferAmount;
     private Money parsedAmount;
     private boolean resultOK = true;
-    private Group group;
-    private Money amount;
 
     public CompleteTransferDialog(Group group, Transfer transfer) {
         super((JFrame) null, "Wykonaj przelew", true);
 
-        this.group = group;
         this.transferAmount = transfer.getAmount();
+        parsedAmount = transferAmount;
 
         UtilDateModel model = new UtilDateModel();
         model.setValue(new Date());
-
-        // todo: zrobiłem na te properties zmienną w klasie Format ale jest na innym branchu,
-        // jak juz będzie zmerge'owany to trzeba dodać 😭
-        Properties p = new Properties();
-        p.put("text.today", "Today");
-        p.put("text.month", "Month");
-        p.put("text.year", "Year");
-        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, Format.DATE_PICKER_PROPERTIES);
         datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 
         amountField = new JFormattedTextField(new Format.MonetaryFormatter());
+        amountField.setValue(parsedAmount);
         handleTransferTextInputChange();
         SwingUtils.addChangeListener(amountField, e -> handleTransferTextInputChange());
 
@@ -52,7 +43,6 @@ public class CompleteTransferDialog extends JDialog {
         JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Adjusted the layout for the date picker
         panel.add(new JLabel("Data:"));
         panel.add(datePicker);
         panel.add(new JLabel("Kwota:"));
@@ -81,15 +71,9 @@ public class CompleteTransferDialog extends JDialog {
                         null, "Błędne dane", "Błąd", JOptionPane.ERROR_MESSAGE);
             }
         });
-
-        this.setSize(300, 200);
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
     }
 
     private void handleTransferTextInputChange() {
-        parsedAmount = (Money) amountField.getValue();
-
         try {
             amountField.commitEdit();
             amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -98,6 +82,7 @@ public class CompleteTransferDialog extends JDialog {
             resultOK = false;
             return;
         }
+        parsedAmount = (Money) amountField.getValue();
 
         if (validateAmount()) {
             amountField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -106,6 +91,8 @@ public class CompleteTransferDialog extends JDialog {
             amountField.setBorder(BorderFactory.createLineBorder(Color.RED));
             resultOK = false;
         }
+
+        amountField.repaint();
     }
 
     private boolean validateAmount() {
@@ -115,15 +102,11 @@ public class CompleteTransferDialog extends JDialog {
         if (parsedAmount.signum() < 0)
             return false;
 
-        if (parsedAmount.isGreaterThan(transferAmount))
-            return false;
-
-        return true;
+        return !parsedAmount.isGreaterThan(transferAmount);
     }
 
     private Date getSelectedDate() {
-        Date selectedDate = (Date) datePicker.getModel().getValue();
-        return selectedDate;
+        return (Date) datePicker.getModel().getValue();
     }
 
 }

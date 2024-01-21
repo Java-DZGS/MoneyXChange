@@ -16,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Properties;
 
 public class Format {
     public static final Locale PL = new Locale("pl");
@@ -36,7 +37,7 @@ public class Format {
         }
 
         @Override
-        public String valueToString(Object value) throws ParseException {
+        public String valueToString(Object value) {
             if (value != null) {
                 Calendar cal = (Calendar) value;
                 return SIMPLE_DATE_FORMAT.format(cal.getTime());
@@ -64,10 +65,15 @@ public class Format {
         }
 
         @Override
-        public String valueToString(Object value) throws ParseException {
+        public String valueToString(Object value) {
             return MONETARY_FORMAT.format(value == null ? Money.of(0, CURRENCY) : (Money) value);
         }
 
 
     }
+    public static final Properties DATE_PICKER_PROPERTIES = new Properties() {{
+        put("text.today", "Dzisiaj");
+        put("text.month", "Miesiąc");
+        put("text.year", "Rok");
+    }};
 }
