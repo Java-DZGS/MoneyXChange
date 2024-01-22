@@ -49,7 +49,7 @@ public class PercentageSplitter implements ISplitter {
             double percent = entry.getValue();
 
             if (percent != 0)
-                map.put(user, expenseAmount.multiply(percent / 100.0));
+                map.put(user, expenseAmount.multiply(percent).divide(100));
         }
         return map;
     }

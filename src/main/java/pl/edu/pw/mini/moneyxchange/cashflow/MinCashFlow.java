@@ -5,6 +5,8 @@ import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 
+import javax.money.MonetaryAmount;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,22 +62,28 @@ public class MinCashFlow {
                 .flatMapToInt(transfer -> IntStream.of(transfer.getFromUser().getId(), transfer.getToUser().getId()))
                 .max()
                 .orElse(0);
-        double[] balance = new double[max + 1];
+        Money[] balance = new Money[max + 1];
         User[] userIds = new User[max + 1];
         int userCount = 0;
 
+        for(int i = 0; i <= max; i++)
+            balance[i] = Money.of(0, Format.CURRENCY);
+
         for (var transfer : transfers) {
-            balance[transfer.getFromUser().getId()] += transfer.getAmount().getNumber().doubleValue();
-            balance[transfer.getToUser().getId()] -= transfer.getAmount().getNumber().doubleValue();
-            userIds[transfer.getFromUser().getId()] = transfer.getFromUser();
-            userIds[transfer.getToUser().getId()] = transfer.getToUser();
+            int from = transfer.getFromUser().getId();
+            int to = transfer.getToUser().getId();
+
+            balance[from] = balance[from].add(transfer.getAmount());
+            balance[to] = balance[to].subtract(transfer.getAmount());
+            userIds[from] = transfer.getFromUser();
+            userIds[to] = transfer.getToUser();
         }
 
         int index = 0;
-        List<Double> nonZeroBalances = new ArrayList<>();
+        List<Money> nonZeroBalances = new ArrayList<>();
         List<User> users = new ArrayList<>();
-        for (double b : balance) {
-            if (b != 0) {
+        for (Money b : balance) {
+            if (!b.isZero()) {
                 nonZeroBalances.add(b);
                 User user = userIds[index];
                 users.add(user);
@@ -92,15 +100,15 @@ public class MinCashFlow {
 
         // Loop through all possible subsets of debts
         for (int i = 1; i < (1 << numAccounts); ++i) {
-            int sum = 0;
+            Money sum = Money.of(0, Format.CURRENCY);
 
             for (int j = 0; j < numAccounts; ++j) {
                 if ((i >> j & 1) == 1) {
-                    sum += nonZeroBalances.get(j);
+                    sum = sum.add(nonZeroBalances.get(j));
                 }
             }
 
-            if (sum == 0) {
+            if (sum.isZero()) {
                 minTransfers[i] = Integer.bitCount(i) - 1;
 
                 for (int j = (i - 1) & i; j > 0; j = (j - 1) & i) {
@@ -113,7 +121,6 @@ public class MinCashFlow {
         }
         int optimalSubset = (1 << numAccounts) - 1;
         return reconstructTransfers(optimalSubset, nonZeroBalances, users, prevSubset);
-
     }
 
     /**
@@ -125,7 +132,7 @@ public class MinCashFlow {
      * @param prevSubset      Array containing information about the previous subset in the optimization process.
      * @return List of Transfer objects representing optimal transfers to minimize cash flow within the subset.
      */
-    private static List<Transfer> reconstructTransfers(int subset, List<Double> nonZeroBalances, List<User> users, int[] prevSubset) {
+    private static List<Transfer> reconstructTransfers(int subset, List<Money> nonZeroBalances, List<User> users, int[] prevSubset) {
         List<Transfer> optimalTransfers = new ArrayList<>();
         Date today = new Date();
         while (subset > 0) {
@@ -136,22 +143,23 @@ public class MinCashFlow {
                 if ((diff >> j & 1) == 1) {
                     int k = -1;
                     for (int i = 0; i < users.size(); ++i) {
-                        if (i != j && nonZeroBalances.get(i) != 0 && (subset >> i & 1) == 1) {
+                        if (i != j && !nonZeroBalances.get(i).isZero() && (subset >> i & 1) == 1) {
                             k = i;
                             break;
                         }
                     }
+
                     Transfer transfer;
-                    Double amount = nonZeroBalances.get(j);
-                    if (amount == 0) continue;
+                    Money amount = nonZeroBalances.get(j);
+                    if (amount.isZero()) continue;
 
-                    if (amount > 0)
-                        transfer = new Transfer(today, Money.of(nonZeroBalances.get(j), Format.CURRENCY), users.get(j), users.get(k));
+                    if (amount.isPositive())
+                        transfer = new Transfer(today, nonZeroBalances.get(j), users.get(j), users.get(k));
                     else
-                        transfer = new Transfer(today, Money.of(-nonZeroBalances.get(j), Format.CURRENCY), users.get(k), users.get(j));
+                        transfer = new Transfer(today, nonZeroBalances.get(j).negate(), users.get(k), users.get(j));
 
-                    nonZeroBalances.set(k, nonZeroBalances.get(k) + amount);
-                    nonZeroBalances.set(j, 0.0);
+                    nonZeroBalances.set(k, nonZeroBalances.get(k).add(amount));
+                    nonZeroBalances.set(j, Money.of(0, Format.CURRENCY));
                     optimalTransfers.add(transfer);
                 }
             }
