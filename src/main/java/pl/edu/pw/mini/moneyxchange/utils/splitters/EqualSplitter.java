@@ -38,12 +38,18 @@ public class EqualSplitter implements ISplitter {
     @Override
     public Map<User, Money> split() {
         int n = includedUsers.size();
-        // todo: handle uneven division like 10 / 3
-        Money splitAmount = expenseAmount.divide(n);
+        Money[] splitAmount = ISplitter.divideAndRemainderCent(expenseAmount, n);
         Map<User, Money> outputMap = new HashMap<>();
         for (User user : includedUsers) {
-            outputMap.put(user, splitAmount);
+            outputMap.put(user, splitAmount[0]);
         }
+
+        if(!splitAmount[1].isZero()) {
+            //noinspection OptionalGetWithoutIsPresent
+            var randomVictim = outputMap.entrySet().stream().skip(ISplitter.random.nextInt(outputMap.entrySet().size())).findFirst().get();
+            randomVictim.setValue(randomVictim.getValue().add(splitAmount[1]));
+        }
+
         return outputMap;
     }
 
@@ -53,6 +59,6 @@ public class EqualSplitter implements ISplitter {
             return "Zaznacz użytkowników biorących udział w wydatku";
 
         return "Zaznaczeni użytkownicy płacą po " + Format.MONETARY_FORMAT.format(
-                expenseAmount.divide(includedUsers.size()));
+                ISplitter.divideAndRemainderCent(expenseAmount, includedUsers.size())[0]);
     }
 }

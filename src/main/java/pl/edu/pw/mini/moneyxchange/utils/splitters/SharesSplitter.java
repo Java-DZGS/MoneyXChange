@@ -47,14 +47,21 @@ public class SharesSplitter implements ISplitter {
     public Map<User, Money> split() {
         // how many total shares
         int n = shares.values().stream().reduce(Integer::sum).orElse(1);
-        Map<User, Money> map = new HashMap<>();
+        Money[] shareAmount = ISplitter.divideAndRemainderCent(expenseAmount, n);
 
+        Map<User, Money> map = new HashMap<>();
         for (var entry : shares.entrySet()) {
             User user = entry.getKey();
             int shares = entry.getValue();
 
             if (shares != 0)
-                map.put(user, expenseAmount.multiply(1.0 * shares / n));
+                map.put(user, shareAmount[0].multiply(shares));
+        }
+
+        if(!shareAmount[1].isZero()) {
+            //noinspection OptionalGetWithoutIsPresent
+            var randomVictim = map.entrySet().stream().skip(ISplitter.random.nextInt(map.entrySet().size())).findFirst().get();
+            randomVictim.setValue(randomVictim.getValue().add(shareAmount[1]));
         }
 
         return map;
@@ -66,8 +73,7 @@ public class SharesSplitter implements ISplitter {
             return "Wpisz udziały użykowników";
 
         int n = shares.values().stream().reduce(Integer::sum).orElse(1);
-        // todo: wyrzuca wyjątek gdy wynik dzielenia jest ułamkiem z nieskończonym rozwinięciem dziesiętnym XD
-        return "Jeden udział wynosi " + Format.MONETARY_FORMAT.format(expenseAmount.divide(n));
+        return "Jeden udział wynosi " + Format.MONETARY_FORMAT.format(ISplitter.divideAndRemainderCent(expenseAmount, n)[0]);
     }
 
     private boolean parse(String text) {
