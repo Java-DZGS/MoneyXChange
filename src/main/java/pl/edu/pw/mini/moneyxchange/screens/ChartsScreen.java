@@ -35,6 +35,15 @@ public class ChartsScreen extends JPanel {
         chart.getStyler().setToolTipsEnabled(true);
         chartPanel = new XChartPanel<>(chart);
 
+        Group.getInstance().addListener(evt -> {
+            if (!evt.getPropertyName().equals("expenses")) return;
+
+            //TODO: Pokazywanie panelu z wykresami gdy sie pojawia nowe
+            //noinspection unchecked
+            expenses = (List<Expense>) evt.getNewValue();
+            updateChart();
+        });
+
         if (expenses.isEmpty()) {
             JPanel noExpensesPanel = new JPanel();
             noExpensesPanel.setLayout(new BoxLayout(noExpensesPanel, BoxLayout.Y_AXIS));
@@ -83,14 +92,6 @@ public class ChartsScreen extends JPanel {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         add(chartPanel, gbc);
-
-        Group.getInstance().addListener(evt -> {
-            if (!evt.getPropertyName().equals("expenses")) return;
-
-            //noinspection unchecked
-            expenses = (List<Expense>) evt.getNewValue();
-            updateChart();
-        });
     }
 
     private void updateChart() {
