@@ -5,6 +5,7 @@ import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 import pl.edu.pw.mini.moneyxchange.data.Expense;
+import pl.edu.pw.mini.moneyxchange.data.ExpenseCategory;
 import pl.edu.pw.mini.moneyxchange.data.MoneyAction;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
@@ -81,6 +82,27 @@ public class FilterDialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         add(titleField, gbc);
 
+        JLabel categoryLabel = new JLabel("Kategoria:");
+        JComboBox<ExpenseCategory> categoryComboBox = new JComboBox<>(ExpenseCategory.values());
+        JCheckBox categoryCheckBox = new JCheckBox();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        add(categoryLabel, gbc);
+        gbc.gridx = 1;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(categoryCheckBox, gbc);
+        gbc.gridx = 2;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(categoryComboBox, gbc);
+
+        categoryCheckBox.setSelected(false);
+        categoryComboBox.setEnabled(false);
+        categoryCheckBox.addActionListener(e -> {
+            categoryComboBox.setEnabled(categoryCheckBox.isSelected());
+        });
+
         JButton applyButton = new JButton("Zatwierdź");
         applyButton.addActionListener(e -> {
             filterCriteria.setFromDate((Date) fromDatePicker.getModel().getValue());
@@ -88,6 +110,8 @@ public class FilterDialog extends JDialog {
             filterCriteria.setFromAmount((Money) fromAmountField.getValue());
             filterCriteria.setToAmount((Money) toAmountField.getValue());
             filterCriteria.setTitleKeyword(titleField.getText());
+            if (categoryCheckBox.isSelected())
+                filterCriteria.setCategory((ExpenseCategory) categoryComboBox.getSelectedItem());
 
             if (!filterCriteria.isFilterValid()) {
                 JOptionPane.showMessageDialog(
@@ -100,7 +124,7 @@ public class FilterDialog extends JDialog {
         });
 
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.gridwidth = 5;
         add(applyButton, gbc);
 
@@ -130,7 +154,7 @@ public class FilterDialog extends JDialog {
         private Date toDate;
         private Money fromAmount;
         private Money toAmount;
-
+        private ExpenseCategory category;
         private String keyword;
 
         public void setFromDate(Date date) {
@@ -175,6 +199,10 @@ public class FilterDialog extends JDialog {
             keyword = text;
         }
 
+        public void setCategory(ExpenseCategory category) {
+            this.category = category;
+        }
+
         public boolean isFilterValid() {
             return (fromDate == null || toDate == null || !fromDate.after(toDate)) &&
                     (fromAmount == null || toAmount == null || fromAmount.isLessThanOrEqualTo(toAmount));
@@ -194,10 +222,16 @@ public class FilterDialog extends JDialog {
             return text.toLowerCase().contains(keyword.toLowerCase());
         }
 
+        private boolean checkCategory(ExpenseCategory category)
+        {
+            return this.category == null || category == this.category;
+        }
+
         public boolean applyFilter(MoneyAction action) {
             return checkDate(action.getDate())
                     && checkAmount(action.getAmount())
-                    && checkTitle(action.getName());
+                    && checkTitle(action.getName())
+                    && (!(action instanceof Expense) || checkCategory(((Expense)action).getCategory()));
         }
 
     }

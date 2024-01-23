@@ -46,7 +46,7 @@ public class Group implements Serializable {
     /**
      * The list of expenses in the group.
      */
-    private List<Expense> expenses;
+    private final List<Expense> expenses;
 
     /**
      * The list of pending transfers in the group.
@@ -56,7 +56,7 @@ public class Group implements Serializable {
     /**
      * The list of completed transfers in the group.
      */
-    private List<Transfer> completedTransfers;
+    private final List<Transfer> completedTransfers;
 
     /**
      * Support for property change events.
@@ -84,6 +84,7 @@ public class Group implements Serializable {
     public static synchronized Group getInstance() {
         if (instance == null) {
             instance = new Group();
+            //instance.createDummyData();
         }
         return instance;
     }

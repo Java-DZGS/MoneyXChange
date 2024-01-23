@@ -43,6 +43,7 @@ public class ExpenseDialog extends JDialog {
         amountField = new JFormattedTextField(new Format.MonetaryFormatter());
         payerComboBox = new JComboBox<>(Group.getInstance().getUsers().toArray(User[]::new));
         categoryComboBox = new JComboBox<>(ExpenseCategory.values());
+        categoryComboBox.setSelectedItem(ExpenseCategory.OTHER);
 
         JButton splitButton = new JButton("Podziel wydatek");
         JButton addButton = new JButton("Dodaj wydatek");

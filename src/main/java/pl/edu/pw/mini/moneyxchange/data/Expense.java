@@ -145,6 +145,8 @@ public class Expense implements MoneyAction, Serializable {
         return date;
     }
 
+    public ExpenseCategory getCategory() {return category;}
+
     public YearMonth getYearMonth() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
