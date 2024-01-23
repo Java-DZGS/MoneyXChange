@@ -84,7 +84,7 @@ public class Group implements Serializable {
     public static synchronized Group getInstance() {
         if (instance == null) {
             instance = new Group();
-            //instance.createDummyData();
+//            instance.createDummyData();
         }
         return instance;
     }
@@ -277,10 +277,19 @@ public class Group implements Serializable {
         addUser(new User("Barbara"));
 
         try {
-            File image = new File("test.png");
+            File image = new File("paulina.jpg");
             users.get(0).setImage(ImageIO.read(image));
 
-            image = new File("test2.png");
+            image = new File("dua.png");
+            users.get(1).setImage(ImageIO.read(image));
+
+            image = new File("maryla.jpg");
+            users.get(2).setImage(ImageIO.read(image));
+
+            image = new File("andrzej.png");
+            users.get(3).setImage(ImageIO.read(image));
+
+            image = new File("barbara.png");
             users.get(4).setImage(ImageIO.read(image));
         } catch (IOException e) {
             throw new RuntimeException(e);
