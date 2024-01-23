@@ -15,47 +15,57 @@ import java.util.stream.IntStream;
 
 /**
  * Utility class for minimizing cash flow in a group by determining optimal transfers between users.
+ * <br>
+ * <br>
+ * The algorithm proceeds through the following steps:<br>
+ * <b>Step 1</b>: Calculating Net Balances<br>
+ * <ul>
+ *     <li>Prepares a list to store the net balance of each person.</li>
+ *     <li>Iterates through the list of financial transactions, updating net balances accordingly.</li>
+ *     <li>A positive balance implies giving money, while a negative balance implies receiving money.</li>
+ * </ul>
+ * <b>Step 2</b>: Filtering Zero Net Balances<br>
+ * <ul>
+ *     <li>Filters out individuals with a net balance of zero, as they do not need to be involved in further transactions.</li>
+ * </ul>
+ * <b>Step 3</b>: Initializing Dynamic Programming Array<br>
+ * <ul>
+ *     <li>Initializes a dynamic programming array {@code f} to track the minimum number of transactions for each subset of persons.</li>
+ * </ul>
+ * <b>Step 4</b>: Finding Minimum Number of Transactions<br>
+ * <ul>
+ *     <li>Iterates through all possible non-zero net balance subsets, using a bitmask {@code i}.</li>
+ *     <li>Computes the sum of balances in the subset; if the sum is zero, it indicates a subset that can balance itself.</li>
+ * </ul>
+ * <b>Step 5</b>: Setting Base Condition for Correct Subsets<br>
+ * <ul>
+ *     <li>If the sum for the 'i'-th subset is zero, calculates the number of required transactions as one less than the number of set bits in 'i'.</li>
+ *     <li>Transactions can be executed by selecting any two individuals with non-zero balances and transferring funds
+ *     to zero out the balance of one of them. Repeats this step until all debts in the group are settled.</li>
+ * </ul>
+ * <b>Step 6</b>: Optimizing Transactions<br>
+ * <ul>
+ *     <li>Searches for pairs of disjoint subsets {@code j} and {@code i^j} (XOR operation) that combine into the subset {@code i}.</li>
+ *     <li>Uses bitwise manipulation to iterate through potential pairs, aiming to minimize the sum {@code f[j] + f[i^j]}.</li>
+ *     <li>Stores the optimal previous subset {@code prevSubset[i] = j}.</li>
+ * </ul>
+ * <b>Step 7:</b> Reconstructing Optimal Transfers<br>
+ * <ul>
+ *     <li>Iterates through all persons, reading the previous optimal subset {@code prev}, and its complement {@code diff}.</li>
+ *     <li>In a for loop checking for differences between the current and previous subsets, finds a partner for settlement.</li>
+ *     <li>Creates a {@link Transfer} object representing the transaction and updates balances.</li>
+ * </ul>
+ * <b>Step 8</b>: Returning the List of Optimal Transfers<br>
+ * <ul>
+ *     <li>Returns a list of {@link Transfer} objects representing optimal transactions to balance debts within the obtained optimal subset.</li>
+ * </ul>
  */
 public class MinCashFlow {
     /**
-     * Calculates the minimal transfers required to equalize balances within a group.
+     * Calculates the minimal transfers required to equalize balances within a group.<br>
      *
      * @param transfers List of Transfer objects representing monetary transactions to be completed between users.
      * @return List of Transfer objects representing optimal transfers to minimize cash flow.
-     * @implSpec The algorithm proceeds through the following steps:
-     * <br>
-     * Step 1: Calculating Net Balances<br>
-     * - Prepares a list to store the net balance of each person.<br>
-     * - Iterates through the list of financial transactions, updating net balances accordingly.<br>
-     * A positive balance implies giving money, while a negative balance implies receiving money.<br>
-     * <br>
-     * Step 2: Filtering Zero Net Balances<br>
-     * - Filters out individuals with a net balance of zero, as they do not need to be involved in further transactions.<br>
-     * <br>
-     * Step 3: Initializing Dynamic Programming Array<br>
-     * - Initializes a dynamic programming array 'f' to track the minimum number of transactions for each subset of persons.<br>
-     * <br>
-     * Step 4: Finding Minimum Number of Transactions<br>
-     * - Iterates through all possible non-zero net balance subsets, using a bitmask 'i'.<br>
-     * - Computes the sum of balances in the subset; if the sum is zero, it indicates a subset that can balance itself.<br>
-     * <br>
-     * Step 5: Setting Base Condition for Correct Subsets<br>
-     * - If the sum for the 'i'-th subset is zero, calculates the number of required transactions as one less than the number of set bits in 'i'.<br>
-     * Transactions can be executed by selecting any two individuals with non-zero balances and transferring funds<br>
-     * to zero out the balance of one of them. Repeats this step until all debts in the group are settled.<br>
-     * <br>
-     * Step 6: Optimizing Transactions<br>
-     * - Searches for pairs of disjoint subsets 'j' and 'i^j' (XOR operation) that combine into the subset 'i'.<br>
-     * - Uses bitwise manipulation to iterate through potential pairs, aiming to minimize the sum 'f[j] + f[i^j]'.<br>
-     * - Stores the optimal previous subset 'prevSubset[i] = j'.<br>
-     * <br>
-     * Step 7: Reconstructing Optimal Transfers<br>
-     * - Iterates through all persons, reading the previous optimal subset 'prev', and its complement 'diff'.<br>
-     * - In a for loop checking for differences between the current and previous subsets, finds a partner for settlement.<br>
-     * - Creates a Transfer object representing the transaction and updates balances.<br>
-     * <br>
-     * Step 8: Returning the List of Optimal Transfers<br>
-     * - Returns a list of Transfer objects representing optimal transactions to balance debts within the obtained optimal subset.
      */
     public static List<Transfer> minTransfers(List<Transfer> transfers) {
         int max = transfers.stream()
@@ -66,7 +76,7 @@ public class MinCashFlow {
         User[] userIds = new User[max + 1];
         int userCount = 0;
 
-        for(int i = 0; i <= max; i++)
+        for (int i = 0; i <= max; i++)
             balance[i] = Money.of(0, Format.CURRENCY);
 
         for (var transfer : transfers) {
