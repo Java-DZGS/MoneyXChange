@@ -27,6 +27,7 @@ public class MainScreen extends JPanel {
         showActions();
 
         JScrollPane actionScrollPane = new JScrollPane(actionsPanel);
+        actionScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
         JButton addExpenseButton = new JButton("Dodaj nową płatność");
 

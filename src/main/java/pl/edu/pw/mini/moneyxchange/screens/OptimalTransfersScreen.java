@@ -19,6 +19,7 @@ public class OptimalTransfersScreen extends JPanel {
         // Create components
         transfersPanel = new JPanel(new GridBagLayout());
         JScrollPane transfersScrollPane = new JScrollPane(transfersPanel);
+        transfersScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
         // Add padding to the main panel
         int padding = 10;

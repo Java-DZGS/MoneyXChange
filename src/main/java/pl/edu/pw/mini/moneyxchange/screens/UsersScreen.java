@@ -19,14 +19,15 @@ public class UsersScreen extends JPanel {
         users = Group.getInstance().getUsers();
 
         usersPanel = new JPanel(new GridBagLayout());
-        JScrollPane usersScrollPlane = new JScrollPane(usersPanel);
+        JScrollPane usersScrollPane = new JScrollPane(usersPanel);
+        usersScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         JButton addUserButton = new JButton("Dodaj użytkownika");
 
         int padding = 10;
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(padding, padding, padding, padding));
 
-        add(usersScrollPlane, BorderLayout.CENTER);
+        add(usersScrollPane, BorderLayout.CENTER);
         add(addUserButton, BorderLayout.SOUTH);
 
         displayUsers();

@@ -124,7 +124,10 @@ public class Transfer implements MoneyAction, Serializable {
         public TransferPanel() {
             super();
 
-            setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.BLACK),
+                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
             setLayout(new GridLayout(3, 1));
 
             JLabel titleLabel = new JLabel("Przelew od " + fromUser.getName() + " do " + toUser.getName());
@@ -147,7 +150,10 @@ public class Transfer implements MoneyAction, Serializable {
         public OptimalTransferPanel() {
             super(new GridBagLayout());
 
-            setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.BLACK),
+                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
 
             GridBagConstraints constraints = new GridBagConstraints();
             constraints.anchor = GridBagConstraints.WEST;

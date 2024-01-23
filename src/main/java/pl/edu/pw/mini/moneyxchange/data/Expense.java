@@ -204,7 +204,10 @@ public class Expense implements MoneyAction, Serializable {
         public ExpensePanel() {
             super();
 
-            setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.BLACK),
+                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
             setLayout(new GridLayout(0, 1));
 
             titleLabel = new JLabel("Tytuł: " + name);

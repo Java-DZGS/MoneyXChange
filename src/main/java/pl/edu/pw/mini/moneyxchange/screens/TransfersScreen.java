@@ -22,6 +22,7 @@ public class TransfersScreen extends JPanel {
         transfersPanel = new JPanel(new GridBagLayout());
 
         JScrollPane transfersScrollPane = new JScrollPane(transfersPanel);
+        transfersScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         JButton filterButton = new JButton("Filtruj...");
 
         // Add padding to the main panel

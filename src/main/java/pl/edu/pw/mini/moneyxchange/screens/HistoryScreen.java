@@ -17,6 +17,7 @@ public class HistoryScreen extends JPanel {
         historyPanel = new JPanel(new GridBagLayout());
 
         JScrollPane historyScrollPane = new JScrollPane(historyPanel);
+        historyScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
         int padding = 10;
         setLayout(new BorderLayout());
