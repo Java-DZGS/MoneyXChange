@@ -174,7 +174,11 @@ public class User implements Serializable {
          */
         public UserPanel() {
             super();
-            setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.BLACK),
+                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
 
             setLayout(new BorderLayout());
 

@@ -191,13 +191,13 @@ public class FilterDialog extends JDialog {
         }
 
         private boolean checkTitle(String text) {
-            return text.contains(keyword);
+            return text.toLowerCase().contains(keyword.toLowerCase());
         }
 
         public boolean applyFilter(MoneyAction action) {
             return checkDate(action.getDate())
                     && checkAmount(action.getAmount())
-                    && (!(action instanceof Expense) || checkTitle(((Expense) action).getName()));
+                    && checkTitle(action.getName());
         }
 
     }

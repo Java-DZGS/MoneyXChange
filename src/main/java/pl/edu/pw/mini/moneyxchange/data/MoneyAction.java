@@ -10,6 +10,7 @@ public interface MoneyAction extends Comparator<MoneyAction> {
     Date getDate();
     Money getAmount();
 
+    String getName();
     JPanel getPanel();
 
     @Override

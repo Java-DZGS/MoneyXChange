@@ -89,6 +89,7 @@ public class UserDetailsDialog extends JDialog {
 
         expensesPanel = new JPanel(new GridBagLayout());  // Utwórz panel dla wydatków
         JScrollPane expensesScrollPane = new JScrollPane(expensesPanel);
+        expensesScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
         panel.add(expensesScrollPane, BorderLayout.CENTER);
 

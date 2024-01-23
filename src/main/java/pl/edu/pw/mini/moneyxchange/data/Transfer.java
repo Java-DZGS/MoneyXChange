@@ -114,6 +114,11 @@ public class Transfer implements MoneyAction, Serializable {
                 '}';
     }
 
+    public String getName()
+    {
+        return "Przelew od " + fromUser.getName() + " do " + toUser.getName();
+    }
+
     /**
      * A panel representing the transfer.
      */

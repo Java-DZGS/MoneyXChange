@@ -39,8 +39,7 @@ public class Expense implements MoneyAction, Serializable {
     /**
      * The name/title of the expense.
      */
-    private String name; //TODO: proof-of-concept aktualizowania zmiennych
-    // to todo jest już chyba resolved?
+    private String name;
 
     /**
      * The date when the expense occurred.
