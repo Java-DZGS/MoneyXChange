@@ -97,14 +97,13 @@ public class MainScreen extends JPanel {
         deserializeButton.addActionListener(e -> {
             try {
                 Group.deserialize();
+                showActions();
+                groupNameLabel.setText(Group.getInstance().getName());
+                JOptionPane.showMessageDialog(null, "Grupa zdeserializowana z pliku.");
             } catch (IOException | ClassNotFoundException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "W trakcie deserializacji wystąpił błąd!", "Błąd", JOptionPane.ERROR_MESSAGE);
             }
-
-            showActions();
-            groupNameLabel.setText(Group.getInstance().getName());
-            JOptionPane.showMessageDialog(null, "Grupa zdeserializowana z pliku.");
         });
 
         addExpenseButton.addActionListener(e -> showExpenseDialog());

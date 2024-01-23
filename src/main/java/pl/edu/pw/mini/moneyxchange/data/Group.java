@@ -84,7 +84,6 @@ public class Group implements Serializable {
     public static synchronized Group getInstance() {
         if (instance == null) {
             instance = new Group();
-            instance.createDummyData();
         }
         return instance;
     }
@@ -270,11 +269,11 @@ public class Group implements Serializable {
      * Creates dummy data for testing and presentation purposes.
      */
     public void createDummyData() {
-        addUser(new User("Bronisław"));
-        addUser(new User("Stanisław"));
-        addUser(new User("Radosław"));
-        addUser(new User("Władysław"));
-        addUser(new User("Krasnystaw"));
+        addUser(new User("Paulina"));
+        addUser(new User("Dua"));
+        addUser(new User("Maryla"));
+        addUser(new User("Andrzej"));
+        addUser(new User("Barbara"));
 
         try {
             File image = new File("test.png");
