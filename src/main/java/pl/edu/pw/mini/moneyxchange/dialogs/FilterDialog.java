@@ -7,6 +7,7 @@ import org.jdatepicker.impl.UtilDateModel;
 import pl.edu.pw.mini.moneyxchange.data.Expense;
 import pl.edu.pw.mini.moneyxchange.data.ExpenseCategory;
 import pl.edu.pw.mini.moneyxchange.data.MoneyAction;
+import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 import pl.edu.pw.mini.moneyxchange.utils.SwingUtils;
 
@@ -21,6 +22,10 @@ public class FilterDialog extends JDialog {
     private final FilterCriteria filterCriteria;
 
     public FilterDialog(Frame owner) {
+        this(owner, true);
+    }
+
+    public FilterDialog(Frame owner, boolean filterByCategories) {
         super(owner, "Opcje filtrowania", true);
 
         filterApplied = false;
@@ -103,6 +108,12 @@ public class FilterDialog extends JDialog {
             categoryComboBox.setEnabled(categoryCheckBox.isSelected());
         });
 
+        if (!filterByCategories) {
+            categoryLabel.setVisible(false);
+            categoryCheckBox.setVisible(false);
+            categoryComboBox.setVisible(false);
+        }
+
         JButton applyButton = new JButton("Zatwierdź");
         applyButton.addActionListener(e -> {
             filterCriteria.setFromDate((Date) fromDatePicker.getModel().getValue());
@@ -112,6 +123,7 @@ public class FilterDialog extends JDialog {
             filterCriteria.setTitleKeyword(titleField.getText());
             if (categoryCheckBox.isSelected())
                 filterCriteria.setCategory((ExpenseCategory) categoryComboBox.getSelectedItem());
+            filterCriteria.setFilteringByCategories(filterByCategories);
 
             if (!filterCriteria.isFilterValid()) {
                 JOptionPane.showMessageDialog(
@@ -156,6 +168,7 @@ public class FilterDialog extends JDialog {
         private Money toAmount;
         private ExpenseCategory category;
         private String keyword;
+        private boolean filterCategories;
 
         public void setFromDate(Date date) {
             if (date == null)
@@ -203,6 +216,10 @@ public class FilterDialog extends JDialog {
             this.category = category;
         }
 
+        public void setFilteringByCategories(boolean filterCategories) {
+            this.filterCategories = filterCategories;
+        }
+
         public boolean isFilterValid() {
             return (fromDate == null || toDate == null || !fromDate.after(toDate)) &&
                     (fromAmount == null || toAmount == null || fromAmount.isLessThanOrEqualTo(toAmount));
@@ -222,16 +239,22 @@ public class FilterDialog extends JDialog {
             return text.toLowerCase().contains(keyword.toLowerCase());
         }
 
-        private boolean checkCategory(ExpenseCategory category)
-        {
+        private boolean checkCategory(ExpenseCategory category) {
             return this.category == null || category == this.category;
         }
 
         public boolean applyFilter(MoneyAction action) {
+            boolean categoryCheck = true;
+
+            if (action instanceof Expense)
+                categoryCheck = checkCategory(((Expense) action).getCategory());
+            else if (action instanceof Transfer)
+                categoryCheck = !filterCategories || this.category == null;
+
             return checkDate(action.getDate())
                     && checkAmount(action.getAmount())
                     && checkTitle(action.getName())
-                    && (!(action instanceof Expense) || checkCategory(((Expense)action).getCategory()));
+                    && categoryCheck;
         }
 
     }
