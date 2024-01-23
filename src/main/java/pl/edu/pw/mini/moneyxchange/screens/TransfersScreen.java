@@ -66,7 +66,7 @@ public class TransfersScreen extends JPanel {
 
 
     private void showFilterDialog() {
-        FilterDialog filterDialog = new FilterDialog((Frame) SwingUtilities.getWindowAncestor(this));
+        FilterDialog filterDialog = new FilterDialog((Frame) SwingUtilities.getWindowAncestor(this), false);
         filterDialog.setLocationRelativeTo(this);
         filterDialog.setVisible(true);
 
