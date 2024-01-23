@@ -20,8 +20,9 @@ public class ChartsScreen extends JPanel {
 
     private DateGroupingType type = DateGroupingType.DAY;
     private List<Expense> expenses;
-    private final CategoryChart chart;
-    private final XChartPanel<CategoryChart> chartPanel;
+    private CategoryChart chart;
+    private XChartPanel<CategoryChart> chartPanel;
+    private final JPanel cardPanel;
 
     public ChartsScreen() {
         expenses = Group.getInstance().getExpenses();
@@ -29,69 +30,40 @@ public class ChartsScreen extends JPanel {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        // Create XChart
-        chart = new CategoryChartBuilder().width(800).height(600).title("Wydatki").xAxisTitle("Data").yAxisTitle("Kwota").build();
-        chart.getStyler().setLegendVisible(false);
-        chart.getStyler().setToolTipsEnabled(true);
-        chartPanel = new XChartPanel<>(chart);
+        cardPanel = new JPanel();
+        cardPanel.setLayout(new CardLayout());
+
+        JPanel someExpensesPanel = createSomeExpensesPanel();
+        JPanel noExpensesPanel = createNoExpensesPanel();
+
+        cardPanel.add(noExpensesPanel, "No expenses");
+        cardPanel.add(someExpensesPanel, "Some expenses");
+
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        add(cardPanel, gbc);
 
         Group.getInstance().addListener(evt -> {
             if (!evt.getPropertyName().equals("expenses")) return;
 
-            //TODO: Pokazywanie panelu z wykresami gdy sie pojawia nowe
             //noinspection unchecked
             expenses = (List<Expense>) evt.getNewValue();
+
+            if (!expenses.isEmpty()) {
+                ((CardLayout) cardPanel.getLayout()).show(cardPanel, "Some expenses");
+            }
+
             updateChart();
         });
 
         if (expenses.isEmpty()) {
-            JPanel noExpensesPanel = new JPanel();
-            noExpensesPanel.setLayout(new BoxLayout(noExpensesPanel, BoxLayout.Y_AXIS));
-            noExpensesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            noExpensesPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
-
-            JLabel noExpensesLabel = new JLabel("Nie ma żadnych wydatków w grupie.");
-            noExpensesLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            noExpensesLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            noExpensesPanel.add(Box.createVerticalGlue());
-            noExpensesPanel.add(noExpensesLabel);
-            noExpensesPanel.add(Box.createVerticalGlue());
-
-            add(noExpensesPanel);
-            return;
+            ((CardLayout) cardPanel.getLayout()).show(cardPanel, "No expenses");
+        } else {
+            updateChart();
+            ((CardLayout) cardPanel.getLayout()).show(cardPanel, "Some expenses");
         }
 
-        updateChart();
-
-        JButton filterButton = new JButton("Filtruj...");
-        filterButton.addActionListener(e -> showFilterDialog());
-
-        JComboBox<DateGroupingType> groupingTypeComboBox = new JComboBox<>(DateGroupingType.values());
-        groupingTypeComboBox.setSelectedItem(type);
-        groupingTypeComboBox.addActionListener(e -> {
-            type = (DateGroupingType) groupingTypeComboBox.getSelectedItem();
-            updateChart();
-        });
-
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.add(filterButton);
-        buttonPanel.add(groupingTypeComboBox);
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        add(buttonPanel, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        add(chartPanel, gbc);
     }
 
     private void updateChart() {
@@ -167,6 +139,66 @@ public class ChartsScreen extends JPanel {
             updateChart();
         }
     }
+
+    private JPanel createNoExpensesPanel() {
+        JPanel noExpensesPanel = new JPanel();
+        noExpensesPanel.setLayout(new BoxLayout(noExpensesPanel, BoxLayout.Y_AXIS));
+        noExpensesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        noExpensesPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+        JLabel noExpensesLabel = new JLabel("Nie ma żadnych wydatków w grupie.");
+        noExpensesLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        noExpensesLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        noExpensesPanel.add(Box.createVerticalGlue());
+        noExpensesPanel.add(noExpensesLabel);
+        noExpensesPanel.add(Box.createVerticalGlue());
+
+        return noExpensesPanel;
+    }
+
+    private JPanel createSomeExpensesPanel() {
+        JPanel expensesPanel = new JPanel();
+
+        expensesPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        chart = new CategoryChartBuilder().width(800).height(600).title("Wydatki").xAxisTitle("Data").yAxisTitle("Kwota").build();
+        chart.getStyler().setLegendVisible(false);
+        chart.getStyler().setToolTipsEnabled(true);
+        chartPanel = new XChartPanel<>(chart);
+
+        JButton filterButton = new JButton("Filtruj...");
+        filterButton.addActionListener(e -> showFilterDialog());
+
+        JComboBox<DateGroupingType> groupingTypeComboBox = new JComboBox<>(DateGroupingType.values());
+        groupingTypeComboBox.setSelectedItem(type);
+        groupingTypeComboBox.addActionListener(e -> {
+            type = (DateGroupingType) groupingTypeComboBox.getSelectedItem();
+            updateChart();
+        });
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(filterButton);
+        buttonPanel.add(groupingTypeComboBox);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        expensesPanel.add(buttonPanel, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        expensesPanel.add(chartPanel, gbc);
+
+        return expensesPanel;
+    }
+
 }
 
 enum DateGroupingType {
