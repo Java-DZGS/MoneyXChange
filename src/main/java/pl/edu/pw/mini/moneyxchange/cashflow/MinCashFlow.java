@@ -5,8 +5,6 @@ import pl.edu.pw.mini.moneyxchange.data.Transfer;
 import pl.edu.pw.mini.moneyxchange.data.User;
 import pl.edu.pw.mini.moneyxchange.utils.Format;
 
-import javax.money.MonetaryAmount;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,7 +72,6 @@ public class MinCashFlow {
                 .orElse(0);
         Money[] balance = new Money[max + 1];
         User[] userIds = new User[max + 1];
-        int userCount = 0;
 
         for (int i = 0; i <= max; i++)
             balance[i] = Money.of(0, Format.CURRENCY);
@@ -122,8 +119,9 @@ public class MinCashFlow {
                 minTransfers[i] = Integer.bitCount(i) - 1;
 
                 for (int j = (i - 1) & i; j > 0; j = (j - 1) & i) {
-                    if (minTransfers[i] > minTransfers[j] + minTransfers[i ^ j]) {
-                        minTransfers[i] = minTransfers[j] + minTransfers[i ^ j];
+                    int subsetTransfers = minTransfers[j] + minTransfers[i ^ j];
+                    if (minTransfers[i] > subsetTransfers) {
+                        minTransfers[i] = subsetTransfers;
                         prevSubset[i] = j;
                     }
                 }

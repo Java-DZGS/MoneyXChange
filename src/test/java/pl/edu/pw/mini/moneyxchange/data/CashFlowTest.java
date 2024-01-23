@@ -9,13 +9,11 @@ import pl.edu.pw.mini.moneyxchange.utils.splitters.ISplitter;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public class CashFlowTest {
     @Test
-    public void infinite() throws InterruptedException {
+    public void infinite() {
         int k = 24;
 
         List<User> users = IntStream.range(0, k)
