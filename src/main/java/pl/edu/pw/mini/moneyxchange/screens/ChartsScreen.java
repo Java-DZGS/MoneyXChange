@@ -166,6 +166,7 @@ public class ChartsScreen extends JPanel {
         chart = new CategoryChartBuilder().width(800).height(600).title("Wydatki").xAxisTitle("Data").yAxisTitle("Kwota").build();
         chart.getStyler().setLegendVisible(false);
         chart.getStyler().setToolTipsEnabled(true);
+        chart.getStyler().setXAxisLabelRotation(-90);
         chartPanel = new XChartPanel<>(chart);
 
         JButton filterButton = new JButton("Filtruj...");
