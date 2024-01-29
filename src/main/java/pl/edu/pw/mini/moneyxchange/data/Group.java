@@ -277,19 +277,19 @@ public class Group implements Serializable {
         addUser(new User("Barbara"));
 
         try {
-            File image = new File("paulina.jpg");
+            File image = new File("user.png");
             users.get(0).setImage(ImageIO.read(image));
 
-            image = new File("dua.png");
+            image = new File("user.png");
             users.get(1).setImage(ImageIO.read(image));
 
-            image = new File("maryla.jpg");
+            image = new File("user.png");
             users.get(2).setImage(ImageIO.read(image));
 
-            image = new File("andrzej.png");
+            image = new File("user.png");
             users.get(3).setImage(ImageIO.read(image));
 
-            image = new File("barbara.png");
+            image = new File("user.png");
             users.get(4).setImage(ImageIO.read(image));
         } catch (IOException e) {
             throw new RuntimeException(e);
